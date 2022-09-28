@@ -7,7 +7,7 @@
     "migrate": "ts-node src/db/migrate.ts",
     "seeds": "ts-node src/db/load-seeds.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node src/index.ts",
+    "start": "nodemon",
     "build": "npx tsc -p ."
   },
   "author": "Yasunori Horikoshi",
