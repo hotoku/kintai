@@ -12,6 +12,5 @@ export const fetchWorkHours = async (
 ) => {
   const res = await fetch(`/api/workHours?dealId=${dealId}`);
   const data = (await res.json()) as WorkHour[];
-  console.log(data);
   cb(data);
 };
