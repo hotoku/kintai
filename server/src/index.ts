@@ -4,17 +4,17 @@ import { getInstance } from "./db/db";
 
 const start = () => {
   const app = express();
-  app.use("/api/deals", () => {
+  app.use("/api/deals", async (_, res) => {
     const db = getInstance();
     db.open();
-    const ret = db.get(`
+    const ret = await db.get(`
 select
   id,
   name
 from
   deals
 `);
-    console.log(ret);
+    res.send(ret);
   });
 
   app.listen(8080);
