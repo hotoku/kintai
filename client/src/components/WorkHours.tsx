@@ -1,17 +1,13 @@
 import { useEffect, useState } from "react";
-import { fetchWorkHours } from "../api/fetches";
 
+import { fetchWorkHours } from "../api/fetches";
 import { WorkHour } from "../api/types";
 
-interface IProps {
+type HalfwayWorkHour = {
   dealId: number;
-}
-
-interface HalfwayWorkHour {
-  dealId?: number;
   startTime?: string;
   endTime?: string;
-}
+};
 
 const createItem = (wh: WorkHour): JSX.Element => {
   return (
@@ -21,10 +17,25 @@ const createItem = (wh: WorkHour): JSX.Element => {
   );
 };
 
-const createEditor = (
-  obj: HalfwayWorkHour,
-  cb: (w: WorkHour) => void
-): JSX.Element => {
+interface IEditorProps {
+  obj: HalfwayWorkHour;
+  onChange: (obj: HalfwayWorkHour) => void;
+}
+
+const Editor = ({ obj, onChange }: IEditorProps) => {
+  const [val, setVal] = useState(1);
+  return (
+    <input
+      onChange={(e) => {
+        setVal(new Number(e.target.value).valueOf());
+      }}
+      type="number"
+      value={val}
+    ></input>
+  );
+};
+
+const createEditor = (obj: HalfwayWorkHour, cb: (w: WorkHour) => void) => {
   const onclick = () => {
     if (obj.dealId === undefined || obj.startTime === undefined) {
       console.log("not create");
@@ -46,7 +57,11 @@ const createEditor = (
   );
 };
 
-const WorkHours = ({ dealId }: IProps) => {
+interface IWorkHoursProps {
+  dealId: number;
+}
+
+const WorkHours = ({ dealId }: IWorkHoursProps) => {
   const [workHours, setWorkHours] = useState<WorkHour[]>([]);
   const [halfWorkHour, setHalfWorkHour] = useState<HalfwayWorkHour>({
     dealId: dealId,
@@ -73,6 +88,7 @@ const WorkHours = ({ dealId }: IProps) => {
 
   return (
     <div className="WorkHours">
+      <Editor {...{ obj: { dealId: 100 }, onChange: (x: any) => {} }} />
       <button onClick={handleAddClick}>add</button>
       <ul>{items}</ul>
     </div>
