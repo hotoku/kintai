@@ -20,9 +20,11 @@ const createItem = (wh: WorkHour): JSX.Element => {
 interface IEditorProps {
   currentObj: HalfwayWorkHour;
   onChange: (obj: HalfwayWorkHour) => void;
+  onSave: (obj: HalfwayWorkHour) => void;
+  onCancel: (obj: HalfwayWorkHour) => void;
 }
 
-const Editor = ({ currentObj, onChange }: IEditorProps) => {
+const Editor = ({ currentObj, onChange, onSave, onCancel }: IEditorProps) => {
   const handleChange =
     (name: "startTime" | "endTime") =>
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,20 +47,8 @@ const Editor = ({ currentObj, onChange }: IEditorProps) => {
         type="string"
         value={currentObj.endTime || ""}
       ></input>
-      <button
-        onClick={() => {
-          console.log("save");
-        }}
-      >
-        save
-      </button>
-      <button
-        onClick={() => {
-          console.log("cancel");
-        }}
-      >
-        cancel
-      </button>
+      <button onClick={() => onSave(currentObj)}>save</button>
+      <button onClick={() => onCancel(currentObj)}>cancel</button>
     </span>
   );
 };
@@ -91,7 +81,22 @@ const WorkHours = ({ dealId }: IWorkHoursProps) => {
   if (isAdding) {
     items.push(
       <li key="editor">
-        <Editor currentObj={halfWorkHour} onChange={setHalfWorkHour} />
+        <Editor
+          currentObj={halfWorkHour}
+          onChange={setHalfWorkHour}
+          onSave={(obj) => {
+            if (!obj.startTime) return;
+            addWorkHour({
+              dealId: obj.dealId,
+              startTime: obj.startTime,
+              endTime: obj.endTime,
+            });
+            setHalfWorkHour({ dealId: dealId });
+          }}
+          onCancel={() => {
+            setIsAdding(false);
+          }}
+        />
       </li>
     );
   }
