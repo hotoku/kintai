@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 import { fetchWorkHours, postWorkHours } from "../api/fetches";
 import { WorkHour } from "../api/types";
@@ -53,11 +54,9 @@ const Editor = ({ currentObj, onChange, onSave, onCancel }: IEditorProps) => {
   );
 };
 
-interface IWorkHoursProps {
-  dealId: number;
-}
-
-const WorkHours = ({ dealId }: IWorkHoursProps) => {
+const WorkHours = () => {
+  const params = useParams();
+  const dealId = new Number(params["id"]).valueOf();
   const [workHours, setWorkHours] = useState<WorkHour[]>([]);
   const [halfWorkHour, setHalfWorkHour] = useState<HalfwayWorkHour>({
     dealId: dealId,

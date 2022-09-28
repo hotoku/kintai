@@ -1,24 +1,16 @@
-import { useEffect } from "react";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import "./App.css";
+import Deals from "./Deals";
+import WorkHours from "./WorkHours";
 
 const App = () => {
-  useEffect(() => {}, []);
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route index element={<Deals />} />
+        <Route path="/deal/:id" element={<WorkHours />} />
+      </Routes>
+    </BrowserRouter>
   );
 };
 
