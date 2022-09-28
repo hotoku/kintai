@@ -1,17 +1,24 @@
 import * as fs from "fs";
 import { getInstance } from "./db";
 
-import { Deal } from "./types";
+const makeLoader = (
+  sql: string,
+  path: string,
+  names: string[]
+): (() => Promise<void>) => {
+  const ret = async () => {
+    const contents = fs.readFileSync(path).toString();
+    const objs = JSON.parse(contents) as any[];
+    const db = getInstance();
+    db.open();
+    for (const obj of objs) {
+      await db.run(sql, ...names.map((n) => obj[n]));
+    }
+  };
+  return ret;
+};
 
-const loadSeed = async () => {
-  const seedFile = `${process.cwd()}/seeds/deals.json`;
-  const contents = fs.readFileSync(seedFile).toString();
-  const deals = JSON.parse(contents) as Deal[];
-  const db = getInstance();
-  db.open();
-  for (const deal of deals) {
-    await db.run(
-      `
+const queryForDeals = `
 insert into deals
 (
   name
@@ -20,10 +27,33 @@ values
 (
   ?
 )
-`,
-      deal.name
-    );
-  }
+`;
+const loadDeals = makeLoader(
+  queryForDeals,
+  `${process.cwd()}/seeds/deals.json`,
+  ["name"]
+);
+
+const queryForWorkHours = `
+insert into work_hours
+(
+  deal_id,
+  start_time,
+  end_time
+)
+values
+(
+  ?, ?, ?
+)
+`;
+const loadWorkHours = makeLoader(
+  queryForWorkHours,
+  `${process.cwd()}/seeds/work_hours.json`,
+  ["deal_id", "start_time", "end_time"]
+);
+const run = async () => {
+  await loadDeals();
+  await loadWorkHours();
 };
 
-loadSeed();
+run();

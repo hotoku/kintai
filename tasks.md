@@ -3,4 +3,9 @@
     - deals
       - id
       - name
+    - `work_hours`
+      - `id`
+      - `deal_id`
+      - `start_time`
+      - `end_time` nullable
 - [ ] server
