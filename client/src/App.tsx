@@ -1,8 +1,17 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import logo from "./logo.svg";
+import "./App.css";
 
-function App() {
+const fetchDeals = async () => {
+  const res = await fetch("/api/deals");
+  const data = await res.json();
+  console.log(data);
+};
+
+const App = () => {
+  useEffect(() => {
+    fetchDeals();
+  }, []);
   return (
     <div className="App">
       <header className="App-header">
@@ -21,6 +30,6 @@ function App() {
       </header>
     </div>
   );
-}
+};
 
 export default App;
