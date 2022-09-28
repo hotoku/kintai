@@ -1,0 +1,6 @@
+- [ ] db
+  - [ ] スキーマ
+    - deals
+      - id
+      - name
+- [ ] server
