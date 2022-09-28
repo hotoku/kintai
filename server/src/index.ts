@@ -4,7 +4,7 @@ import { getInstance } from "./db/db";
 
 const start = () => {
   const app = express();
-  app.use("/api/deals", async (_, res) => {
+  app.get("/api/deals", async (_, res) => {
     const db = getInstance();
     db.open();
     const ret = await db.all(`
@@ -16,7 +16,7 @@ from
 `);
     res.send(ret);
   });
-  app.use("/api/workHours", async (req, res) => {
+  app.get("/api/workHours", async (req, res) => {
     const db = getInstance();
     db.open();
     const dealId = (req.query as any).dealId; // todo: reqの型付け調べる
