@@ -1,39 +1,13 @@
 import express from "express";
+import bodyParser from "body-parser";
 
-import { getInstance } from "./db/db";
+import { deals, workHours } from "./server/routes";
 
 const start = () => {
   const app = express();
-  app.get("/api/deals", async (_, res) => {
-    const db = getInstance();
-    db.open();
-    const ret = await db.all(`
-select
-  id,
-  name
-from
-  deals
-`);
-    res.send(ret);
-  });
-  app.get("/api/workHours", async (req, res) => {
-    const db = getInstance();
-    db.open();
-    const dealId = (req.query as any).dealId; // todo: reqの型付け調べる
-    const ret = await db.all(`
-select
-  id,
-  dealId,
-  startTime,
-  endTime
-from
-  workHours
-where
-  dealId=${dealId}
-`);
-    res.send(ret);
-  });
-
+  app.use(bodyParser.json());
+  deals(app);
+  workHours(app);
   app.listen(8080);
 };
 
