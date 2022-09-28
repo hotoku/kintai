@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { fetchWorkHours } from "../api/fetches";
+import { fetchWorkHours, postWorkHours } from "../api/fetches";
 import { WorkHour } from "../api/types";
 
 type HalfwayWorkHour = {
@@ -72,8 +72,13 @@ const WorkHours = ({ dealId }: IWorkHoursProps) => {
     setIsAdding(true);
   };
 
-  const addWorkHour = (wh: WorkHour) => {
-    setWorkHours(workHours.concat([wh]));
+  const handleSave = async (wh: HalfwayWorkHour) => {
+    if (!wh.startTime) return;
+    const obj: WorkHour = { ...wh, startTime: wh.startTime };
+    await postWorkHours(obj);
+    fetchWorkHours(dealId, setWorkHours);
+    setIsAdding(false);
+    setHalfWorkHour({ dealId: dealId });
   };
 
   const items = workHours.map(createItem);
@@ -83,19 +88,8 @@ const WorkHours = ({ dealId }: IWorkHoursProps) => {
         <Editor
           currentObj={halfWorkHour}
           onChange={setHalfWorkHour}
-          onSave={(obj) => {
-            if (!obj.startTime) return;
-            addWorkHour({
-              dealId: obj.dealId,
-              startTime: obj.startTime,
-              endTime: obj.endTime,
-            });
-            setHalfWorkHour({ dealId: dealId });
-            setIsAdding(false);
-          }}
-          onCancel={() => {
-            setIsAdding(false);
-          }}
+          onSave={handleSave}
+          onCancel={() => setIsAdding(false)}
         />
       </li>
     );

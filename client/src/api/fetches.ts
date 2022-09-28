@@ -14,3 +14,13 @@ export const fetchWorkHours = async (
   const data = (await res.json()) as WorkHour[];
   cb(data);
 };
+
+export const postWorkHours = async (obj: WorkHour) => {
+  const method = "POST";
+  const body = JSON.stringify(obj);
+  const headers = {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  };
+  await fetch("/api/workHours", { method, headers, body });
+};
