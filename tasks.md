@@ -1,6 +1,16 @@
 - [ ] db
   - [ ] スキーマ
-    - deals
-      - id
-      - name
+    - `deals`
+      - `id`
+      - `name`
+    - `work_hours`
+      - `id`
+      - `deal_id`
+      - `start_time`
+      - `end_time` nullable
 - [ ] server
+- [ ] client
+  - [ ] route
+    - home
+    - deal一覧
+    - 稼働実績
