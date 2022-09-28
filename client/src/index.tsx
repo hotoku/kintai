@@ -1,8 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import App from "./components/App";
-import Deals from "./components/Deals";
+import WorkHours from "./components/WorkHours";
 import reportWebVitals from "./reportWebVitals";
 
 const root = ReactDOM.createRoot(
@@ -10,7 +9,7 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <Deals />
+    <WorkHours dealId={1}></WorkHours>
   </React.StrictMode>
 );
 

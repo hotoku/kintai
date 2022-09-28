@@ -35,11 +35,11 @@ const loadDeals = makeLoader(
 );
 
 const queryForWorkHours = `
-insert into work_hours
+insert into WorkHours
 (
-  deal_id,
-  start_time,
-  end_time
+  dealId,
+  startTime,
+  endTime
 )
 values
 (

@@ -1,14 +1,14 @@
 --------------------------------------------------------------------------------
 -- Up
 --------------------------------------------------------------------------------
-CREATE TABLE work_hours
+CREATE TABLE WorkHours
 (
   id INTEGER PRIMARY KEY,
-  deal_id INTEGER NOT NULL,
-  start_time TEXT NOT NULL,
-  end_time TEXT
+  dealId INTEGER NOT NULL,
+  startTime TEXT NOT NULL,
+  endTime TEXT
 );
 --------------------------------------------------------------------------------
 -- Down
 --------------------------------------------------------------------------------
-DROP TABLE work_hours;
+DROP TABLE WorkHours;

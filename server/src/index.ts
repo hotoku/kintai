@@ -16,20 +16,20 @@ from
 `);
     res.send(ret);
   });
-  app.use("/api/work_hours", async (req, res) => {
+  app.use("/api/workHours", async (req, res) => {
     const db = getInstance();
     db.open();
-    const deal_id = (req.query as any).deal_id;
+    const dealId = (req.query as any).dealId; // todo: reqの型付け調べる
     const ret = await db.all(`
 select
   id,
-  deal_id,
-  start_time,
-  end_time
+  dealId,
+  startTime,
+  endTime
 from
-  work_hours
+  workHours
 where
-  deal_id=${deal_id}
+  dealId=${dealId}
 `);
     res.send(ret);
   });
