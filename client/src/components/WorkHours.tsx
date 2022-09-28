@@ -7,11 +7,11 @@ interface IProps {
   dealId: number;
 }
 
-type UncompleteWorkHour = {
-  dealid?: number;
+interface HalfwayWorkHour {
+  dealId?: number;
   startTime?: string;
   endTime?: string;
-};
+}
 
 const createItem = (wh: WorkHour): JSX.Element => {
   return (
@@ -21,31 +21,59 @@ const createItem = (wh: WorkHour): JSX.Element => {
   );
 };
 
-const createEditor = (): JSX.Element => {
-  return <li key="hoge">hoge</li>;
+const createEditor = (
+  obj: HalfwayWorkHour,
+  cb: (w: WorkHour) => void
+): JSX.Element => {
+  const onclick = () => {
+    if (obj.dealId === undefined || obj.startTime === undefined) {
+      console.log("not create");
+      return;
+    }
+    const ret: WorkHour = {
+      dealId: obj.dealId,
+      startTime: obj.startTime,
+      endTime: obj.endTime,
+    };
+    cb(ret);
+  };
+
+  return (
+    <li key="halfway">
+      {obj.startTime || "null"}, {obj.endTime || "null"}
+      <button onClick={onclick}>save</button>
+    </li>
+  );
 };
 
 const WorkHours = ({ dealId }: IProps) => {
   const [workHours, setWorkHours] = useState<WorkHour[]>([]);
-  const [uWorkHours, setUWorkHours] = useState<UncompleteWorkHour>({});
-  const [adding, setAdding] = useState<boolean>(false);
+  const [halfWorkHour, setHalfWorkHour] = useState<HalfwayWorkHour>({
+    dealId: dealId,
+  });
+  const [isAdding, setIsAdding] = useState<boolean>(false);
 
   useEffect(() => {
     fetchWorkHours(dealId, setWorkHours);
   }, [dealId]);
 
-  const handleAdd = () => {
-    setAdding(true);
+  const handleAddClick = () => {
+    setIsAdding(true);
+  };
+
+  const addWorkHour = (wh: WorkHour) => {
+    setWorkHours(workHours.concat([wh]));
+    setIsAdding(false);
   };
 
   const items = workHours.map(createItem);
-  if (adding) {
-    items.push(createEditor());
+  if (isAdding) {
+    items.push(createEditor(halfWorkHour, setHalfWorkHour));
   }
 
   return (
     <div className="WorkHours">
-      <button onClick={handleAdd}>add</button>
+      <button onClick={handleAddClick}>add</button>
       <ul>{items}</ul>
     </div>
   );
