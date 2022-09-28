@@ -20,7 +20,7 @@ const WorkHours = ({ dealId }: IProps) => {
 
   useEffect(() => {
     fetchWorkHours(dealId, setWorkHours);
-  }, []);
+  }, [dealId]);
   return (
     <div className="WorkHours">
       <ul>{workHours.map(createItem)}</ul>
