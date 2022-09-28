@@ -7,7 +7,7 @@ const start = () => {
   app.use("/api/deals", async (_, res) => {
     const db = getInstance();
     db.open();
-    const ret = await db.get(`
+    const ret = await db.all(`
 select
   id,
   name

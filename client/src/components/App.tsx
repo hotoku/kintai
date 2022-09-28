@@ -1,16 +1,8 @@
 import React, { useEffect } from "react";
 import "./App.css";
 
-const fetchDeals = async () => {
-  const res = await fetch("/api/deals");
-  const data = await res.json();
-  console.log(data);
-};
-
 const App = () => {
-  useEffect(() => {
-    fetchDeals();
-  }, []);
+  useEffect(() => {}, []);
   return (
     <div className="App">
       <header className="App-header">
