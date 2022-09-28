@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { fetchDeals } from "../api/fetches";
 
 import { Deal } from "../api/types";
 
 const createItem = (d: Deal): JSX.Element => {
-  return <li key={d.id}>{d.name} </li>;
+  return (
+    <li key={d.id}>
+      <Link to={`/deal/${d.id}`}> {d.name}</Link>
+    </li>
+  );
 };
 
 const Deals = () => {
