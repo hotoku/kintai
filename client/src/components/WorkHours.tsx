@@ -74,7 +74,6 @@ const WorkHours = ({ dealId }: IWorkHoursProps) => {
 
   const addWorkHour = (wh: WorkHour) => {
     setWorkHours(workHours.concat([wh]));
-    setIsAdding(false);
   };
 
   const items = workHours.map(createItem);
@@ -92,6 +91,7 @@ const WorkHours = ({ dealId }: IWorkHoursProps) => {
               endTime: obj.endTime,
             });
             setHalfWorkHour({ dealId: dealId });
+            setIsAdding(false);
           }}
           onCancel={() => {
             setIsAdding(false);
