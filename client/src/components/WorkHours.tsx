@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { fetchWorkHours } from "../api/fetches";
 import { WorkHour } from "../api/types";
@@ -18,42 +18,48 @@ const createItem = (wh: WorkHour): JSX.Element => {
 };
 
 interface IEditorProps {
-  obj: HalfwayWorkHour;
+  currentObj: HalfwayWorkHour;
   onChange: (obj: HalfwayWorkHour) => void;
 }
 
-const Editor = ({ obj, onChange }: IEditorProps) => {
-  const [val, setVal] = useState(1);
-  return (
-    <input
-      onChange={(e) => {
-        setVal(new Number(e.target.value).valueOf());
-      }}
-      type="number"
-      value={val}
-    ></input>
-  );
-};
-
-const createEditor = (obj: HalfwayWorkHour, cb: (w: WorkHour) => void) => {
-  const onclick = () => {
-    if (obj.dealId === undefined || obj.startTime === undefined) {
-      console.log("not create");
-      return;
-    }
-    const ret: WorkHour = {
-      dealId: obj.dealId,
-      startTime: obj.startTime,
-      endTime: obj.endTime,
+const Editor = ({ currentObj, onChange }: IEditorProps) => {
+  const handleChange =
+    (name: "startTime" | "endTime") =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const diff: any = {};
+      diff[name] = e.target.value;
+      onChange({
+        ...currentObj,
+        ...diff,
+      });
     };
-    cb(ret);
-  };
-
   return (
-    <li key="halfway">
-      {obj.startTime || "null"}, {obj.endTime || "null"}
-      <button onClick={onclick}>save</button>
-    </li>
+    <span>
+      <input
+        onChange={handleChange("startTime")}
+        type="string"
+        value={currentObj.startTime || ""}
+      ></input>
+      <input
+        onChange={handleChange("endTime")}
+        type="string"
+        value={currentObj.endTime || ""}
+      ></input>
+      <button
+        onClick={() => {
+          console.log("save");
+        }}
+      >
+        save
+      </button>
+      <button
+        onClick={() => {
+          console.log("cancel");
+        }}
+      >
+        cancel
+      </button>
+    </span>
   );
 };
 
@@ -83,12 +89,15 @@ const WorkHours = ({ dealId }: IWorkHoursProps) => {
 
   const items = workHours.map(createItem);
   if (isAdding) {
-    items.push(createEditor(halfWorkHour, setHalfWorkHour));
+    items.push(
+      <li key="editor">
+        <Editor currentObj={halfWorkHour} onChange={setHalfWorkHour} />
+      </li>
+    );
   }
 
   return (
     <div className="WorkHours">
-      <Editor {...{ obj: { dealId: 100 }, onChange: (x: any) => {} }} />
       <button onClick={handleAddClick}>add</button>
       <ul>{items}</ul>
     </div>
