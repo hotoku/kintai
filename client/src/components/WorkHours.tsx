@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 import { fetchWorkHours, postWorkHours } from "../api/fetches";
 import { WorkHour } from "../api/types";
+import { parseQuery } from "../utils";
 
 type HalfwayWorkHour = {
   dealId: number;
@@ -55,8 +56,15 @@ const Editor = ({ currentObj, onChange, onSave, onCancel }: IEditorProps) => {
 };
 
 const WorkHours = () => {
-  const params = useParams();
-  const dealId = new Number(params["id"]).valueOf();
+  const query = parseQuery(useLocation().search);
+  if (query["dealId"] === undefined) {
+    throw Error("query parameter dealId is not given");
+  }
+  const dealId = parseInt(query["dealId"]);
+  if (Number.isNaN(dealId)) {
+    throw Error(`query parameter dealId is invalid: ${query["dealId"]}`);
+  }
+
   const [workHours, setWorkHours] = useState<WorkHour[]>([]);
   const [halfWorkHour, setHalfWorkHour] = useState<HalfwayWorkHour>({
     dealId: dealId,

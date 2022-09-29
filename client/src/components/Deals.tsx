@@ -7,7 +7,7 @@ import { Deal } from "../api/types";
 const createItem = (d: Deal): JSX.Element => {
   return (
     <li key={d.id}>
-      <Link to={`/deal/${d.id}`}> {d.name}</Link>
+      <Link to={`/workHours?dealId=${d.id}`}> {d.name}</Link>
     </li>
   );
 };
