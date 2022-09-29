@@ -87,24 +87,21 @@ const WorkHours = () => {
   const [editedRecord, setEditedRecord] = useState<HalfwayWorkHour>({
     dealId: dealId,
   });
-  const [isEditing, setIsEditing] = useState(false);
-  const [isAdding, setIsAdding] = useState(false);
   const [editedId, setEditedId] = useState<number | "new" | undefined>();
+
+  const isAdding = () => editedId === "new";
+  const isEditing = () => !(editedId === "new" || editedId === undefined);
 
   useEffect(() => {
     fetchWorkHours(dealId, setWorkHours);
   }, [dealId]);
 
   const handleAddClick = () => {
-    setIsAdding(true);
-    setIsEditing(false);
     setEditedId("new");
   };
 
   const handleEditClick = (wh: HalfwayWorkHour) => {
     const id = wh.id;
-    setIsAdding(false);
-    setIsEditing(true);
     setEditedId(id);
   };
 
@@ -113,15 +110,11 @@ const WorkHours = () => {
     const obj: WorkHour = { ...wh, startTime: wh.startTime };
     await postWorkHours(obj);
     fetchWorkHours(dealId, setWorkHours);
-    setIsEditing(false);
-    setIsAdding(false);
     setEditedRecord({ dealId: dealId });
   };
 
   const handleCancel = (_: any) => {
     setEditedRecord({ dealId: dealId });
-    setIsEditing(false);
-    setIsAdding(false);
   };
 
   const items = workHours.map((wh) => {
@@ -134,7 +127,7 @@ const WorkHours = () => {
     });
   });
 
-  if (isAdding) {
+  if (isAdding()) {
     items.push(
       <li key="new">
         <Editor
