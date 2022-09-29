@@ -29,7 +29,8 @@ type ViewOrEditorProps = IEditorProps & IViewProps;
 const View = ({ currentObj, onEdit }: IViewProps) => {
   return (
     <span>
-      {currentObj.startTime}, {currentObj.endTime || "null"}
+      {currentObj.startTime}, {currentObj.endTime || "null"}{" "}
+      <button onClick={() => onEdit(currentObj)}>edit</button>
     </span>
   );
 };
@@ -120,7 +121,7 @@ const WorkHours = () => {
 
   const items = workHours.map((wh) => {
     return createViewOrEditor(editedId, {
-      currentObj: editedRecord,
+      currentObj: wh,
       onChange: (wh) => setEditedRecord(wh),
       onSave: handleSave,
       onCancel: handleCancel,
