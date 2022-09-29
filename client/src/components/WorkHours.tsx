@@ -66,7 +66,7 @@ const WorkHours = () => {
   }
 
   const [workHours, setWorkHours] = useState<WorkHour[]>([]);
-  const [halfWorkHour, setHalfWorkHour] = useState<HalfwayWorkHour>({
+  const [addingRecord, setAddingRecord] = useState<HalfwayWorkHour>({
     dealId: dealId,
   });
   const [isAdding, setIsAdding] = useState<boolean>(false);
@@ -85,7 +85,7 @@ const WorkHours = () => {
     await postWorkHours(obj);
     fetchWorkHours(dealId, setWorkHours);
     setIsAdding(false);
-    setHalfWorkHour({ dealId: dealId });
+    setAddingRecord({ dealId: dealId });
   };
 
   const items = workHours.map(createItem);
@@ -93,8 +93,8 @@ const WorkHours = () => {
     items.push(
       <li key="editor">
         <Editor
-          currentObj={halfWorkHour}
-          onChange={setHalfWorkHour}
+          currentObj={addingRecord}
+          onChange={setAddingRecord}
           onSave={handleSave}
           onCancel={() => setIsAdding(false)}
         />
