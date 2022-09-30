@@ -24,17 +24,19 @@ export const workHours = (app: Application): Application => {
     const db = getInstance();
     await db.open();
     const dealId = (req.query as any).dealId; // todo: reqの型付け調べる
-    const ret = await db.all(`
-select
-  id,
-  dealId,
-  startTime,
-  endTime
-from
-  workHours
-where
-  dealId=${dealId}
-`);
+    const ret = await db.all(
+      `
+      select
+        id,
+        dealId,
+        startTime,
+        endTime
+      from
+        workHours
+      where
+        dealId=${dealId}
+      `
+    );
     res.send(ret);
   });
 
@@ -44,12 +46,41 @@ where
     const obj = req.body as WorkHour;
     await db.run(
       `
-insert into workHours(dealId, startTime, endTime)
-values(?, ?, ?)
-`,
+      insert into workHours (
+        dealId,
+        startTime,
+        endTime)
+      values (
+        ?,
+        ?,
+        ?
+      )
+      `,
       obj.dealId,
       obj.startTime,
       obj.endTime
+    );
+    res.send("ok");
+  });
+
+  app.put("/api/workHours", async (req, res) => {
+    const db = getInstance();
+    await db.open();
+    const obj = req.body as WorkHour;
+    await db.run(
+      `
+      update workHours
+      set
+        dealId = ?,
+        startTime = ?,
+        endTime = ?
+      where
+        id=?
+      `,
+      obj.dealId,
+      obj.startTime,
+      obj.endTime,
+      obj.id
     );
     res.send("ok");
   });

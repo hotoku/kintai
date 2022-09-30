@@ -13,7 +13,7 @@ type HalfwayWorkHour = {
 };
 
 interface IEditorProps {
-  currentObj: HalfwayWorkHour;
+  halfObj: HalfwayWorkHour;
   onChange: (obj: HalfwayWorkHour) => void;
   onSaveClick?: (obj: HalfwayWorkHour) => void;
   onUpdateClick?: (obj: HalfwayWorkHour) => void;
@@ -21,23 +21,23 @@ interface IEditorProps {
 }
 
 interface IViewProps {
-  currentObj: HalfwayWorkHour;
+  obj: WorkHour;
   onEditClick: (obj: HalfwayWorkHour) => void;
 }
 
 type ViewOrEditorProps = IEditorProps & IViewProps;
 
-const View = ({ currentObj, onEditClick }: IViewProps) => {
+const View = ({ obj, onEditClick }: IViewProps) => {
   return (
     <span>
-      {currentObj.startTime}, {currentObj.endTime || "null"}{" "}
-      <button onClick={() => onEditClick(currentObj)}>edit</button>
+      {obj.startTime}, {obj.endTime || "null"}{" "}
+      <button onClick={() => onEditClick(obj)}>edit</button>
     </span>
   );
 };
 
 const Editor = ({
-  currentObj,
+  halfObj,
   onChange,
   onSaveClick,
   onUpdateClick,
@@ -49,18 +49,16 @@ const Editor = ({
       const diff: any = {};
       diff[name] = e.target.value;
       onChange({
-        ...currentObj,
+        ...halfObj,
         ...diff,
       });
     };
   let saveOrUpdate: JSX.Element;
   if (onSaveClick !== undefined) {
-    saveOrUpdate = (
-      <button onClick={() => onSaveClick(currentObj)}>save</button>
-    );
+    saveOrUpdate = <button onClick={() => onSaveClick(halfObj)}>save</button>;
   } else if (onUpdateClick !== undefined) {
     saveOrUpdate = (
-      <button onClick={() => onUpdateClick(currentObj)}>update</button>
+      <button onClick={() => onUpdateClick(halfObj)}>update</button>
     );
   } else {
     throw Error("onSave click or onUpdateClick must be non null");
@@ -70,15 +68,15 @@ const Editor = ({
       <input
         onChange={handleChange("startTime")}
         type="string"
-        value={currentObj.startTime || ""}
+        value={halfObj.startTime || ""}
       ></input>
       <input
         onChange={handleChange("endTime")}
         type="string"
-        value={currentObj.endTime || ""}
+        value={halfObj.endTime || ""}
       ></input>
       {saveOrUpdate}
-      <button onClick={() => onCancelClick(currentObj)}>cancel</button>
+      <button onClick={() => onCancelClick(halfObj)}>cancel</button>
     </span>
   );
 };
@@ -87,7 +85,7 @@ const createViewOrEditor = (
   editedId: number | "new" | undefined,
   props: ViewOrEditorProps
 ): JSX.Element => {
-  const wh = props.currentObj;
+  const wh = props.obj;
   let ret: JSX.Element;
   if (wh.id === editedId) {
     ret = <Editor {...props} />;
@@ -119,10 +117,6 @@ const WorkHours = () => {
     fetchWorkHours(dealId, setWorkHours);
   }, [dealId]);
 
-  const handleAddClick = () => {
-    setEditedId("new");
-  };
-
   const sendWorkHour =
     (sendMethod: (obj: WorkHour) => Promise<any>) =>
     async (wh: HalfwayWorkHour) => {
@@ -130,17 +124,23 @@ const WorkHours = () => {
       const obj: WorkHour = { ...wh, startTime: wh.startTime };
       await sendMethod(obj);
       fetchWorkHours(dealId, setWorkHours);
-      setEditedRecord({ dealId: dealId });
+      disableEditing();
     };
 
   const saveWorkHour = sendWorkHour(postWorkHour);
   const updateWorkHour = sendWorkHour(putWorkHour);
 
-  const enableEditing = (obj: HalfwayWorkHour) => {
-    setEditedId(obj.id);
+  const startAdding = () => {
+    setEditedId("new");
+    setEditedRecord({ dealId: dealId });
   };
 
-  const disableEditing = (_: any) => {
+  const enableEditing = (obj: HalfwayWorkHour) => {
+    setEditedId(obj.id);
+    setEditedRecord({ ...obj });
+  };
+
+  const disableEditing = (_: any = null) => {
     setEditedId(undefined);
     setEditedRecord({ dealId: dealId });
   };
@@ -152,9 +152,9 @@ const WorkHours = () => {
 
   const items = workHours.map((wh) => {
     return createViewOrEditor(editedId, {
-      currentObj: wh,
-      /*onChange: setEditedRecord,*/
-      onChange: handleChange,
+      obj: wh,
+      halfObj: editedRecord,
+      onChange: setEditedRecord,
       onCancelClick: disableEditing,
       onEditClick: enableEditing,
       onUpdateClick: updateWorkHour,
@@ -165,7 +165,7 @@ const WorkHours = () => {
     items.push(
       <li key="new">
         <Editor
-          currentObj={editedRecord}
+          halfObj={editedRecord}
           onChange={handleChange}
           onSaveClick={saveWorkHour}
           onCancelClick={disableEditing}
@@ -176,7 +176,7 @@ const WorkHours = () => {
 
   return (
     <div className="WorkHours" tabIndex={0}>
-      <button onClick={handleAddClick}>add</button>
+      <button onClick={startAdding}>add</button>
       <ul>{items}</ul>
     </div>
   );
