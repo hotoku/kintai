@@ -170,10 +170,6 @@ const WorkHours = () => {
     setEditedRecord({ dealId: dealId });
   };
 
-  const handleChange = (obj: HalfwayWorkHour) => {
-    setEditedRecord(obj);
-  };
-
   const items = workHours.map((wh) => {
     return createViewOrEditor(editedId, {
       originalObj: wh,
@@ -190,7 +186,7 @@ const WorkHours = () => {
     items.push(
       <Editor
         editedObj={editedRecord}
-        onChange={handleChange}
+        onChange={setEditedRecord}
         onSaveClick={saveWorkHour}
         onCancelClick={disableEditing}
         key="new"
