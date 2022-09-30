@@ -15,12 +15,22 @@ export const fetchWorkHours = async (
   cb(data);
 };
 
-export const postWorkHours = async (obj: WorkHour) => {
+export const postWorkHour = (obj: WorkHour): Promise<Response> => {
   const method = "POST";
   const body = JSON.stringify(obj);
   const headers = {
     Accept: "application/json",
     "Content-Type": "application/json",
   };
-  await fetch("/api/workHours", { method, headers, body });
+  return fetch("/api/workHours", { method, headers, body });
+};
+
+export const putWorkHour = (obj: WorkHour): Promise<Response> => {
+  const method = "PUT";
+  const body = JSON.stringify(obj);
+  const headers = {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  };
+  return fetch("/api/workHours", { method, headers, body });
 };

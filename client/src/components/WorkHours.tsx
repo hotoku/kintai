@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
-import { fetchWorkHours, postWorkHours } from "../api/fetches";
+import { fetchWorkHours, postWorkHour, putWorkHour } from "../api/fetches";
 import { WorkHour } from "../api/types";
 import { parseQuery } from "../utils";
 
@@ -15,27 +15,34 @@ type HalfwayWorkHour = {
 interface IEditorProps {
   currentObj: HalfwayWorkHour;
   onChange: (obj: HalfwayWorkHour) => void;
-  onSave: (obj: HalfwayWorkHour) => void;
-  onCancel: (obj: HalfwayWorkHour) => void;
+  onSaveClick?: (obj: HalfwayWorkHour) => void;
+  onUpdateClick?: (obj: HalfwayWorkHour) => void;
+  onCancelClick: (obj: HalfwayWorkHour) => void;
 }
 
 interface IViewProps {
   currentObj: HalfwayWorkHour;
-  onEdit: (obj: HalfwayWorkHour) => void;
+  onEditClick: (obj: HalfwayWorkHour) => void;
 }
 
 type ViewOrEditorProps = IEditorProps & IViewProps;
 
-const View = ({ currentObj, onEdit }: IViewProps) => {
+const View = ({ currentObj, onEditClick }: IViewProps) => {
   return (
     <span>
       {currentObj.startTime}, {currentObj.endTime || "null"}{" "}
-      <button onClick={() => onEdit(currentObj)}>edit</button>
+      <button onClick={() => onEditClick(currentObj)}>edit</button>
     </span>
   );
 };
 
-const Editor = ({ currentObj, onChange, onSave, onCancel }: IEditorProps) => {
+const Editor = ({
+  currentObj,
+  onChange,
+  onSaveClick,
+  onUpdateClick,
+  onCancelClick,
+}: IEditorProps) => {
   const handleChange =
     (name: "startTime" | "endTime") =>
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,6 +53,18 @@ const Editor = ({ currentObj, onChange, onSave, onCancel }: IEditorProps) => {
         ...diff,
       });
     };
+  let saveOrUpdate: JSX.Element;
+  if (onSaveClick !== undefined) {
+    saveOrUpdate = (
+      <button onClick={() => onSaveClick(currentObj)}>save</button>
+    );
+  } else if (onUpdateClick !== undefined) {
+    saveOrUpdate = (
+      <button onClick={() => onUpdateClick(currentObj)}>update</button>
+    );
+  } else {
+    throw Error("onSave click or onUpdateClick must be non null");
+  }
   return (
     <span>
       <input
@@ -58,8 +77,8 @@ const Editor = ({ currentObj, onChange, onSave, onCancel }: IEditorProps) => {
         type="string"
         value={currentObj.endTime || ""}
       ></input>
-      <button onClick={() => onSave(currentObj)}>save</button>
-      <button onClick={() => onCancel(currentObj)}>cancel</button>
+      {saveOrUpdate}
+      <button onClick={() => onCancelClick(currentObj)}>cancel</button>
     </span>
   );
 };
@@ -69,7 +88,12 @@ const createViewOrEditor = (
   props: ViewOrEditorProps
 ): JSX.Element => {
   const wh = props.currentObj;
-  const ret = wh.id === editedId ? <Editor {...props} /> : <View {...props} />;
+  let ret: JSX.Element;
+  if (wh.id === editedId) {
+    ret = <Editor {...props} />;
+  } else {
+    ret = <View {...props} />;
+  }
   return <li key={wh.id}>{ret}</li>;
 };
 
@@ -90,7 +114,6 @@ const WorkHours = () => {
   const [editedId, setEditedId] = useState<number | "new" | undefined>();
 
   const isAdding = () => editedId === "new";
-  const isEditing = () => !(editedId === "new" || editedId === undefined);
 
   useEffect(() => {
     fetchWorkHours(dealId, setWorkHours);
@@ -100,30 +123,41 @@ const WorkHours = () => {
     setEditedId("new");
   };
 
-  const handleEditClick = (wh: HalfwayWorkHour) => {
-    const id = wh.id;
-    setEditedId(id);
+  const sendWorkHour =
+    (sendMethod: (obj: WorkHour) => Promise<any>) =>
+    async (wh: HalfwayWorkHour) => {
+      if (!wh.startTime) return;
+      const obj: WorkHour = { ...wh, startTime: wh.startTime };
+      await sendMethod(obj);
+      fetchWorkHours(dealId, setWorkHours);
+      setEditedRecord({ dealId: dealId });
+    };
+
+  const saveWorkHour = sendWorkHour(postWorkHour);
+  const updateWorkHour = sendWorkHour(putWorkHour);
+
+  const enableEditing = (obj: HalfwayWorkHour) => {
+    setEditedId(obj.id);
   };
 
-  const handleSave = async (wh: HalfwayWorkHour) => {
-    if (!wh.startTime) return;
-    const obj: WorkHour = { ...wh, startTime: wh.startTime };
-    await postWorkHours(obj);
-    fetchWorkHours(dealId, setWorkHours);
+  const disableEditing = (_: any) => {
+    setEditedId(undefined);
     setEditedRecord({ dealId: dealId });
   };
 
-  const handleCancel = (_: any) => {
-    setEditedRecord({ dealId: dealId });
+  const handleChange = (obj: HalfwayWorkHour) => {
+    console.log("handleChange", obj);
+    setEditedRecord(obj);
   };
 
   const items = workHours.map((wh) => {
     return createViewOrEditor(editedId, {
       currentObj: wh,
-      onChange: (wh) => setEditedRecord(wh),
-      onSave: handleSave,
-      onCancel: handleCancel,
-      onEdit: handleEditClick,
+      /*onChange: setEditedRecord,*/
+      onChange: handleChange,
+      onCancelClick: disableEditing,
+      onEditClick: enableEditing,
+      onUpdateClick: updateWorkHour,
     });
   });
 
@@ -132,9 +166,9 @@ const WorkHours = () => {
       <li key="new">
         <Editor
           currentObj={editedRecord}
-          onChange={setEditedRecord}
-          onSave={handleSave}
-          onCancel={handleCancel}
+          onChange={handleChange}
+          onSaveClick={saveWorkHour}
+          onCancelClick={disableEditing}
         />
       </li>
     );
