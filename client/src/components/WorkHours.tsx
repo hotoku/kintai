@@ -19,7 +19,7 @@ interface IEditorProps {
 
 interface IViewProps {
   originalObj: WorkHour;
-  onEditClick: (obj: HalfwayWorkHour) => void;
+  onEditClick: (obj: WorkHour) => void;
   key: string;
 }
 
@@ -160,7 +160,7 @@ const WorkHours = () => {
     setEditedRecord({ dealId: dealId });
   };
 
-  const enableEditing = (obj: HalfwayWorkHour) => {
+  const enableEditing = (obj: WorkHour) => {
     setEditedId(obj.id);
     setEditedRecord({ ...obj });
   };
