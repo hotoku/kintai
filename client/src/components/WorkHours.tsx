@@ -85,7 +85,7 @@ const Editor = ({
           className="list-input"
         />
       </td>
-      <td>
+      <td className="list-buttons">
         {saveOrUpdate}
         <button onClick={() => onCancelClick(editedObj)}>cancel</button>
       </td>
@@ -98,7 +98,7 @@ const View = ({ originalObj, onEditClick, key }: IViewProps) => {
     <tr key={key}>
       <td className="list-item">{originalObj.startTime}</td>
       <td className="list-item">{originalObj.endTime || "null"}</td>
-      <td>
+      <td className="list-buttons">
         <button onClick={() => onEditClick(originalObj)}>edit</button>
       </td>
     </tr>
@@ -204,9 +204,9 @@ const WorkHours = () => {
     <div className="WorkHours" tabIndex={0}>
       <table>
         <tr>
-          <th>a</th>
-          <th>b</th>
-          <th>c</th>
+          <th>start time</th>
+          <th>end time</th>
+          <th>actions</th>
         </tr>
         <tbody>{items}</tbody>
       </table>
