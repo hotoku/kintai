@@ -25,18 +25,6 @@ interface IViewProps {
 
 type ViewOrEditorProps = IEditorProps & IViewProps;
 
-const View = ({ originalObj, onEditClick, key }: IViewProps) => {
-  return (
-    <tr key={key}>
-      <td className="list-item">{originalObj.startTime}</td>
-      <td className="list-item">{originalObj.endTime || "null"}</td>
-      <td>
-        <button onClick={() => onEditClick(originalObj)}>edit</button>
-      </td>
-    </tr>
-  );
-};
-
 const Editor = ({
   originalObj,
   editedObj,
@@ -97,9 +85,21 @@ const Editor = ({
           className="list-input"
         />
       </td>
-      <td>{saveOrUpdate}</td>
       <td>
+        {saveOrUpdate}
         <button onClick={() => onCancelClick(editedObj)}>cancel</button>
+      </td>
+    </tr>
+  );
+};
+
+const View = ({ originalObj, onEditClick, key }: IViewProps) => {
+  return (
+    <tr key={key}>
+      <td className="list-item">{originalObj.startTime}</td>
+      <td className="list-item">{originalObj.endTime || "null"}</td>
+      <td>
+        <button onClick={() => onEditClick(originalObj)}>edit</button>
       </td>
     </tr>
   );
@@ -198,9 +198,16 @@ const WorkHours = () => {
     );
   }
 
+  console.log(items.map((x) => x.key));
+
   return (
     <div className="WorkHours" tabIndex={0}>
       <table>
+        <tr>
+          <th>a</th>
+          <th>b</th>
+          <th>c</th>
+        </tr>
         <tbody>{items}</tbody>
       </table>
       <button onClick={startAdding}>add</button>
