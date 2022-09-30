@@ -5,6 +5,8 @@ import { fetchWorkHours, postWorkHour, putWorkHour } from "../api/fetches";
 import { WorkHour } from "../api/types";
 import { parseQuery } from "../utils";
 
+import "./WorkHours.css";
+
 type HalfwayWorkHour = {
   id?: number;
   dealId: number;
@@ -30,7 +32,8 @@ type ViewOrEditorProps = IEditorProps & IViewProps;
 const View = ({ obj, onEditClick }: IViewProps) => {
   return (
     <span>
-      {obj.startTime}, {obj.endTime || "null"}{" "}
+      <span className="list-item">{obj.startTime}</span>{" "}
+      <span className="list-item">{obj.endTime || "null"}</span>
       <button onClick={() => onEditClick(obj)}>edit</button>
     </span>
   );
@@ -69,11 +72,13 @@ const Editor = ({
         onChange={handleChange("startTime")}
         type="string"
         value={halfObj.startTime || ""}
+        className="list-input"
       ></input>
       <input
         onChange={handleChange("endTime")}
         type="string"
         value={halfObj.endTime || ""}
+        className="list-input"
       ></input>
       {saveOrUpdate}
       <button onClick={() => onCancelClick(halfObj)}>cancel</button>
@@ -146,7 +151,6 @@ const WorkHours = () => {
   };
 
   const handleChange = (obj: HalfwayWorkHour) => {
-    console.log("handleChange", obj);
     setEditedRecord(obj);
   };
 
@@ -176,8 +180,8 @@ const WorkHours = () => {
 
   return (
     <div className="WorkHours" tabIndex={0}>
-      <button onClick={startAdding}>add</button>
       <ul>{items}</ul>
+      <button onClick={startAdding}>add</button>
     </div>
   );
 };

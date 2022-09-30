@@ -1,0 +1,14 @@
+.list-item {
+  display: inline-block;
+  width: 300px;
+  background-color: #eeeeee;
+  margin: 3px;
+  height: 1.4em;
+}
+
+.list-input {
+  display: inline-block;
+  width: 300px;
+  margin: 3px;
+  height: 1.2em;
+}
