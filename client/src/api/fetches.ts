@@ -1,4 +1,4 @@
-import { Deal, WorkHour } from "./types";
+import { Deal, HalfwayWorkHour, WorkHour } from "./types";
 
 export const fetchDeals = async (cb: (ds: Deal[]) => void) => {
   const res = await fetch("/api/deals");
@@ -15,7 +15,7 @@ export const fetchWorkHours = async (
   cb(data);
 };
 
-export const postWorkHour = (obj: WorkHour): Promise<Response> => {
+export const postWorkHour = (obj: HalfwayWorkHour): Promise<Response> => {
   const method = "POST";
   const body = JSON.stringify(obj);
   const headers = {

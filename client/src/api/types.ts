@@ -4,8 +4,15 @@ export type Deal = {
 };
 
 export type WorkHour = {
-  id?: number;
+  id: number;
   dealId: number;
   startTime: string;
+  endTime?: string;
+};
+
+export type HalfwayWorkHour = {
+  id?: number;
+  dealId: number;
+  startTime?: string;
   endTime?: string;
 };

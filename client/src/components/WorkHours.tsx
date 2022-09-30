@@ -2,49 +2,49 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 import { fetchWorkHours, postWorkHour, putWorkHour } from "../api/fetches";
-import { WorkHour } from "../api/types";
+import { WorkHour, HalfwayWorkHour } from "../api/types";
 import { parseQuery } from "../utils";
 
 import "./WorkHours.css";
 
-type HalfwayWorkHour = {
-  id?: number;
-  dealId: number;
-  startTime?: string;
-  endTime?: string;
-};
-
 interface IEditorProps {
-  halfObj: HalfwayWorkHour;
+  originalObj?: WorkHour;
+  editedObj: HalfwayWorkHour;
   onChange: (obj: HalfwayWorkHour) => void;
   onSaveClick?: (obj: HalfwayWorkHour) => void;
-  onUpdateClick?: (obj: HalfwayWorkHour) => void;
+  onUpdateClick?: (obj: WorkHour) => void;
   onCancelClick: (obj: HalfwayWorkHour) => void;
+  key: string;
 }
 
 interface IViewProps {
-  obj: WorkHour;
+  originalObj: WorkHour;
   onEditClick: (obj: HalfwayWorkHour) => void;
+  key: string;
 }
 
 type ViewOrEditorProps = IEditorProps & IViewProps;
 
-const View = ({ obj, onEditClick }: IViewProps) => {
+const View = ({ originalObj, onEditClick, key }: IViewProps) => {
   return (
-    <span>
-      <span className="list-item">{obj.startTime}</span>{" "}
-      <span className="list-item">{obj.endTime || "null"}</span>
-      <button onClick={() => onEditClick(obj)}>edit</button>
-    </span>
+    <tr key={key}>
+      <td className="list-item">{originalObj.startTime}</td>
+      <td className="list-item">{originalObj.endTime || "null"}</td>
+      <td>
+        <button onClick={() => onEditClick(originalObj)}>edit</button>
+      </td>
+    </tr>
   );
 };
 
 const Editor = ({
-  halfObj,
+  originalObj,
+  editedObj,
   onChange,
   onSaveClick,
   onUpdateClick,
   onCancelClick,
+  key,
 }: IEditorProps) => {
   const handleChange =
     (name: "startTime" | "endTime") =>
@@ -52,37 +52,56 @@ const Editor = ({
       const diff: any = {};
       diff[name] = e.target.value;
       onChange({
-        ...halfObj,
+        ...editedObj,
         ...diff,
       });
     };
   let saveOrUpdate: JSX.Element;
   if (onSaveClick !== undefined) {
-    saveOrUpdate = <button onClick={() => onSaveClick(halfObj)}>save</button>;
+    saveOrUpdate = <button onClick={() => onSaveClick(editedObj)}>save</button>;
   } else if (onUpdateClick !== undefined) {
+    if (originalObj === undefined) {
+      throw Error("originalObj is not defined");
+    }
     saveOrUpdate = (
-      <button onClick={() => onUpdateClick(halfObj)}>update</button>
+      <button
+        onClick={() =>
+          onUpdateClick({
+            id: originalObj.id,
+            startTime: originalObj.startTime,
+            ...editedObj,
+          })
+        }
+      >
+        update
+      </button>
     );
   } else {
     throw Error("onSave click or onUpdateClick must be non null");
   }
   return (
-    <span>
-      <input
-        onChange={handleChange("startTime")}
-        type="string"
-        value={halfObj.startTime || ""}
-        className="list-input"
-      ></input>
-      <input
-        onChange={handleChange("endTime")}
-        type="string"
-        value={halfObj.endTime || ""}
-        className="list-input"
-      ></input>
-      {saveOrUpdate}
-      <button onClick={() => onCancelClick(halfObj)}>cancel</button>
-    </span>
+    <tr key={key}>
+      <td>
+        <input
+          onChange={handleChange("startTime")}
+          type="string"
+          value={editedObj.startTime || ""}
+          className="list-input"
+        />
+      </td>
+      <td>
+        <input
+          onChange={handleChange("endTime")}
+          type="string"
+          value={editedObj.endTime || ""}
+          className="list-input"
+        />
+      </td>
+      <td>{saveOrUpdate}</td>
+      <td>
+        <button onClick={() => onCancelClick(editedObj)}>cancel</button>
+      </td>
+    </tr>
   );
 };
 
@@ -90,14 +109,14 @@ const createViewOrEditor = (
   editedId: number | "new" | undefined,
   props: ViewOrEditorProps
 ): JSX.Element => {
-  const wh = props.obj;
+  const wh = props.originalObj;
   let ret: JSX.Element;
   if (wh.id === editedId) {
     ret = <Editor {...props} />;
   } else {
     ret = <View {...props} />;
   }
-  return <li key={wh.id}>{ret}</li>;
+  return ret;
 };
 
 const WorkHours = () => {
@@ -123,13 +142,14 @@ const WorkHours = () => {
   }, [dealId]);
 
   const sendWorkHour =
-    (sendMethod: (obj: WorkHour) => Promise<any>) =>
-    async (wh: HalfwayWorkHour) => {
-      if (!wh.startTime) return;
-      const obj: WorkHour = { ...wh, startTime: wh.startTime };
+    <T extends WorkHour | HalfwayWorkHour>(
+      sendMethod: (obj: T) => Promise<any>
+    ) =>
+    async (obj: T) => {
+      disableEditing();
+      if (!obj.startTime) return;
       await sendMethod(obj);
       fetchWorkHours(dealId, setWorkHours);
-      disableEditing();
     };
 
   const saveWorkHour = sendWorkHour(postWorkHour);
@@ -156,31 +176,33 @@ const WorkHours = () => {
 
   const items = workHours.map((wh) => {
     return createViewOrEditor(editedId, {
-      obj: wh,
-      halfObj: editedRecord,
+      originalObj: wh,
+      editedObj: editedRecord,
       onChange: setEditedRecord,
       onCancelClick: disableEditing,
       onEditClick: enableEditing,
       onUpdateClick: updateWorkHour,
+      key: "" + wh.id,
     });
   });
 
   if (isAdding()) {
     items.push(
-      <li key="new">
-        <Editor
-          halfObj={editedRecord}
-          onChange={handleChange}
-          onSaveClick={saveWorkHour}
-          onCancelClick={disableEditing}
-        />
-      </li>
+      <Editor
+        editedObj={editedRecord}
+        onChange={handleChange}
+        onSaveClick={saveWorkHour}
+        onCancelClick={disableEditing}
+        key="new"
+      />
     );
   }
 
   return (
     <div className="WorkHours" tabIndex={0}>
-      <ul>{items}</ul>
+      <table>
+        <tbody>{items}</tbody>
+      </table>
       <button onClick={startAdding}>add</button>
     </div>
   );
