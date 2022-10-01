@@ -5,12 +5,19 @@ import WorkHours from "./WorkHours";
 
 const App = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route index element={<Home />} />
-        <Route path="/workHours" element={<WorkHours />} />
-      </Routes>
-    </BrowserRouter>
+    <div>
+      <header>
+        <a href="/">header</a>
+      </header>
+      <div className="app-root">
+        <BrowserRouter>
+          <Routes>
+            <Route index element={<Home />} />
+            <Route path="/workHours" element={<WorkHours />} />
+          </Routes>
+        </BrowserRouter>
+      </div>
+    </div>
   );
 };
 
