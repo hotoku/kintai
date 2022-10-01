@@ -7,7 +7,7 @@ const App = () => {
   return (
     <div>
       <header>
-        <a href="/">header</a>
+        <a href="/">home</a>
       </header>
       <div className="app-root">
         <BrowserRouter>
