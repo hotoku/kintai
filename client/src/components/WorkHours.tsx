@@ -97,7 +97,7 @@ const View = ({ originalObj, onEditClick, key }: IViewProps) => {
   return (
     <tr key={key}>
       <td className="list-item">{originalObj.startTime}</td>
-      <td className="list-item">{originalObj.endTime || "null"}</td>
+      <td className="list-item">{originalObj.endTime || ""}</td>
       <td className="list-buttons">
         <button onClick={() => onEditClick(originalObj)}>edit</button>
       </td>
