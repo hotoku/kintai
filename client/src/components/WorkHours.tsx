@@ -194,8 +194,6 @@ const WorkHours = () => {
     );
   }
 
-  console.log(items.map((x) => x.key));
-
   return (
     <div className="WorkHours" tabIndex={0}>
       <table>
