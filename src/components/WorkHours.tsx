@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
-import { formatDate, formatTime } from "./utils";
+import { formatDate, formatTime } from "../share/utils";
 
 import { fetchWorkHours, postWorkHour, putWorkHour } from "../api/fetches";
 import { WorkHour, HalfwayWorkHour } from "../api/types";
