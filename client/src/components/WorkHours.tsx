@@ -32,7 +32,6 @@ const Editor = ({
   onSaveClick,
   onUpdateClick,
   onCancelClick,
-  key,
 }: IEditorProps) => {
   const handleChange =
     (name: "startTime" | "endTime") =>
@@ -68,7 +67,7 @@ const Editor = ({
     throw Error("onSave click or onUpdateClick must be non null");
   }
   return (
-    <tr key={key}>
+    <tr>
       <td>
         <input
           onChange={handleChange("startTime")}
@@ -93,9 +92,9 @@ const Editor = ({
   );
 };
 
-const View = ({ originalObj, onEditClick, key }: IViewProps) => {
+const View = ({ originalObj, onEditClick }: IViewProps) => {
   return (
-    <tr key={key}>
+    <tr>
       <td className="list-item">{originalObj.startTime}</td>
       <td className="list-item">{originalObj.endTime || ""}</td>
       <td className="list-buttons">
@@ -197,11 +196,13 @@ const WorkHours = () => {
   return (
     <div className="WorkHours" tabIndex={0}>
       <table>
-        <tr>
-          <th>start time</th>
-          <th>end time</th>
-          <th>actions</th>
-        </tr>
+        <thead>
+          <tr>
+            <th>start time</th>
+            <th>end time</th>
+            <th>actions</th>
+          </tr>
+        </thead>
         <tbody>{items}</tbody>
       </table>
       <button onClick={startAdding}>add</button>
