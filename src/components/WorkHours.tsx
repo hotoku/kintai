@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
+import { formatDate, formatTime } from "kintai-libs/utils";
+
 import { fetchWorkHours, postWorkHour, putWorkHour } from "../api/fetches";
 import { WorkHour, HalfwayWorkHour } from "../api/types";
 import { parseQuery } from "../utils";
@@ -66,13 +68,19 @@ const Editor = ({
   } else {
     throw Error("onSave click or onUpdateClick must be non null");
   }
+  const st = editedObj.startTime;
+  const startDate = st ? `${formatDate(st, false)}` : "";
+  const startTime = st ? `${formatTime(st, false)}` : "";
+  const et = editedObj.endTime;
+  const endDate = et ? `${formatDate(et, false)}` : "";
+  const endTime = et ? `${formatTime(et, false)}` : "";
   return (
     <tr>
       <td>
         <input
           onChange={handleChange("startTime")}
           type="string"
-                  value={editedObj.startTime ? editedObj.startTime ""}
+          value={`${startDate} ${startTime}`}
           className="list-input"
         />
       </td>
@@ -80,7 +88,7 @@ const Editor = ({
         <input
           onChange={handleChange("endTime")}
           type="string"
-          value={editedObj.endTime || ""}
+          value={`${endDate} ${endTime}`}
           className="list-input"
         />
       </td>
@@ -93,10 +101,17 @@ const Editor = ({
 };
 
 const View = ({ originalObj, onEditClick }: IViewProps) => {
+  const st = originalObj.startTime;
+  const startDate = st ? `${formatDate(st, false)}` : "";
+  const startTime = st ? `${formatTime(st, false)}` : "";
+  const et = originalObj.endTime;
+  const endDate = et ? `${formatDate(et, false)}` : "";
+  const endTime = et ? `${formatTime(et, false)}` : "";
+
   return (
     <tr>
-      <td className="list-item">{originalObj.startTime}</td>
-      <td className="list-item">{originalObj.endTime || ""}</td>
+      <td className="list-item">{`${startDate} ${startTime}`}</td>
+      <td className="list-item">{`${endDate} ${endTime}`}</td>
       <td className="list-buttons">
         <button onClick={() => onEditClick(originalObj)}>edit</button>
       </td>
