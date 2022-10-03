@@ -11,8 +11,16 @@ export const fetchWorkHours = async (
   cb: (ws: WorkHour[]) => void
 ) => {
   const res = await fetch(`/api/workHours?dealId=${dealId}`);
-  const data = (await res.json()) as WorkHour[];
-  cb(data);
+  const data = await res.json();
+  const ret: WorkHour[] = data.map((x: any) => {
+    return {
+      id: x["id"],
+      dealId: x["dealId"],
+      startTime: new Date(x["startTime"]),
+      endTime: x["endTime"] ? new Date(x["endTime"]) : undefined,
+    };
+  });
+  cb(ret);
 };
 
 export const postWorkHour = (obj: HalfwayWorkHour): Promise<Response> => {
