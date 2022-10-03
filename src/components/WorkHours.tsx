@@ -72,7 +72,7 @@ const Editor = ({
         <input
           onChange={handleChange("startTime")}
           type="string"
-          value={editedObj.startTime || ""}
+                  value={editedObj.startTime ? editedObj.startTime ""}
           className="list-input"
         />
       </td>
