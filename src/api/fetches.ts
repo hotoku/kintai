@@ -1,4 +1,5 @@
 import { Deal, HalfwayWorkHour, WorkHour } from "./types";
+import { formatDateTime } from "../share/utils";
 
 export const fetchDeals = async (cb: (ds: Deal[]) => void) => {
   const res = await fetch("/api/deals");
@@ -23,9 +24,27 @@ export const fetchWorkHours = async (
   cb(ret);
 };
 
+const halfwayWorkHourToJson = (obj: HalfwayWorkHour): string => {
+  return JSON.stringify({
+    id: obj.id,
+    dealId: obj.dealId,
+    startTime: obj.startTime ? formatDateTime(obj.startTime, false) : undefined,
+    endTime: obj.endTime ? formatDateTime(obj.endTime, false) : undefined,
+  });
+};
+
+const workHourToJson = (obj: WorkHour): string => {
+  return JSON.stringify({
+    id: obj.id,
+    dealId: obj.dealId,
+    startTime: formatDateTime(obj.startTime, false),
+    endTime: obj.endTime ? formatDateTime(obj.endTime, false) : undefined,
+  });
+};
+
 export const postWorkHour = (obj: HalfwayWorkHour): Promise<Response> => {
   const method = "POST";
-  const body = JSON.stringify(obj);
+  const body = halfwayWorkHourToJson(obj);
   const headers = {
     Accept: "application/json",
     "Content-Type": "application/json",
@@ -35,7 +54,7 @@ export const postWorkHour = (obj: HalfwayWorkHour): Promise<Response> => {
 
 export const putWorkHour = (obj: WorkHour): Promise<Response> => {
   const method = "PUT";
-  const body = JSON.stringify(obj);
+  const body = workHourToJson(obj);
   const headers = {
     Accept: "application/json",
     "Content-Type": "application/json",
