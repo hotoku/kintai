@@ -6,9 +6,11 @@ import { Deal } from "../api/types";
 
 const createItem = (d: Deal): JSX.Element => {
   return (
-    <li key={d.id}>
-      <Link to={`/workHours?dealId=${d.id}`}> {d.name}</Link>
-    </li>
+    <tr key={d.id}>
+      <td>
+        <Link to={`/workHours?dealId=${d.id}`}> {d.name}</Link>
+      </td>
+    </tr>
   );
 };
 
@@ -20,7 +22,14 @@ const Deals = () => {
   }, []);
   return (
     <div className="Deals">
-      <ul>{deals.map(createItem)}</ul>
+      <table>
+        <thead>
+          <tr>
+            <th>name</th>
+          </tr>
+        </thead>
+        <tbody>{deals.map(createItem)}</tbody>
+      </table>
     </div>
   );
 };
