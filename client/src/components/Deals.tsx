@@ -25,8 +25,45 @@ const View = ({ originalObj, onEditClick }: ViewProps): JSX.Element => {
   );
 };
 
-const createItem = (d: Deal): JSX.Element => {
-  return <View key={d.id} originalObj={d} onEditClick={() => {}} />;
+type EditorProps = {
+  editedObj: HalfwayDeal;
+  onChange: (obj: HalfwayDeal) => void;
+  onSaveClick: (obj: HalfwayDeal) => void;
+  onCancelClick: (obj: HalfwayDeal) => void;
+  saveButtonLabel: string;
+};
+const Editor = ({
+  editedObj,
+  onChange,
+  onSaveClick,
+  onCancelClick,
+  saveButtonLabel,
+}: EditorProps): JSX.Element => {
+  return (
+    <tr>
+      <td>
+        <input value={editedObj.name} onChange={() => onChange(editedObj)} />
+      </td>
+      <td>{editedObj.clientName}</td>
+      <td>
+        <button onClick={() => onSaveClick(editedObj)}>
+          {saveButtonLabel}
+        </button>
+        <button onClick={() => onCancelClick(editedObj)}>cancel</button>
+      </td>
+    </tr>
+  );
+};
+
+const createItem = (
+  editedId: number | "new" | undefined,
+  props: EditorProps & ViewProps
+): JSX.Element => {
+  if (editedId === props.originalObj.id) {
+    return <Editor key={props.originalObj.id} {...props} />;
+  } else {
+    return <View key={props.originalObj.id} {...props} />;
+  }
 };
 
 const Deals = () => {
@@ -38,6 +75,15 @@ const Deals = () => {
     fetchDeals(setDeals);
   }, []);
 
+  const enableEditing = (obj: HalfwayDeal) => {
+    setEditedId(obj.id);
+    setEditedRecord({ ...obj });
+  };
+
+  const disableEditing = (_: HalfwayDeal) => {
+    setEditedId(undefined);
+    setEditedRecord({});
+  };
   return (
     <div className="Deals">
       <table>
@@ -48,7 +94,19 @@ const Deals = () => {
             <th>actions</th>
           </tr>
         </thead>
-        <tbody>{deals.map(createItem)}</tbody>
+        <tbody>
+          {deals.map((obj) =>
+            createItem(editedId, {
+              originalObj: obj,
+              editedObj: editedRecord,
+              onChange: () => {},
+              onSaveClick: () => {},
+              onCancelClick: disableEditing,
+              saveButtonLabel: "update",
+              onEditClick: enableEditing,
+            })
+          )}
+        </tbody>
       </table>
       <button>add</button>
     </div>
