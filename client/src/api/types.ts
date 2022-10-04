@@ -5,6 +5,13 @@ export type Deal = {
   clientName: string;
 };
 
+export type HalfwayDeal = {
+  id?: number;
+  name?: string;
+  clientId?: number;
+  clientName?: string;
+};
+
 export type WorkHour = {
   id: number;
   dealId: number;
