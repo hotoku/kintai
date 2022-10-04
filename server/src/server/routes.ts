@@ -21,6 +21,22 @@ from
   return app;
 };
 
+export const clients = (app: Application): Application => {
+  app.get("/api/clients", async (_, res) => {
+    const db = getInstance();
+    await db.open();
+    const ret = await db.all(`
+select
+  id,
+  name
+from
+  clients 
+`);
+    res.send(ret);
+  });
+  return app;
+};
+
 export const workHours = (app: Application): Application => {
   app.get("/api/workHours", async (req, res) => {
     const db = getInstance();

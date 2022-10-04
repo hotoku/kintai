@@ -18,3 +18,8 @@ export type HalfwayWorkHour = {
   startTime?: Date;
   endTime?: Date;
 };
+
+export type Client = {
+  id: number;
+  name: string;
+};

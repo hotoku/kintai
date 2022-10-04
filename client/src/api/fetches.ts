@@ -7,6 +7,12 @@ export const fetchDeals = async (cb: (ds: Deal[]) => void) => {
   cb(data);
 };
 
+export const fetchClients = async (cb: (ds: Deal[]) => void) => {
+  const res = await fetch("/api/clients");
+  const data = (await res.json()) as Deal[];
+  cb(data);
+};
+
 export const fetchWorkHours = async (
   dealId: number,
   cb: (ws: WorkHour[]) => void
