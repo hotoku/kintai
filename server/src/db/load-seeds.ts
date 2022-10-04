@@ -21,37 +21,57 @@ const makeLoader = (
 const queryForDeals = `
 insert into deals
 (
-  name
+  name,
+  clientId
 )
 values
 (
-  ?
+  ?, ?
 )
 `;
 const loadDeals = makeLoader(
   queryForDeals,
   `${process.cwd()}/seeds/deals.json`,
-  ["name"]
+  ["name", "clientId"]
 );
 
 const queryForWorkHours = `
-insert into WorkHours
+insert into workHours
 (
   dealId,
   startTime,
-  endTime
+  endTime,
+  clientId
 )
 values
 (
-  ?, ?, ?
+  ?, ?, ?, ?
 )
 `;
 const loadWorkHours = makeLoader(
   queryForWorkHours,
   `${process.cwd()}/seeds/work_hours.json`,
-  ["deal_id", "start_time", "end_time"]
+  ["dealId", "startTime", "endTime", "clientId"]
 );
+
+const queryForClients = `
+insert into clients
+(
+  name 
+)
+  values
+(
+  ?
+)
+`;
+const loadClients = makeLoader(
+  queryForClients,
+  `${process.cwd()}/seeds/clients.json`,
+  ["name"]
+);
+
 const run = async () => {
+  await loadClients();
   await loadDeals();
   await loadWorkHours();
 };
