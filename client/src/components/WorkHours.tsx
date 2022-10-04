@@ -11,7 +11,7 @@ import { parseQuery } from "../utils";
 
 import "./WorkHours.css";
 
-interface IEditorProps {
+type EditorProps = {
   originalObj?: WorkHour;
   editedObj: HalfwayWorkHour;
   onChange: (obj: HalfwayWorkHour) => void;
@@ -19,15 +19,15 @@ interface IEditorProps {
   onUpdateClick?: (obj: WorkHour) => void;
   onCancelClick: (obj: HalfwayWorkHour) => void;
   key: string;
-}
+};
 
-interface IViewProps {
+type ViewProps = {
   originalObj: WorkHour;
   onEditClick: (obj: WorkHour) => void;
   key: string;
-}
+};
 
-type ViewOrEditorProps = IEditorProps & IViewProps;
+type ViewOrEditorProps = EditorProps & ViewProps;
 
 const Editor = ({
   originalObj,
@@ -36,7 +36,7 @@ const Editor = ({
   onSaveClick,
   onUpdateClick,
   onCancelClick,
-}: IEditorProps) => {
+}: EditorProps) => {
   const handleChange = (name: "startTime" | "endTime") => (e: Date) => {
     const newOne = { ...editedObj };
     newOne[name] = e;
@@ -99,7 +99,7 @@ const Editor = ({
   );
 };
 
-const View = ({ originalObj, onEditClick }: IViewProps) => {
+const View = ({ originalObj, onEditClick }: ViewProps) => {
   const st = originalObj.startTime;
   const startDate = st ? `${formatDate(st, false)}` : "";
   const startTime = st ? `${formatTime(st, false)}` : "";
