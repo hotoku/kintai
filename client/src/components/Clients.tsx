@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { fetchClients } from "../api/fetches";
 import { Client, HalfwayClient } from "../api/types";
 
@@ -18,16 +18,59 @@ const View = ({ originalObj, onEditClick }: ViewProps): JSX.Element => {
   );
 };
 
+type EditorProps = {
+  originalObj?: Client;
+  editedObj: HalfwayClient;
+  onUpdateClick: (obj: HalfwayClient) => void;
+  onCancelClick: (obj: HalfwayClient) => void;
+  onChange: (obj: HalfwayClient) => void;
+};
+
+const Editor = ({
+  originalObj,
+  editedObj,
+  onUpdateClick,
+  onCancelClick,
+  onChange,
+}: EditorProps): JSX.Element => {
+  if (originalObj === undefined) {
+    throw Error("originalObj is undefined");
+  }
+  return (
+    <tr>
+      <td>
+        <input
+          value={editedObj.name || ""}
+          onChange={(e) => {
+            const newOne = { ...editedObj };
+            newOne.name = e.target.value;
+            onChange(newOne);
+          }}
+        ></input>
+      </td>
+      <td>
+        <button
+          onClick={() => {
+            if (editedObj.name === undefined) return;
+            const obj: Client = { ...originalObj };
+            obj.name = editedObj.name;
+            onUpdateClick(obj);
+          }}
+        >
+          update
+        </button>
+        <button onClick={() => onCancelClick(editedObj)}>cancel</button>
+      </td>
+    </tr>
+  );
+};
+
 const createItem = (
   editedId: number | "new" | undefined,
-  props: ViewProps
+  props: ViewProps & EditorProps
 ): JSX.Element => {
   if (editedId === props.originalObj.id) {
-    return (
-      <tr>
-        <td> this object is edited </td>
-      </tr>
-    );
+    return <Editor key={props.originalObj.id} {...props} />;
   } else {
     return <View key={props.originalObj.id} {...props} />;
   }
@@ -40,6 +83,19 @@ const Clients = () => {
 
   const handleEditClick = (obj: Client) => {
     setEditedId(obj.id);
+  };
+
+  const handleUpdateClick = (obj: HalfwayClient) => {
+    console.log("handleUpdateClick", obj);
+  };
+
+  const handleCancelClick = (_: HalfwayClient) => {
+    setEditedId(undefined);
+    setEditedRecord({});
+  };
+
+  const handleChange = (obj: HalfwayClient) => {
+    setEditedRecord(obj);
   };
 
   useEffect(() => {
@@ -58,7 +114,11 @@ const Clients = () => {
           {clients.map((obj) => {
             return createItem(editedId, {
               originalObj: obj,
+              editedObj: editedRecord,
               onEditClick: handleEditClick,
+              onUpdateClick: handleUpdateClick,
+              onCancelClick: handleCancelClick,
+              onChange: handleChange,
             });
           })}
         </tbody>
