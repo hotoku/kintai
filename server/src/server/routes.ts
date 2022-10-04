@@ -1,5 +1,4 @@
 import { Application } from "express";
-import { type } from "os";
 import { getInstance } from "../db/db";
 import { WorkHour } from "../db/types";
 
