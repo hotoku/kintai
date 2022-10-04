@@ -1,6 +1,12 @@
-build:
-	cd ../client && npm run build
+build: build-server build-client
+
+
+build-server:
 	cd server && npm run build
+
+
+build-client:
+	cd ../client && npm run build
 
 
 start:
