@@ -8,8 +8,9 @@ const createItem = (d: Deal): JSX.Element => {
   return (
     <tr key={d.id}>
       <td>
-        <Link to={`/workHours?dealId=${d.id}`}> {d.name}</Link>
+        <Link to={`/workHours?dealId=${d.id}`}>{d.name}</Link>
       </td>
+      <td>{d.clientName}</td>
     </tr>
   );
 };
@@ -26,6 +27,7 @@ const Deals = () => {
         <thead>
           <tr>
             <th>name</th>
+            <th>client name</th>
           </tr>
         </thead>
         <tbody>{deals.map(createItem)}</tbody>

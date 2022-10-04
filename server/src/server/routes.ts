@@ -8,10 +8,13 @@ export const deals = (app: Application): Application => {
     await db.open();
     const ret = await db.all(`
 select
-  id,
-  name
+  l.id,
+  l.name,
+  l.clientId,
+  r.name as clientName
 from
-  deals
+  deals l inner join
+  clients r on (l.clientId = r.id)
 `);
     res.send(ret);
   });
