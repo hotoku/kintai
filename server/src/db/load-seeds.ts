@@ -40,18 +40,17 @@ insert into workHours
 (
   dealId,
   startTime,
-  endTime,
-  clientId
+  endTime
 )
 values
 (
-  ?, ?, ?, ?
+  ?, ?, ?
 )
 `;
 const loadWorkHours = makeLoader(
   queryForWorkHours,
   `${process.cwd()}/seeds/work_hours.json`,
-  ["dealId", "startTime", "endTime", "clientId"]
+  ["dealId", "startTime", "endTime"]
 );
 
 const queryForClients = `

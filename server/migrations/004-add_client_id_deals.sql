@@ -1,20 +1,20 @@
 --------------------------------------------------------------------------------
 -- Up
 --------------------------------------------------------------------------------
-alter table deals
+alter table Deals
   add clientId integer not null;
 --------------------------------------------------------------------------------
 -- Down
 --------------------------------------------------------------------------------
-ALTER TABLE deals RENAME TO _deals_old;
+ALTER TABLE Deals RENAME TO _Deals_old;
 
-CREATE TABLE deals (
+CREATE TABLE Deals (
        id integer primary key,
        name text not null
 );
 
-INSERT INTO deals (id, name)
+INSERT INTO Deals (id, name)
   SELECT id, name
-  FROM _deals_old;
+  FROM _Deals_old;
 
-drop table _deals_old;
+drop table _Deals_old;
