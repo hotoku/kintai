@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { fetchClients } from "../api/fetches";
+import { useEffect, useState } from "react";
+import { fetchClients, putClient } from "../api/fetches";
 import { Client, HalfwayClient } from "../api/types";
 
 type ViewProps = {
@@ -21,7 +21,7 @@ const View = ({ originalObj, onEditClick }: ViewProps): JSX.Element => {
 type EditorProps = {
   originalObj?: Client;
   editedObj: HalfwayClient;
-  onUpdateClick: (obj: HalfwayClient) => void;
+  onUpdateClick: (obj: Client) => void;
   onCancelClick: (obj: HalfwayClient) => void;
   onChange: (obj: HalfwayClient) => void;
 };
@@ -80,27 +80,40 @@ const Clients = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [editedId, setEditedId] = useState<number | "new" | undefined>();
   const [editedRecord, setEditedRecord] = useState<HalfwayClient>({});
+  useEffect(() => {
+    fetchClients(setClients);
+  }, []);
 
-  const handleEditClick = (obj: Client) => {
+  const enableEditing = (obj: Client) => {
     setEditedId(obj.id);
+    setEditedRecord({
+      id: obj.id,
+      name: obj.name,
+    });
   };
 
-  const handleUpdateClick = (obj: HalfwayClient) => {
-    console.log("handleUpdateClick", obj);
-  };
-
-  const handleCancelClick = (_: HalfwayClient) => {
+  const disableEditing = () => {
     setEditedId(undefined);
     setEditedRecord({});
   };
 
-  const handleChange = (obj: HalfwayClient) => {
-    setEditedRecord(obj);
+  const sendClient = async (obj: Client) => {
+    disableEditing();
+    await putClient(obj);
+    fetchClients(setClients);
   };
 
-  useEffect(() => {
-    fetchClients(setClients);
-  }, []);
+  const records = clients.map((obj) => {
+    return createItem(editedId, {
+      originalObj: obj,
+      editedObj: editedRecord,
+      onEditClick: enableEditing,
+      onUpdateClick: sendClient,
+      onCancelClick: disableEditing,
+      onChange: setEditedRecord,
+    });
+  });
+
   return (
     <div className="Clients">
       <table>
@@ -110,18 +123,7 @@ const Clients = () => {
             <th>actions</th>
           </tr>
         </thead>
-        <tbody>
-          {clients.map((obj) => {
-            return createItem(editedId, {
-              originalObj: obj,
-              editedObj: editedRecord,
-              onEditClick: handleEditClick,
-              onUpdateClick: handleUpdateClick,
-              onCancelClick: handleCancelClick,
-              onChange: handleChange,
-            });
-          })}
-        </tbody>
+        <tbody>{records}</tbody>
       </table>
       <button>add</button>
     </div>

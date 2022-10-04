@@ -9,3 +9,8 @@ export type WorkHour = {
   startTime: string;
   endTime?: string;
 };
+
+export type Client = {
+  id?: number;
+  name: string;
+};

@@ -1,6 +1,6 @@
 import express, { Application } from "express";
 import { getInstance } from "../db/db";
-import { WorkHour } from "../db/types";
+import { WorkHour, Client } from "../db/types";
 
 export const deals = (app: Application): Application => {
   app.get("/api/deals", async (_, res) => {
@@ -34,6 +34,25 @@ from
 `);
     res.send(ret);
   });
+
+  app.put("/api/clients", async (req, res) => {
+    const db = getInstance();
+    await db.open();
+    const obj = req.body as Client;
+    await db.run(
+      `
+update Clients
+set
+  name = ?
+where
+  id=?
+`,
+      obj.name,
+      obj.id
+    );
+    res.send("ok");
+  });
+
   return app;
 };
 
