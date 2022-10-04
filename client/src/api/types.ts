@@ -23,3 +23,8 @@ export type Client = {
   id: number;
   name: string;
 };
+
+export type HalfwayClient = {
+  id?: number;
+  name?: string;
+};
