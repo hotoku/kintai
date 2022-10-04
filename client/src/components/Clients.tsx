@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchClients, putClient } from "../api/fetches";
+import { fetchClients, postClient, putClient } from "../api/fetches";
 import { Client, HalfwayClient } from "../api/types";
 
 type ViewProps = {
@@ -19,23 +19,20 @@ const View = ({ originalObj, onEditClick }: ViewProps): JSX.Element => {
 };
 
 type EditorProps = {
-  originalObj?: Client;
   editedObj: HalfwayClient;
-  onUpdateClick: (obj: Client) => void;
+  onSaveClick: (obj: HalfwayClient) => void;
   onCancelClick: (obj: HalfwayClient) => void;
   onChange: (obj: HalfwayClient) => void;
+  saveButtonName: string;
 };
 
 const Editor = ({
-  originalObj,
   editedObj,
-  onUpdateClick,
+  onSaveClick,
   onCancelClick,
   onChange,
+  saveButtonName,
 }: EditorProps): JSX.Element => {
-  if (originalObj === undefined) {
-    throw Error("originalObj is undefined");
-  }
   return (
     <tr>
       <td>
@@ -52,12 +49,12 @@ const Editor = ({
         <button
           onClick={() => {
             if (editedObj.name === undefined) return;
-            const obj: Client = { ...originalObj };
+            const obj: HalfwayClient = { ...editedObj };
             obj.name = editedObj.name;
-            onUpdateClick(obj);
+            onSaveClick(obj);
           }}
         >
-          update
+          {saveButtonName}
         </button>
         <button onClick={() => onCancelClick(editedObj)}>cancel</button>
       </td>
@@ -65,12 +62,33 @@ const Editor = ({
   );
 };
 
+const updateEditor = (
+  originalObj: Client,
+  { editedObj, onSaveClick, onCancelClick, onChange }: EditorProps
+): JSX.Element => {
+  editedObj.id = originalObj.id;
+  return (
+    <Editor
+      key={originalObj.id}
+      editedObj={editedObj}
+      onSaveClick={onSaveClick}
+      onCancelClick={onCancelClick}
+      onChange={onChange}
+      saveButtonName="update"
+    />
+  );
+};
+
+const addEditor = (props: EditorProps): JSX.Element => {
+  return <Editor key="new" {...props} />;
+};
+
 const createItem = (
   editedId: number | "new" | undefined,
   props: ViewProps & EditorProps
 ): JSX.Element => {
   if (editedId === props.originalObj.id) {
-    return <Editor key={props.originalObj.id} {...props} />;
+    return updateEditor(props.originalObj, props);
   } else {
     return <View key={props.originalObj.id} {...props} />;
   }
@@ -83,6 +101,11 @@ const Clients = () => {
   useEffect(() => {
     fetchClients(setClients);
   }, []);
+
+  const startEditing = () => {
+    setEditedId("new");
+    setEditedRecord({});
+  };
 
   const enableEditing = (obj: Client) => {
     setEditedId(obj.id);
@@ -97,9 +120,18 @@ const Clients = () => {
     setEditedRecord({});
   };
 
-  const sendClient = async (obj: Client) => {
+  const updateClient = async (obj: HalfwayClient) => {
+    if (obj.id === undefined) return;
+    if (obj.name === undefined) return;
     disableEditing();
-    await putClient(obj);
+    await putClient({ ...obj } as Client);
+    fetchClients(setClients);
+  };
+
+  const addClient = async (obj: HalfwayClient) => {
+    if (obj.name === undefined) return;
+    disableEditing();
+    await postClient(obj);
     fetchClients(setClients);
   };
 
@@ -108,11 +140,24 @@ const Clients = () => {
       originalObj: obj,
       editedObj: editedRecord,
       onEditClick: enableEditing,
-      onUpdateClick: sendClient,
       onCancelClick: disableEditing,
+      onSaveClick: updateClient,
       onChange: setEditedRecord,
+      saveButtonName: "update",
     });
   });
+
+  if (editedId === "new") {
+    records.push(
+      addEditor({
+        editedObj: editedRecord,
+        onCancelClick: disableEditing,
+        onSaveClick: addClient,
+        onChange: setEditedRecord,
+        saveButtonName: "save",
+      })
+    );
+  }
 
   return (
     <div className="Clients">
@@ -125,7 +170,7 @@ const Clients = () => {
         </thead>
         <tbody>{records}</tbody>
       </table>
-      <button>add</button>
+      <button onClick={startEditing}>add</button>
     </div>
   );
 };

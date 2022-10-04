@@ -1,4 +1,10 @@
-import { Deal, HalfwayWorkHour, WorkHour, Client } from "./types";
+import {
+  Deal,
+  HalfwayWorkHour,
+  WorkHour,
+  Client,
+  HalfwayClient,
+} from "./types";
 import { formatDateTime } from "../share/utils";
 
 export const fetchDeals = async (cb: (ds: Deal[]) => void) => {
@@ -69,6 +75,16 @@ export const putWorkHour = (obj: WorkHour): Promise<Response> => {
 };
 
 export const putClient = (obj: Client): Promise<Response> => {
+  const method = "PUT";
+  const body = JSON.stringify(obj);
+  const headers = {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  };
+  return fetch("/api/clients", { method, headers, body });
+};
+
+export const postClient = (obj: HalfwayClient): Promise<Response> => {
   const method = "PUT";
   const body = JSON.stringify(obj);
   const headers = {
