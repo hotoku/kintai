@@ -1,4 +1,4 @@
-import { Application } from "express";
+import express, { Application } from "express";
 import { getInstance } from "../db/db";
 import { WorkHour } from "../db/types";
 
@@ -84,5 +84,12 @@ export const workHours = (app: Application): Application => {
     res.send("ok");
   });
 
+  return app;
+};
+
+export const staticFiles = (app: Application): Application => {
+  const publicDir = process.cwd() + "/../client/public";
+  console.log(publicDir);
+  app.use("/", express.static(publicDir));
   return app;
 };
