@@ -1,2 +1,10 @@
-- [ ] clientのcrud
 - [ ] dealのcrud
+  - [x] viewを実装
+  - [ ] BaseEditorを実装
+    - [x] nameのinput
+    - [ ] clientNameのinput
+      - [ ] clientId -> clientNameの辞書を取得
+      - [ ] ドロップダウンリストを表示
+      - [ ] ドロップダウンリストのonSelectを登録
+  - [ ] updateEditorを実装
+  - [ ] addEditorを実装
