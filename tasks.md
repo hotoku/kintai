@@ -1,16 +1,8 @@
-- [ ] db
-  - [ ] スキーマ
-    - `deals`
-      - `id`
-      - `name`
-    - `work_hours`
-      - `id`
-      - `deal_id`
-      - `start_time`
-      - `end_time` nullable
-- [ ] server
-- [ ] client
-  - [ ] route
-    - home
-    - deal一覧
-    - 稼働実績
+- [ ] 本番用の環境を整える
+  - [ ] dbのパスを決める
+  - [ ] migrate(初期化)
+    - [ ] migrate.tsが引数でDBのパスを取れるようにする
+  - [ ] migrateコマンドをmakefileに書く
+  - [ ] サーバーのスタートコマンドを決める(ここもコマンドライン引数が必要)
+  - [ ] サーバーの起動コマンドをmakefileに書く
+  - [ ] クライアント側のリソースを配信できるようにrouteを整える
