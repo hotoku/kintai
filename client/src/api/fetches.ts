@@ -85,7 +85,7 @@ export const putClient = (obj: Client): Promise<Response> => {
 };
 
 export const postClient = (obj: HalfwayClient): Promise<Response> => {
-  const method = "PUT";
+  const method = "POST";
   const body = JSON.stringify(obj);
   const headers = {
     Accept: "application/json",

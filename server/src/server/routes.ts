@@ -53,6 +53,24 @@ where
     res.send("ok");
   });
 
+  app.post("/api/clients", async (req, res) => {
+    const db = getInstance();
+    await db.open();
+    const obj = req.body as Client;
+    await db.run(
+      `
+insert into Clients (
+  name
+)
+values (
+  ?
+)
+      `,
+      obj.name
+    );
+    res.send("ok");
+  });
+
   return app;
 };
 
