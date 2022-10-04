@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import DateTimePicker from "react-datetime-picker";
+import "react-datetime-picker/dist/DateTimePicker.css";
 
 import { formatDate, formatTime } from "../share/utils";
 
@@ -35,16 +37,21 @@ const Editor = ({
   onUpdateClick,
   onCancelClick,
 }: IEditorProps) => {
-  const handleChange =
-    (name: "startTime" | "endTime") =>
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const diff: any = {};
-      diff[name] = e.target.value;
-      onChange({
-        ...editedObj,
-        ...diff,
-      });
-    };
+  const handleChange = (name: "startTime" | "endTime") => (e: Date) => {
+    const newOne = { ...editedObj };
+    newOne[name] = e;
+    onChange(newOne);
+  };
+
+  const handleClockOpen = (name: "startTime" | "endTime") => () => {
+    const obj = editedObj[name];
+    if (obj === undefined) {
+      const newOne = { ...editedObj };
+      newOne[name] = new Date();
+      onChange(newOne);
+    }
+  };
+
   let saveOrUpdate: JSX.Element;
   if (onSaveClick !== undefined) {
     saveOrUpdate = <button onClick={() => onSaveClick(editedObj)}>save</button>;
@@ -68,28 +75,20 @@ const Editor = ({
   } else {
     throw Error("onSave click or onUpdateClick must be non null");
   }
-  const st = editedObj.startTime;
-  const startDate = st ? `${formatDate(st, false)}` : "";
-  const startTime = st ? `${formatTime(st, false)}` : "";
-  const et = editedObj.endTime;
-  const endDate = et ? `${formatDate(et, false)}` : "";
-  const endTime = et ? `${formatTime(et, false)}` : "";
   return (
     <tr>
       <td>
-        <input
+        <DateTimePicker
           onChange={handleChange("startTime")}
-          type="string"
-          value={`${startDate} ${startTime}`}
-          className="list-input"
+          onClockOpen={handleClockOpen("startTime")}
+          value={editedObj.startTime}
         />
       </td>
       <td>
-        <input
+        <DateTimePicker
           onChange={handleChange("endTime")}
-          type="string"
-          value={`${endDate} ${endTime}`}
-          className="list-input"
+          onClockOpen={handleClockOpen("endTime")}
+          value={editedObj.endTime}
         />
       </td>
       <td className="list-buttons">
