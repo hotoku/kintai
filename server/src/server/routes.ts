@@ -39,6 +39,21 @@ where
     res.send("ok");
   });
 
+  app.post("/api/deals", async (req, res) => {
+    const db = getInstance();
+    await db.open();
+    const obj = req.body as Deal;
+    await db.run(
+      `
+insert into Deals (name, clientId)
+values (?, ?)      
+`,
+      obj.name,
+      obj.clientId
+    );
+    res.send("ok");
+  });
+
   return app;
 };
 

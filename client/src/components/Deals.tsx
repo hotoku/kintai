@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchClients, fetchDeals, putDeal } from "../api/fetches";
+import { fetchClients, fetchDeals, postDeal, putDeal } from "../api/fetches";
 
 import { Client, Deal, HalfwayDeal } from "../api/types";
 
@@ -45,7 +45,7 @@ const Editor = ({
     <tr>
       <td>
         <input
-          value={editedObj.name}
+          value={editedObj.name || ""}
           onChange={(e) => {
             const newOne = { ...editedObj };
             newOne.name = e.target.value;
@@ -93,6 +93,10 @@ const updateEditor = (originalObj: Deal, props: EditorProps): JSX.Element => {
   return <Editor key={originalObj.id} {...props} />;
 };
 
+const addEditor = (props: EditorProps): JSX.Element => {
+  return <Editor key="new" {...props} />;
+};
+
 const createItem = (
   editedId: number | "new" | undefined,
   props: EditorProps & ViewProps
@@ -115,6 +119,11 @@ const Deals = () => {
     fetchClients(setClients);
   }, []);
 
+  const startAdding = () => {
+    setEditedId("new");
+    setEditedRecord({});
+  };
+
   const enableEditing = (obj: HalfwayDeal) => {
     setEditedId(obj.id);
     setEditedRecord({ ...obj });
@@ -123,6 +132,19 @@ const Deals = () => {
   const disableEditing = () => {
     setEditedId(undefined);
     setEditedRecord({});
+  };
+
+  const addDeal = async (obj: HalfwayDeal) => {
+    console.log("addDeal", JSON.stringify(obj));
+    if (obj.name === undefined || obj.clientId === undefined) {
+      return;
+    }
+    await postDeal({
+      name: obj.name,
+      clientId: obj.clientId,
+    });
+    disableEditing();
+    fetchDeals(setDeals);
   };
 
   const updateDeal = async (obj: HalfwayDeal) => {
@@ -142,6 +164,32 @@ const Deals = () => {
     fetchDeals(setDeals);
   };
 
+  const records = deals.map((obj) =>
+    createItem(editedId, {
+      originalObj: obj,
+      editedObj: editedRecord,
+      onChange: setEditedRecord,
+      onSaveClick: updateDeal,
+      onCancelClick: disableEditing,
+      saveButtonLabel: "update",
+      onEditClick: enableEditing,
+      clients: clients,
+    })
+  );
+
+  if (editedId === "new") {
+    records.push(
+      addEditor({
+        editedObj: editedRecord,
+        onChange: setEditedRecord,
+        onSaveClick: addDeal,
+        onCancelClick: disableEditing,
+        saveButtonLabel: "save",
+        clients: clients,
+      })
+    );
+  }
+
   return (
     <div className="Deals">
       <table>
@@ -152,22 +200,9 @@ const Deals = () => {
             <th>actions</th>
           </tr>
         </thead>
-        <tbody>
-          {deals.map((obj) =>
-            createItem(editedId, {
-              originalObj: obj,
-              editedObj: editedRecord,
-              onChange: setEditedRecord,
-              onSaveClick: updateDeal,
-              onCancelClick: disableEditing,
-              saveButtonLabel: "update",
-              onEditClick: enableEditing,
-              clients: clients,
-            })
-          )}
-        </tbody>
+        <tbody>{records}</tbody>
       </table>
-      <button>add</button>
+      <button onClick={startAdding}>add</button>
     </div>
   );
 };

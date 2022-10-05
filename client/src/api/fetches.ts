@@ -27,6 +27,19 @@ export const putDeal = (obj: {
   return fetch("/api/deals", { method, headers, body });
 };
 
+export const postDeal = (obj: {
+  name: string;
+  clientId: number;
+}): Promise<Response> => {
+  const method = "POST";
+  const body = JSON.stringify(obj);
+  const headers = {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  };
+  return fetch("/api/deals", { method, headers, body });
+};
+
 export const fetchClients = async (cb: (ds: Deal[]) => void) => {
   const res = await fetch("/api/clients");
   const data = (await res.json()) as Deal[];
