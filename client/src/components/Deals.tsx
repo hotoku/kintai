@@ -73,7 +73,7 @@ const Editor = ({
           {clients.map((c) => {
             return (
               <option key={c.id} value={c.id}>
-                {c.name}
+                {c.id}: {c.name}
               </option>
             );
           })}
@@ -89,12 +89,16 @@ const Editor = ({
   );
 };
 
+const updateEditor = (originalObj: Deal, props: EditorProps): JSX.Element => {
+  return <Editor key={originalObj.id} {...props} />;
+};
+
 const createItem = (
   editedId: number | "new" | undefined,
   props: EditorProps & ViewProps
 ): JSX.Element => {
   if (editedId === props.originalObj.id) {
-    return <Editor key={props.originalObj.id} {...props} />;
+    return updateEditor(props.originalObj, props);
   } else {
     return <View key={props.originalObj.id} {...props} />;
   }
