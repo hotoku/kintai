@@ -1,13 +1,4 @@
-- [ ] dealのcrud
-  - [x] viewを実装
-  - [ ] BaseEditorを実装
-    - [x] nameのinput
-    - [ ] clientNameのinput
-      - [ ] clientId -> clientNameの辞書を取得
-      - [ ] ドロップダウンリストを表示
-      - [ ] ドロップダウンリストのonSelectを登録
-  - [ ] updateEditorを実装
-  - [ ] addEditorを実装
+- [x] dealのcrud
 - [ ] サーバーの起動引数/環境変数を登録
 - [ ] テストのやり方を学ぶ
 - [ ] クライアント側のログの吐き方。開発モードのときだけ吐くみたいな方法があるはず
