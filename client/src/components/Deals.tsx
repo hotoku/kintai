@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchDeals } from "../api/fetches";
+import { fetchClients, fetchDeals } from "../api/fetches";
 
-import { Deal, HalfwayDeal } from "../api/types";
+import { Client, Deal, HalfwayDeal } from "../api/types";
 
 type ViewProps = {
   originalObj: Deal;
@@ -31,6 +31,7 @@ type EditorProps = {
   onSaveClick: (obj: HalfwayDeal) => void;
   onCancelClick: (obj: HalfwayDeal) => void;
   saveButtonLabel: string;
+  clients: Client[];
 };
 const Editor = ({
   editedObj,
@@ -38,6 +39,7 @@ const Editor = ({
   onSaveClick,
   onCancelClick,
   saveButtonLabel,
+  clients,
 }: EditorProps): JSX.Element => {
   return (
     <tr>
@@ -51,10 +53,13 @@ const Editor = ({
             console.log(e.target.value);
           }}
         >
-          <option value={1}>1</option>
-          <option value={2}>2</option>
-          <option value={3}>3</option>
-          <option value={4}>4</option>
+          {clients.map((c) => {
+            return (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            );
+          })}
         </select>
       </td>
       <td>
@@ -80,11 +85,13 @@ const createItem = (
 
 const Deals = () => {
   const [deals, setDeals] = useState<Deal[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
   const [editedRecord, setEditedRecord] = useState<HalfwayDeal>({});
   const [editedId, setEditedId] = useState<number | "new" | undefined>();
 
   useEffect(() => {
     fetchDeals(setDeals);
+    fetchClients(setClients);
   }, []);
 
   const enableEditing = (obj: HalfwayDeal) => {
@@ -116,6 +123,7 @@ const Deals = () => {
               onCancelClick: disableEditing,
               saveButtonLabel: "update",
               onEditClick: enableEditing,
+              clients: clients,
             })
           )}
         </tbody>
