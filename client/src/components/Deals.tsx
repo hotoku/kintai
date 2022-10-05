@@ -41,6 +41,14 @@ const Editor = ({
   saveButtonLabel,
   clients,
 }: EditorProps): JSX.Element => {
+  const choices = clients.map((c) => {
+    return (
+      <option key={c.id} value={c.id}>
+        {c.id}: {c.name}
+      </option>
+    );
+  });
+  choices.push(<option key="undefined" value="undefined" />);
   return (
     <tr>
       <td>
@@ -55,28 +63,14 @@ const Editor = ({
       </td>
       <td>
         <select
-          value={editedObj.clientId}
+          value={editedObj.clientId || "undefined"}
           onChange={(e) => {
             const newOne = { ...editedObj };
-            newOne.clientId = parseInt(e.target.value);
-
-            let selected: Client | undefined;
-            for (const c of clients) {
-              if (c.id === newOne.clientId) {
-                selected = c;
-              }
-            }
-            console.log(selected);
+            newOne.clientId = parseInt(e.target.value) || undefined;
             onChange(newOne);
           }}
         >
-          {clients.map((c) => {
-            return (
-              <option key={c.id} value={c.id}>
-                {c.id}: {c.name}
-              </option>
-            );
-          })}
+          {choices}
         </select>
       </td>
       <td>
