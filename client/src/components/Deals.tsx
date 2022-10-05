@@ -44,13 +44,30 @@ const Editor = ({
   return (
     <tr>
       <td>
-        <input value={editedObj.name} onChange={() => onChange(editedObj)} />
+        <input
+          value={editedObj.name}
+          onChange={(e) => {
+            const newOne = { ...editedObj };
+            newOne.name = e.target.value;
+            onChange(newOne);
+          }}
+        />
       </td>
       <td>
         <select
           value={editedObj.clientId}
           onChange={(e) => {
-            console.log(e.target.value);
+            const newOne = { ...editedObj };
+            newOne.clientId = parseInt(e.target.value);
+
+            let selected: Client | undefined;
+            for (const c of clients) {
+              if (c.id === newOne.clientId) {
+                selected = c;
+              }
+            }
+            console.log(selected);
+            onChange(newOne);
           }}
         >
           {clients.map((c) => {
