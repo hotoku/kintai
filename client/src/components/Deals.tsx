@@ -46,6 +46,7 @@ const Editor = ({
       </td>
       <td>
         <select
+          value={editedObj.clientId}
           onChange={(e) => {
             console.log(e.target.value);
           }}
