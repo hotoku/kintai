@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchClients, fetchDeals } from "../api/fetches";
+import { fetchClients, fetchDeals, putDeal } from "../api/fetches";
 
 import { Client, Deal, HalfwayDeal } from "../api/types";
 
@@ -116,10 +116,28 @@ const Deals = () => {
     setEditedRecord({ ...obj });
   };
 
-  const disableEditing = (_: HalfwayDeal) => {
+  const disableEditing = () => {
     setEditedId(undefined);
     setEditedRecord({});
   };
+
+  const updateDeal = async (obj: HalfwayDeal) => {
+    if (
+      obj.id === undefined ||
+      obj.name === undefined ||
+      obj.clientId === undefined
+    ) {
+      return;
+    }
+    await putDeal({
+      id: obj.id,
+      name: obj.name,
+      clientId: obj.clientId,
+    });
+    disableEditing();
+    fetchDeals(setDeals);
+  };
+
   return (
     <div className="Deals">
       <table>
@@ -135,8 +153,8 @@ const Deals = () => {
             createItem(editedId, {
               originalObj: obj,
               editedObj: editedRecord,
-              onChange: () => {},
-              onSaveClick: () => {},
+              onChange: setEditedRecord,
+              onSaveClick: updateDeal,
               onCancelClick: disableEditing,
               saveButtonLabel: "update",
               onEditClick: enableEditing,

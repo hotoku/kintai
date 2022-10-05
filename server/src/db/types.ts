@@ -1,6 +1,7 @@
 export type Deal = {
   id?: number;
   name: string;
+  clientId: number;
 };
 
 export type WorkHour = {

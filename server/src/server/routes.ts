@@ -1,6 +1,6 @@
 import express, { Application } from "express";
 import { getInstance } from "../db/db";
-import { WorkHour, Client } from "../db/types";
+import { WorkHour, Client, Deal } from "../db/types";
 
 export const deals = (app: Application): Application => {
   app.get("/api/deals", async (_, res) => {
@@ -18,6 +18,27 @@ from
 `);
     res.send(ret);
   });
+
+  app.put("/api/deals", async (req, res) => {
+    const db = getInstance();
+    await db.open();
+    const obj = req.body as Deal;
+    await db.run(
+      `
+update Deals
+set
+  name = ?,
+  clientId = ?
+where
+  id=?      
+`,
+      obj.name,
+      obj.clientId,
+      obj.id
+    );
+    res.send("ok");
+  });
+
   return app;
 };
 
