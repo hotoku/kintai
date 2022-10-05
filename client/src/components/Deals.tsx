@@ -44,7 +44,18 @@ const Editor = ({
       <td>
         <input value={editedObj.name} onChange={() => onChange(editedObj)} />
       </td>
-      <td>{editedObj.clientName}</td>
+      <td>
+        <select
+          onChange={(e) => {
+            console.log(e.target.value);
+          }}
+        >
+          <option value={1}>1</option>
+          <option value={2}>2</option>
+          <option value={3}>3</option>
+          <option value={4}>4</option>
+        </select>
+      </td>
       <td>
         <button onClick={() => onSaveClick(editedObj)}>
           {saveButtonLabel}
