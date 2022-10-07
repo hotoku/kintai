@@ -99,16 +99,17 @@ const editor = ({
 
 const view = ({ originalObj, onEditClick }: ViewProps): JSX.Element[] => {
   const st = originalObj.startTime;
-  const startDate = st ? `${formatDate(st, false)}` : "";
-  const startTime = st ? `${formatTime(st, false)}` : "";
-  const et = originalObj.endTime;
-  const endDate = et ? `${formatDate(et, false)}` : "";
-  const endTime = et ? `${formatTime(et, false)}` : "";
+  const date = formatDate(st, false);
+  const startTime = formatTime(st, false);
+  const endTiime = originalObj.endTime
+    ? formatTime(originalObj.endTime, false)
+    : "";
 
   return [
-    <div className={Style.item}>{`${startDate} ${startTime}`}</div>,
-    <div className={Style.item}>{`${endDate} ${endTime}`}</div>,
-    <div className="list-buttons">
+    <div className={Style.date}>{date}</div>,
+    <div className={Style.time}>{startTime}</div>,
+    <div className={Style.time}>{endTiime}</div>,
+    <div className={Style.action}>
       <button onClick={() => onEditClick(originalObj)}>edit</button>
     </div>,
   ];
@@ -207,9 +208,10 @@ const WorkHours = () => {
     <div className="WorkHours" tabIndex={0}>
       <Table
         thead={[
-          <div className={Style.startTime}>start time</div>,
-          <div className={Style.endTime}>end time</div>,
-          <div className={Style.actions}>actions</div>,
+          <div>date</div>,
+          <div>start</div>,
+          <div>end</div>,
+          <div>actions</div>,
         ]}
         rows={items}
       />

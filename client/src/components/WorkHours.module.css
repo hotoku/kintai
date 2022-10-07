@@ -1,15 +1,13 @@
-.startTime {
-  width: 12em;
-}
-
-.endTime {
-  width: 12em;
-}
-
-.actions {
-  width: 10em;
-}
-
-.item {
+.date {
+  width: 13ch;
   text-align: center;
+}
+
+.time {
+  width: 10ch;
+  text-align: center;
+}
+
+.action {
+  width: 20ch;
 }
