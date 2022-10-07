@@ -155,20 +155,11 @@ const Clients = () => {
 
   return (
     <div className="Clients">
-      <table>
-        <thead>
-          <tr>
-            <th>name</th>
-            <th>actions</th>
-          </tr>
-        </thead>
-        <tbody>{records}</tbody>
-      </table>
-      <button onClick={startEditing}>add</button>
       <Table
         thead={[<span>name</span>, <span>actions</span>]}
         rows={records}
       ></Table>
+      <button onClick={startEditing}>add</button>
     </div>
   );
 };
