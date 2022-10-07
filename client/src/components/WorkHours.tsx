@@ -10,6 +10,7 @@ import { WorkHour, HalfwayWorkHour } from "../api/types";
 import { parseQuery } from "../utils";
 
 import "./WorkHours.css";
+import { Table } from "./Table";
 
 type EditorProps = {
   originalObj?: WorkHour;
@@ -209,16 +210,16 @@ const WorkHours = () => {
 
   return (
     <div className="WorkHours" tabIndex={0}>
-      <table>
-        <thead>
+      <Table
+        thead={
           <tr>
             <th>start time</th>
             <th>end time</th>
             <th>actions</th>
           </tr>
-        </thead>
-        <tbody>{items}</tbody>
-      </table>
+        }
+        rows={items}
+      />
       <button onClick={startAdding}>add</button>
     </div>
   );
