@@ -3,26 +3,23 @@ import { Link } from "react-router-dom";
 import { fetchClients, fetchDeals, postDeal, putDeal } from "../api/fetches";
 
 import { Client, Deal, HalfwayDeal } from "../api/types";
+import { Table } from "./Table";
 
 type ViewProps = {
   originalObj: Deal;
   onEditClick: (obj: Deal) => void;
 };
 
-const View = ({ originalObj, onEditClick }: ViewProps): JSX.Element => {
-  return (
-    <tr>
-      <td>
-        <Link to={`/workHours?dealId=${originalObj.id}`}>
-          {originalObj.name}
-        </Link>
-      </td>
-      <td>{originalObj.clientName}</td>
-      <td>
-        <button onClick={() => onEditClick(originalObj)}>edit</button>
-      </td>
-    </tr>
-  );
+const view = ({ originalObj, onEditClick }: ViewProps): JSX.Element[] => {
+  return [
+    <div>
+      <Link to={`/workHours?dealId=${originalObj.id}`}>{originalObj.name}</Link>
+    </div>,
+    <div>{originalObj.clientName}</div>,
+    <div>
+      <button onClick={() => onEditClick(originalObj)}>edit</button>
+    </div>,
+  ];
 };
 
 type EditorProps = {
@@ -33,14 +30,14 @@ type EditorProps = {
   saveButtonLabel: string;
   clients: Client[];
 };
-const Editor = ({
+const editor = ({
   editedObj,
   onChange,
   onSaveClick,
   onCancelClick,
   saveButtonLabel,
   clients,
-}: EditorProps): JSX.Element => {
+}: EditorProps): JSX.Element[] => {
   const choices = clients.map((c) => {
     return (
       <option key={c.id} value={c.id}>
@@ -49,56 +46,52 @@ const Editor = ({
     );
   });
   choices.push(<option key="undefined" value="undefined" />);
-  return (
-    <tr>
-      <td>
-        <input
-          value={editedObj.name || ""}
-          onChange={(e) => {
-            const newOne = { ...editedObj };
-            newOne.name = e.target.value;
-            onChange(newOne);
-          }}
-        />
-      </td>
-      <td>
-        <select
-          value={editedObj.clientId || "undefined"}
-          onChange={(e) => {
-            const newOne = { ...editedObj };
-            newOne.clientId = parseInt(e.target.value) || undefined;
-            onChange(newOne);
-          }}
-        >
-          {choices}
-        </select>
-      </td>
-      <td>
-        <button onClick={() => onSaveClick(editedObj)}>
-          {saveButtonLabel}
-        </button>
-        <button onClick={() => onCancelClick(editedObj)}>cancel</button>
-      </td>
-    </tr>
-  );
+  return [
+    <div>
+      <input
+        value={editedObj.name || ""}
+        onChange={(e) => {
+          const newOne = { ...editedObj };
+          newOne.name = e.target.value;
+          onChange(newOne);
+        }}
+      />
+    </div>,
+    <div>
+      <select
+        value={editedObj.clientId || "undefined"}
+        onChange={(e) => {
+          const newOne = { ...editedObj };
+          newOne.clientId = parseInt(e.target.value) || undefined;
+          onChange(newOne);
+        }}
+      >
+        {choices}
+      </select>
+    </div>,
+    <div>
+      <button onClick={() => onSaveClick(editedObj)}>{saveButtonLabel}</button>
+      <button onClick={() => onCancelClick(editedObj)}>cancel</button>
+    </div>,
+  ];
 };
 
-const updateEditor = (originalObj: Deal, props: EditorProps): JSX.Element => {
-  return <Editor key={originalObj.id} {...props} />;
+const updateEditor = (props: EditorProps): JSX.Element[] => {
+  return editor(props);
 };
 
-const addEditor = (props: EditorProps): JSX.Element => {
-  return <Editor key="new" {...props} />;
+const addEditor = (props: EditorProps): JSX.Element[] => {
+  return editor(props);
 };
 
 const createItem = (
   editedId: number | "new" | undefined,
   props: EditorProps & ViewProps
-): JSX.Element => {
+): JSX.Element[] => {
   if (editedId === props.originalObj.id) {
-    return updateEditor(props.originalObj, props);
+    return updateEditor(props);
   } else {
-    return <View key={props.originalObj.id} {...props} />;
+    return view(props);
   }
 };
 
@@ -158,7 +151,7 @@ const Deals = () => {
     fetchDeals(setDeals);
   };
 
-  const records = deals.map((obj) =>
+  const records: JSX.Element[][] = deals.map((obj) =>
     createItem(editedId, {
       originalObj: obj,
       editedObj: editedRecord,
@@ -186,16 +179,10 @@ const Deals = () => {
 
   return (
     <div className="Deals">
-      <table>
-        <thead>
-          <tr>
-            <th>name</th>
-            <th>client name</th>
-            <th>actions</th>
-          </tr>
-        </thead>
-        <tbody>{records}</tbody>
-      </table>
+      <Table
+        thead={[<th>name</th>, <th>client name</th>, <th>actions</th>]}
+        rows={records}
+      ></Table>
       <button onClick={startAdding}>add</button>
     </div>
   );
