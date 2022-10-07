@@ -1,10 +1,10 @@
 PLIST_FILE := info.hotoku.kintai.plist
-DEST := $(HOME)/Library/LaunchAgents
+DEST := $(HOME)/Library/LaunchAgents/$(PLIST_FILE)
 
 
 load: unload build clear-log $(PLIST_FILE)
 	cp $(PLIST_FILE) $(DEST)
-	launchctl load $(DEST)/$(PLIST_FILE)
+	launchctl load $(DEST)
 
 
 $(PLIST_FILE): $(PLIST_FILE).jinja
@@ -20,6 +20,7 @@ clear-log:
 
 clean: unload
 	git clean -fx .
+	rm -f $(DEST)
 
 
 unload:
