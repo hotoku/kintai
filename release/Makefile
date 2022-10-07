@@ -18,6 +18,10 @@ clear-log:
 	rm log/*
 
 
+clean: unload
+	git clean -fx .
+
+
 unload:
 	launchctl unload $(DEST)/$(PLIST_FILE)
 
@@ -39,7 +43,3 @@ start:
 
 migrate:
 	cd server && npm run migrate
-
-
-clean:
-	git clean -fx .
