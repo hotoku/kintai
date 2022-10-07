@@ -221,6 +221,15 @@ const WorkHours = () => {
         rows={items}
       />
       <button onClick={startAdding}>add</button>
+      <table>
+        <thead>
+          <tr>
+            <th>start time</th>
+            <th>end time</th>
+            <th>actions</th>
+          </tr>
+        </thead>
+      </table>
     </div>
   );
 };

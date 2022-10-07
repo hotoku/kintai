@@ -1,3 +1,5 @@
+import "./Table.css";
+
 type Props = {
   thead: JSX.Element;
   rows: JSX.Element[];
