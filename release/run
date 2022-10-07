@@ -2,12 +2,13 @@
 
 echo launching at $(date)
 
-export KINTAI_SYNC_DATA_PATH=${HOME}/.kintai
-export PATH=/opt/homebrew/bin:${PATH}:/usr/bin
+
+# enable anyenv
+export PATH=/opt/homebrew/bin:${PATH}
 eval "$(anyenv init -)"
 
 
-cd server
+
 
 
 
