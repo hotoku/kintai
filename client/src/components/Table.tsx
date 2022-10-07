@@ -1,4 +1,4 @@
-import "./Table.css";
+import TableModule from "./Table.module.css";
 
 type Props = {
   thead: JSX.Element;
@@ -6,9 +6,11 @@ type Props = {
 };
 
 export const Table = ({ thead, rows }: Props): JSX.Element => {
+  for (const r of rows) {
+  }
   return (
     <table>
-      <thead>{thead}</thead>
+      <thead className={TableModule.header}>{thead}</thead>
       <tbody>{rows}</tbody>
     </table>
   );
