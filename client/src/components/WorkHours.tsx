@@ -4,13 +4,12 @@ import DateTimePicker from "react-datetime-picker";
 import "react-datetime-picker/dist/DateTimePicker.css";
 
 import { formatDate, formatTime } from "../share/utils";
-
 import { fetchWorkHours, postWorkHour, putWorkHour } from "../api/fetches";
 import { WorkHour, HalfwayWorkHour } from "../api/types";
 import { parseQuery } from "../utils";
-
-import "./WorkHours.css";
 import { Table } from "./Table";
+
+import Style from "./WorkHours.module.css";
 
 type EditorProps = {
   originalObj?: WorkHour;
@@ -107,8 +106,8 @@ const view = ({ originalObj, onEditClick }: ViewProps): JSX.Element[] => {
   const endTime = et ? `${formatTime(et, false)}` : "";
 
   return [
-    <div className="list-item">{`${startDate} ${startTime}`}</div>,
-    <div className="list-item">{`${endDate} ${endTime}`}</div>,
+    <div className={Style.item}>{`${startDate} ${startTime}`}</div>,
+    <div className={Style.item}>{`${endDate} ${endTime}`}</div>,
     <div className="list-buttons">
       <button onClick={() => onEditClick(originalObj)}>edit</button>
     </div>,
@@ -208,9 +207,9 @@ const WorkHours = () => {
     <div className="WorkHours" tabIndex={0}>
       <Table
         thead={[
-          <span>start time</span>,
-          <span>end time</span>,
-          <span>actions</span>,
+          <div className={Style.startTime}>start time</div>,
+          <div className={Style.endTime}>end time</div>,
+          <div className={Style.actions}>actions</div>,
         ]}
         rows={items}
       />
