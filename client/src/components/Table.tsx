@@ -6,12 +6,19 @@ type Props = {
 };
 
 export const Table = ({ thead, rows }: Props): JSX.Element => {
-  for (const r of rows) {
-  }
+  const makeTr = (cells: JSX.Element[], i: number): JSX.Element => {
+    return (
+      <tr key={i}>
+        {cells.map((c, i) => (
+          <td key={i}>{c}</td>
+        ))}
+      </tr>
+    );
+  };
   return (
     <table>
       <thead className={TableModule.header}>{thead}</thead>
-      <tbody>{rows}</tbody>
+      <tbody>{rows.map((v, i) => makeTr(v, i))}</tbody>
     </table>
   );
 };
