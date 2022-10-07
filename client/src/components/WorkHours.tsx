@@ -110,7 +110,7 @@ const view = ({ originalObj, onEditClick }: ViewProps): JSX.Element[] => {
     <div className="list-item">{`${startDate} ${startTime}`}</div>,
     <div className="list-item">{`${endDate} ${endTime}`}</div>,
     <div className="list-buttons">
-      ,<button onClick={() => onEditClick(originalObj)}>edit</button>
+      <button onClick={() => onEditClick(originalObj)}>edit</button>
     </div>,
   ];
 };
