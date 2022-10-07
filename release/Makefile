@@ -24,7 +24,7 @@ clear-log:
 
 
 unload:
-	launchctl unload $(DEST)/$(PLIST_FILE)
+	launchctl unload $(DEST)
 
 
 build: build-server build-client
