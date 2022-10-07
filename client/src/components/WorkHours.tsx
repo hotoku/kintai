@@ -30,14 +30,14 @@ type ViewProps = {
 
 type ViewOrEditorProps = EditorProps & ViewProps;
 
-const Editor = ({
+const editor = ({
   originalObj,
   editedObj,
   onChange,
   onSaveClick,
   onUpdateClick,
   onCancelClick,
-}: EditorProps) => {
+}: EditorProps): JSX.Element[] => {
   const handleChange = (name: "startTime" | "endTime") => (e: Date) => {
     const newOne = { ...editedObj };
     newOne[name] = e;
@@ -76,31 +76,29 @@ const Editor = ({
   } else {
     throw Error("onSave click or onUpdateClick must be non null");
   }
-  return (
-    <tr>
-      <td>
-        <DateTimePicker
-          onChange={handleChange("startTime")}
-          onClockOpen={handleClockOpen("startTime")}
-          value={editedObj.startTime}
-        />
-      </td>
-      <td>
-        <DateTimePicker
-          onChange={handleChange("endTime")}
-          onClockOpen={handleClockOpen("endTime")}
-          value={editedObj.endTime}
-        />
-      </td>
-      <td className="list-buttons">
-        {saveOrUpdate}
-        <button onClick={() => onCancelClick(editedObj)}>cancel</button>
-      </td>
-    </tr>
-  );
+  return [
+    <div>
+      <DateTimePicker
+        onChange={handleChange("startTime")}
+        onClockOpen={handleClockOpen("startTime")}
+        value={editedObj.startTime}
+      />
+    </div>,
+    <div>
+      <DateTimePicker
+        onChange={handleChange("endTime")}
+        onClockOpen={handleClockOpen("endTime")}
+        value={editedObj.endTime}
+      />
+    </div>,
+    <div className="list-buttons">
+      {saveOrUpdate}
+      <button onClick={() => onCancelClick(editedObj)}>cancel</button>
+    </div>,
+  ];
 };
 
-const View = ({ originalObj, onEditClick }: ViewProps) => {
+const view = ({ originalObj, onEditClick }: ViewProps): JSX.Element[] => {
   const st = originalObj.startTime;
   const startDate = st ? `${formatDate(st, false)}` : "";
   const startTime = st ? `${formatTime(st, false)}` : "";
@@ -108,27 +106,25 @@ const View = ({ originalObj, onEditClick }: ViewProps) => {
   const endDate = et ? `${formatDate(et, false)}` : "";
   const endTime = et ? `${formatTime(et, false)}` : "";
 
-  return (
-    <tr>
-      <td className="list-item">{`${startDate} ${startTime}`}</td>
-      <td className="list-item">{`${endDate} ${endTime}`}</td>
-      <td className="list-buttons">
-        <button onClick={() => onEditClick(originalObj)}>edit</button>
-      </td>
-    </tr>
-  );
+  return [
+    <div className="list-item">{`${startDate} ${startTime}`}</div>,
+    <div className="list-item">{`${endDate} ${endTime}`}</div>,
+    <div className="list-buttons">
+      ,<button onClick={() => onEditClick(originalObj)}>edit</button>
+    </div>,
+  ];
 };
 
 const createViewOrEditor = (
   editedId: number | "new" | undefined,
   props: ViewOrEditorProps
-): JSX.Element => {
+): JSX.Element[] => {
   const wh = props.originalObj;
-  let ret: JSX.Element;
+  let ret: JSX.Element[];
   if (wh.id === editedId) {
-    ret = <Editor {...props} />;
+    ret = editor(props);
   } else {
-    ret = <View {...props} />;
+    ret = view(props);
   }
   return ret;
 };
@@ -184,7 +180,7 @@ const WorkHours = () => {
     setEditedRecord({ dealId: dealId });
   };
 
-  const items = workHours.map((wh) => {
+  const items: JSX.Element[][] = workHours.map((wh) => {
     return createViewOrEditor(editedId, {
       originalObj: wh,
       editedObj: editedRecord,
@@ -198,13 +194,13 @@ const WorkHours = () => {
 
   if (isAdding()) {
     items.push(
-      <Editor
-        editedObj={editedRecord}
-        onChange={setEditedRecord}
-        onSaveClick={saveWorkHour}
-        onCancelClick={disableEditing}
-        key="new"
-      />
+      editor({
+        editedObj: editedRecord,
+        onChange: setEditedRecord,
+        onSaveClick: saveWorkHour,
+        onCancelClick: disableEditing,
+        key: "new",
+      })
     );
   }
 

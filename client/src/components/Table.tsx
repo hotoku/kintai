@@ -2,7 +2,7 @@ import TableModule from "./Table.module.css";
 
 type Props = {
   thead: JSX.Element;
-  rows: JSX.Element[];
+  rows: JSX.Element[][];
 };
 
 export const Table = ({ thead, rows }: Props): JSX.Element => {
