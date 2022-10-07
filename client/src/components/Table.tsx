@@ -1,7 +1,7 @@
 import TableModule from "./Table.module.css";
 
 type Props = {
-  thead: JSX.Element;
+  thead: JSX.Element[];
   rows: JSX.Element[][];
 };
 
@@ -17,7 +17,13 @@ export const Table = ({ thead, rows }: Props): JSX.Element => {
   };
   return (
     <table>
-      <thead className={TableModule.header}>{thead}</thead>
+      <thead className={TableModule.header}>
+        <tr>
+          {thead.map((c, i) => (
+            <th key={i}>{c}</th>
+          ))}
+        </tr>
+      </thead>
       <tbody>{rows.map((v, i) => makeTr(v, i))}</tbody>
     </table>
   );

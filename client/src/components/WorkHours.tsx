@@ -207,25 +207,14 @@ const WorkHours = () => {
   return (
     <div className="WorkHours" tabIndex={0}>
       <Table
-        thead={
-          <tr>
-            <th>start time</th>
-            <th>end time</th>
-            <th>actions</th>
-          </tr>
-        }
+        thead={[
+          <span>start time</span>,
+          <span>end time</span>,
+          <span>actions</span>,
+        ]}
         rows={items}
       />
       <button onClick={startAdding}>add</button>
-      <table>
-        <thead>
-          <tr>
-            <th>start time</th>
-            <th>end time</th>
-            <th>actions</th>
-          </tr>
-        </thead>
-      </table>
     </div>
   );
 };
