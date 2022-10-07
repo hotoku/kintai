@@ -14,13 +14,13 @@ $(PLIST_FILE): $(PLIST_FILE).jinja
 		-o $@
 
 
-clear-log:
-	rm log/*
-
-
-clean: unload
-	git clean -fx .
+clean: unload clear-log
+	rm -f $(PLIST_FILE)
 	rm -f $(DEST)
+
+
+clear-log:
+	rm -f log/*
 
 
 unload:
