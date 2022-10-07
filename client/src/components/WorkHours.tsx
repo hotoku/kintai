@@ -76,6 +76,7 @@ const editor = ({
     throw Error("onSave click or onUpdateClick must be non null");
   }
   return [
+    <div></div>,
     <div>
       <DateTimePicker
         onChange={handleChange("startTime")}
@@ -99,16 +100,20 @@ const editor = ({
 
 const view = ({ originalObj, onEditClick }: ViewProps): JSX.Element[] => {
   const st = originalObj.startTime;
-  const date = formatDate(st, false);
-  const startTime = formatTime(st, false);
-  const endTiime = originalObj.endTime
-    ? formatTime(originalObj.endTime, false)
-    : "";
+  const date = formatDate(st);
+  const startTime = formatTime(st);
+  const endTiime = originalObj.endTime ? formatTime(originalObj.endTime) : "";
+  const dateDiffers = (() => {
+    if (!originalObj.endTime) return false;
+    return date !== formatDate(originalObj.endTime);
+  })();
 
   return [
     <div className={Style.date}>{date}</div>,
     <div className={Style.time}>{startTime}</div>,
-    <div className={Style.time}>{endTiime}</div>,
+    <div className={`${Style.time} ${dateDiffers ? Style.dateDiffAlert : ""}`}>
+      {endTiime}
+    </div>,
     <div className={Style.action}>
       <button onClick={() => onEditClick(originalObj)}>edit</button>
     </div>,

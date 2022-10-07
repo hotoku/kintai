@@ -4,10 +4,14 @@
 }
 
 .time {
-  width: 10ch;
+  width: 7ch;
   text-align: center;
 }
 
 .action {
-  width: 20ch;
+  width: 8ch;
+}
+
+.dateDiffAlert {
+  color: #cc0000;
 }
