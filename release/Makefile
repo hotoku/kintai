@@ -1,3 +1,20 @@
+PLIST_FILE := info.hotoku.kintai.plist
+DEST := $(HOME)/Library/LaunchAgents
+
+
+load: unload build clear-log
+	cp $(PLIST_FILE) $(DEST)
+	launchctl load $(DEST)/$(PLIST_FILE)
+
+
+clear-log:
+	rm log/*
+
+
+unload:
+	launchctl unload $(DEST)/$(PLIST_FILE)
+
+
 build: build-server build-client
 
 

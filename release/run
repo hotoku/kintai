@@ -1,4 +1,22 @@
 #!/bin/bash
 
+echo launching at $(date)
 
-echo
+export KINTAI_SYNC_DATA_PATH=${HOME}/.kintai
+export PATH=/opt/homebrew/bin:${PATH}:/usr/bin
+eval "$(anyenv init -)"
+
+
+cd server
+
+
+
+echo HOME=${HOME}
+echo KINTAI_SYNC_DATA_PATH=${KINTAI_SYNC_DATA_PATH}
+echo PATH=${PATH}
+echo sqlite is $(which sqlite3)
+echo node version follows
+node --version
+echo i am $(whoami)
+
+node dist/index.js
