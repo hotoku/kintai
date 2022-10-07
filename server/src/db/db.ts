@@ -5,7 +5,6 @@ import { sync_data_path } from "../utils";
 export const getInstance = (): Database => {
   const db_dir = `${sync_data_path()}/db`;
   const db_path = db_dir + `/db.sqlite`;
-  console.log(`db_path=${db_path}`);
   const db = new Database({
     filename: db_path,
     driver: Driver,

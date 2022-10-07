@@ -11,6 +11,7 @@ $(PLIST_FILE): $(PLIST_FILE).jinja
 	jinja2 $< \
 		-D pwd=$(shell pwd) \
 		-D KINTAI_SYNC_DATA_PATH=$(KINTAI_SYNC_DATA_PATH) \
+		-D KINTAI_PORT=$(KINTAI_PORT) \
 		-o $@
 
 
