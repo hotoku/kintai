@@ -91,11 +91,21 @@ const editor = ({
         value={editedObj.endTime}
       />
     </div>,
+    <div />,
     <div className="list-buttons">
       {saveOrUpdate}
       <button onClick={() => onCancelClick(editedObj)}>cancel</button>
     </div>,
   ];
+};
+
+const secToStr = (sec: number): string => {
+  const s = sec % 60;
+  sec = Math.floor(sec / 60);
+  const m = sec % 60;
+  sec = Math.floor(sec / 60);
+  const h = sec % 60;
+  return `${h}:${m}:${s}`;
 };
 
 const view = ({ originalObj, onEditClick }: ViewProps): JSX.Element[] => {
@@ -108,12 +118,17 @@ const view = ({ originalObj, onEditClick }: ViewProps): JSX.Element[] => {
     return date !== formatDate(originalObj.endTime);
   })();
 
+  const duration = originalObj.endTime
+    ? (originalObj.endTime.getTime() - originalObj.startTime.getTime()) / 1000
+    : 0;
+
   return [
     <div className={Style.date}>{date}</div>,
     <div className={Style.time}>{startTime}</div>,
     <div className={`${Style.time} ${dateDiffers ? Style.dateDiffAlert : ""}`}>
       {endTiime}
     </div>,
+    <div>{duration <= 0 ? "" : secToStr(duration)}</div>,
     <div className={Style.action}>
       <button onClick={() => onEditClick(originalObj)}>edit</button>
     </div>,
@@ -216,6 +231,7 @@ const WorkHours = () => {
           <div>date</div>,
           <div>start</div>,
           <div>end</div>,
+          <div>duration</div>,
           <div>actions</div>,
         ]}
         rows={items}
