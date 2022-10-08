@@ -149,6 +149,30 @@ const createViewOrEditor = (
   return ret;
 };
 
+type SumProps = {
+  whs: WorkHour[];
+};
+
+const Sum = ({ whs }: SumProps): JSX.Element => {
+  let sum = 0;
+  for (const wh of whs) {
+    if (wh.endTime) {
+      sum += wh.endTime.getTime() - wh.startTime.getTime();
+    }
+  }
+  sum /= 1000 * 3600;
+  return (
+    <div>
+      <span>合計時間</span>:
+      <span>
+        {Intl.NumberFormat("ja-JP", { maximumSignificantDigits: 3 }).format(
+          sum
+        )}
+      </span>
+    </div>
+  );
+};
+
 const WorkHours = () => {
   const query = parseQuery(useLocation().search);
   if (query["dealId"] === undefined) {
@@ -226,6 +250,7 @@ const WorkHours = () => {
 
   return (
     <div className="WorkHours" tabIndex={0}>
+      <Sum whs={workHours} />
       <Table
         thead={[
           <div>date</div>,
