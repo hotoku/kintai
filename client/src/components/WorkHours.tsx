@@ -100,9 +100,9 @@ const editor = ({
 };
 
 const secToStr = (sec: number): string => {
-  const s = sec % 60;
+  const s = ("" + (sec % 60)).padStart(2, "0");
   sec = Math.floor(sec / 60);
-  const m = sec % 60;
+  const m = ("" + (sec % 60)).padStart(2, "0");
   sec = Math.floor(sec / 60);
   const h = sec % 60;
   return `${h}:${m}:${s}`;
@@ -165,7 +165,7 @@ const Sum = ({ whs }: SumProps): JSX.Element => {
     <div>
       <span>合計時間</span>:
       <span>
-        {Intl.NumberFormat("ja-JP", { maximumSignificantDigits: 3 }).format(
+        {Intl.NumberFormat("ja-JP", { maximumSignificantDigits: 4 }).format(
           sum
         )}
       </span>
