@@ -33,7 +33,7 @@ unload:
 
 
 .PHONY: build
-build: build-server build-client
+build: tree-clean build-server build-client
 
 
 .PHONY: build-server
