@@ -235,7 +235,7 @@ const WorkHours = () => {
     setEditedRecord({ dealId: dealId });
   };
 
-  const deleteWorkHour = async (obj: WorkHour): Promise<any> => {
+  const deleteWorkHour = async (obj: WorkHour): Promise<void> => {
     disableEditing();
     await _deleteWorkHour(obj);
     fetchWorkHours(dealId, setWorkHours);
