@@ -9,7 +9,7 @@
 }
 
 .action {
-  width: 18ch;
+  width: 16ch;
   text-align: center;
 }
 
@@ -19,4 +19,6 @@
 
 .button {
   width: 8ch;
+  margin-left: 1px;
+  margin-right: 1px;
 }
