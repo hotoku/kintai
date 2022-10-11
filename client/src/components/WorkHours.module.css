@@ -9,9 +9,14 @@
 }
 
 .action {
-  width: 10ch;
+  width: 18ch;
+  text-align: center;
 }
 
 .dateDiffAlert {
   color: #cc0000;
+}
+
+.button {
+  width: 8ch;
 }

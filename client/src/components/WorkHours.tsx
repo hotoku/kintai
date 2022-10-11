@@ -60,13 +60,18 @@ const editor = ({
 
   let saveOrUpdate: JSX.Element;
   if (onSaveClick !== undefined) {
-    saveOrUpdate = <button onClick={() => onSaveClick(editedObj)}>save</button>;
+    saveOrUpdate = (
+      <button className={Style.button} onClick={() => onSaveClick(editedObj)}>
+        save
+      </button>
+    );
   } else if (onUpdateClick !== undefined) {
     if (originalObj === undefined) {
       throw Error("originalObj is not defined");
     }
     saveOrUpdate = (
       <button
+        className={Style.button}
         onClick={() =>
           onUpdateClick({
             id: originalObj.id,
@@ -98,9 +103,11 @@ const editor = ({
       />
     </div>,
     <div />,
-    <div className="list-buttons">
+    <div className={Style.action}>
       {saveOrUpdate}
-      <button onClick={() => onCancelClick(editedObj)}>cancel</button>
+      <button className={Style.button} onClick={() => onCancelClick(editedObj)}>
+        cancel
+      </button>
     </div>,
   ];
 };
@@ -140,8 +147,15 @@ const view = ({
     </div>,
     <div className={Style.time}>{secToStr(duration)}</div>,
     <div className={Style.action}>
-      <button onClick={() => onEditClick(originalObj)}>edit</button>
-      <button onClick={() => onDeleteClick(originalObj)}>delete</button>
+      <button className={Style.button} onClick={() => onEditClick(originalObj)}>
+        edit
+      </button>
+      <button
+        className={Style.button}
+        onClick={() => onDeleteClick(originalObj)}
+      >
+        delete
+      </button>
     </div>,
   ];
 };
