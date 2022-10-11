@@ -4,7 +4,12 @@ import DateTimePicker from "react-datetime-picker";
 import "react-datetime-picker/dist/DateTimePicker.css";
 
 import { formatDate, formatTime } from "../share/utils";
-import { fetchWorkHours, postWorkHour, putWorkHour } from "../api/fetches";
+import {
+  fetchWorkHours,
+  postWorkHour,
+  putWorkHour,
+  deleteWorkHour as _deleteWorkHour,
+} from "../api/fetches";
 import { WorkHour, HalfwayWorkHour } from "../api/types";
 import { parseQuery } from "../utils";
 import { Table } from "./Table";
@@ -24,6 +29,7 @@ type EditorProps = {
 type ViewProps = {
   originalObj: WorkHour;
   onEditClick: (obj: WorkHour) => void;
+  onDeleteClick: (obj: WorkHour) => void;
   key: string;
 };
 
@@ -108,7 +114,11 @@ const secToStr = (sec: number): string => {
   return `${h}:${m}:${s}`;
 };
 
-const view = ({ originalObj, onEditClick }: ViewProps): JSX.Element[] => {
+const view = ({
+  originalObj,
+  onEditClick,
+  onDeleteClick,
+}: ViewProps): JSX.Element[] => {
   const st = originalObj.startTime;
   const date = formatDate(st);
   const startTime = formatTime(st);
@@ -131,6 +141,7 @@ const view = ({ originalObj, onEditClick }: ViewProps): JSX.Element[] => {
     <div>{duration <= 0 ? "" : secToStr(duration)}</div>,
     <div className={Style.action}>
       <button onClick={() => onEditClick(originalObj)}>edit</button>
+      <button onClick={() => onDeleteClick(originalObj)}>delete</button>
     </div>,
   ];
 };
@@ -224,6 +235,12 @@ const WorkHours = () => {
     setEditedRecord({ dealId: dealId });
   };
 
+  const deleteWorkHour = async (obj: WorkHour): Promise<any> => {
+    disableEditing();
+    await _deleteWorkHour(obj);
+    fetchWorkHours(dealId, setWorkHours);
+  };
+
   const items: JSX.Element[][] = workHours.map((wh) => {
     return createViewOrEditor(editedId, {
       originalObj: wh,
@@ -232,6 +249,7 @@ const WorkHours = () => {
       onCancelClick: disableEditing,
       onEditClick: enableEditing,
       onUpdateClick: updateWorkHour,
+      onDeleteClick: deleteWorkHour,
       key: "" + wh.id,
     });
   });

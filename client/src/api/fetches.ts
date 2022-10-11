@@ -101,6 +101,18 @@ export const putWorkHour = (obj: WorkHour): Promise<Response> => {
   return fetch("/api/workHours", { method, headers, body });
 };
 
+export const deleteWorkHour = (obj: WorkHour): Promise<Response> => {
+  const method = "DELETE";
+  const body = JSON.stringify({
+    id: obj.id,
+  });
+  const headers = {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  };
+  return fetch("/api/workHours", { method, headers, body });
+};
+
 export const putClient = (obj: Client): Promise<Response> => {
   const method = "PUT";
   const body = JSON.stringify(obj);
