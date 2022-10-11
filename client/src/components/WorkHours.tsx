@@ -106,12 +106,12 @@ const editor = ({
 };
 
 const secToStr = (sec: number): string => {
-  const s = ("" + (sec % 60)).padStart(2, "0");
+  const _ = ("" + (sec % 60)).padStart(2, "0");
   sec = Math.floor(sec / 60);
   const m = ("" + (sec % 60)).padStart(2, "0");
   sec = Math.floor(sec / 60);
   const h = sec % 60;
-  return `${h}:${m}:${s}`;
+  return `${h}:${m}`;
 };
 
 const view = ({
@@ -138,7 +138,7 @@ const view = ({
     <div className={`${Style.time} ${dateDiffers ? Style.dateDiffAlert : ""}`}>
       {endTiime}
     </div>,
-    <div>{duration <= 0 ? "" : secToStr(duration)}</div>,
+    <div className={Style.time}>{secToStr(duration)}</div>,
     <div className={Style.action}>
       <button onClick={() => onEditClick(originalObj)}>edit</button>
       <button onClick={() => onDeleteClick(originalObj)}>delete</button>
