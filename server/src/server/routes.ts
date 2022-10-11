@@ -176,6 +176,21 @@ export const workHours = (app: Application): Application => {
     res.send("ok");
   });
 
+  app.delete("/api/workHours", async (req, res) => {
+    const db = getInstance();
+    await db.open();
+    const obj = req.body as WorkHour;
+    await db.run(
+      `
+      delete from WorkHours
+      where
+        id = ?
+      `,
+      obj.id
+    );
+    res.send("ok");
+  });
+
   return app;
 };
 

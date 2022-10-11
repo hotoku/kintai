@@ -103,9 +103,7 @@ export const putWorkHour = (obj: WorkHour): Promise<Response> => {
 
 export const deleteWorkHour = (obj: WorkHour): Promise<Response> => {
   const method = "DELETE";
-  const body = JSON.stringify({
-    id: obj.id,
-  });
+  const body = JSON.stringify(obj);
   const headers = {
     Accept: "application/json",
     "Content-Type": "application/json",
