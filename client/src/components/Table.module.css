@@ -1,5 +1,7 @@
+@import ("../vars.css");
+
 .header {
-  background: pink;
+  background: var(--color-accent);
 }
 
 .rowOdd {
