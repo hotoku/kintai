@@ -3,8 +3,40 @@ import { Link, useLocation } from "react-router-dom";
 import { fetchClients, fetchDeals, postDeal, putDeal } from "../api/fetches";
 
 import { Client, Deal, HalfwayDeal } from "../api/types";
-import { parseQuery } from "../utils";
 import { Table } from "./Table";
+
+type FilterProps = {
+  selectedClientId: number | undefined;
+  clients: Client[];
+  onChange: (id: number | undefined) => void;
+};
+
+const filter = ({
+  selectedClientId,
+  clients,
+  onChange,
+}: FilterProps): JSX.Element => {
+  const choices = clients.map((c) => {
+    return (
+      <option key={c.id} value={c.id}>
+        {c.id}: {c.name}
+      </option>
+    );
+  });
+  choices.push(<option key="undefined" value="undefined" />);
+  return (
+    <select
+      value={selectedClientId}
+      onChange={(e) =>
+        onChange(
+          e.target.value === "undefined" ? undefined : parseInt(e.target.value)
+        )
+      }
+    >
+      {choices}
+    </select>
+  );
+};
 
 type ViewProps = {
   originalObj: Deal;
@@ -157,6 +189,7 @@ const Deals = () => {
 
   const records: JSX.Element[][] = deals
     .filter((obj) => {
+      console.log("selectedClientId", selectedClientId);
       return selectedClientId === undefined || selectedClientId === obj.id;
     })
     .map((obj) =>
@@ -187,24 +220,11 @@ const Deals = () => {
 
   return (
     <div className="Deals">
-      <select
-        value={selectedClientId}
-        onChange={(e) => {
-          if (e.target.value === "undefined") {
-            setSelectedClientId(undefined);
-          } else {
-            setSelectedClientId(parseInt(e.target.value));
-          }
-        }}
-      >
-        {clients.map((c) => {
-          return (
-            <option key={c.id} value={c.id}>
-              {c.id}: {c.name}
-            </option>
-          );
-        })}
-      </select>
+      {filter({
+        selectedClientId: selectedClientId,
+        clients: clients,
+        onChange: setSelectedClientId,
+      })}
       <Table
         thead={[<div>name</div>, <div>client name</div>, <div>actions</div>]}
         rows={records}
