@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { fetchClients, fetchDeals, postDeal, putDeal } from "../api/fetches";
 
 import { Client, Deal, HalfwayDeal } from "../api/types";
+import { parseQuery } from "../utils";
 import { Table } from "./Table";
 
 type ViewProps = {
@@ -100,6 +101,9 @@ const Deals = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [editedRecord, setEditedRecord] = useState<HalfwayDeal>({});
   const [editedId, setEditedId] = useState<number | "new" | undefined>();
+  const [selectedClientId, setSelectedClientId] = useState<
+    number | undefined
+  >();
 
   useEffect(() => {
     fetchDeals(setDeals);
@@ -151,18 +155,22 @@ const Deals = () => {
     fetchDeals(setDeals);
   };
 
-  const records: JSX.Element[][] = deals.map((obj) =>
-    createItem(editedId, {
-      originalObj: obj,
-      editedObj: editedRecord,
-      onChange: setEditedRecord,
-      onSaveClick: updateDeal,
-      onCancelClick: disableEditing,
-      saveButtonLabel: "update",
-      onEditClick: enableEditing,
-      clients: clients,
+  const records: JSX.Element[][] = deals
+    .filter((obj) => {
+      return selectedClientId === undefined || selectedClientId === obj.id;
     })
-  );
+    .map((obj) =>
+      createItem(editedId, {
+        originalObj: obj,
+        editedObj: editedRecord,
+        onChange: setEditedRecord,
+        onSaveClick: updateDeal,
+        onCancelClick: disableEditing,
+        saveButtonLabel: "update",
+        onEditClick: enableEditing,
+        clients: clients,
+      })
+    );
 
   if (editedId === "new") {
     records.push(
@@ -179,8 +187,26 @@ const Deals = () => {
 
   return (
     <div className="Deals">
+      <select
+        value={selectedClientId}
+        onChange={(e) => {
+          if (e.target.value === "undefined") {
+            setSelectedClientId(undefined);
+          } else {
+            setSelectedClientId(parseInt(e.target.value));
+          }
+        }}
+      >
+        {clients.map((c) => {
+          return (
+            <option key={c.id} value={c.id}>
+              {c.id}: {c.name}
+            </option>
+          );
+        })}
+      </select>
       <Table
-        thead={[<th>name</th>, <th>client name</th>, <th>actions</th>]}
+        thead={[<div>name</div>, <div>client name</div>, <div>actions</div>]}
         rows={records}
       ></Table>
       <button onClick={startAdding}>add</button>
