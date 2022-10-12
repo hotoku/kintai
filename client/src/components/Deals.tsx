@@ -188,10 +188,10 @@ const Deals = () => {
   };
 
   const records: JSX.Element[][] = deals
-    .filter((obj) => {
-      console.log("selectedClientId", selectedClientId);
-      return selectedClientId === undefined || selectedClientId === obj.id;
-    })
+    .filter(
+      (obj) =>
+        selectedClientId === undefined || selectedClientId === obj.clientId
+    )
     .map((obj) =>
       createItem(editedId, {
         originalObj: obj,

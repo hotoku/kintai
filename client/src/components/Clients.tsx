@@ -10,6 +10,7 @@ type ViewProps = {
 
 const view = ({ originalObj, onEditClick }: ViewProps): JSX.Element[] => {
   return [
+    <div>{originalObj.id}</div>,
     <div>{originalObj.name}</div>,
     <div>
       <button onClick={() => onEditClick(originalObj)}>edit</button>
@@ -33,6 +34,7 @@ const editor = ({
   saveButtonName,
 }: EditorProps): JSX.Element[] => {
   return [
+    <div />,
     <div>
       <input
         value={editedObj.name || ""}
@@ -156,7 +158,7 @@ const Clients = () => {
   return (
     <div className="Clients">
       <Table
-        thead={[<span>name</span>, <span>actions</span>]}
+        thead={[<span>id</span>, <span>name</span>, <span>actions</span>]}
         rows={records}
       ></Table>
       <button onClick={startEditing}>add</button>
