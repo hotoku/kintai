@@ -8,7 +8,7 @@ header {
 }
 
 header a {
-  color: white;
+  color: var(--color-white);
   padding-right: 10px;
 }
 
