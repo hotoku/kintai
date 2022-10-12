@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { fetchClients, fetchDeals, postDeal, putDeal } from "../api/fetches";
 
 import { Client, Deal, HalfwayDeal } from "../api/types";
+import { parseQuery } from "../utils";
 import { Table } from "./Table";
 
 type FilterProps = {
@@ -129,13 +130,14 @@ const createItem = (
 };
 
 const Deals = () => {
+  const query = parseQuery(useLocation().search);
   const [deals, setDeals] = useState<Deal[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [editedRecord, setEditedRecord] = useState<HalfwayDeal>({});
   const [editedId, setEditedId] = useState<number | "new" | undefined>();
-  const [selectedClientId, setSelectedClientId] = useState<
-    number | undefined
-  >();
+  const [selectedClientId, setSelectedClientId] = useState<number | undefined>(
+    query["clientId"] ? parseInt(query["clientId"]) : undefined
+  );
 
   useEffect(() => {
     fetchDeals(setDeals);

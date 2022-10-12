@@ -1,4 +1,7 @@
 export const parseQuery = (query: string): { [keys: string]: string } => {
+  if (query === "" || query === undefined) {
+    return {};
+  }
   if (query[0] !== "?") {
     throw Error(`parseQuery: first letter must be '?' => ${query}`);
   }
