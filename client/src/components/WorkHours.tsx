@@ -112,13 +112,11 @@ const editor = ({
   ];
 };
 
-const secToStr = (sec: number): string => {
-  const _ = ("" + (sec % 60)).padStart(2, "0");
-  sec = Math.floor(sec / 60);
-  const m = ("" + (sec % 60)).padStart(2, "0");
-  sec = Math.floor(sec / 60);
-  const h = sec % 60;
-  return `${h}:${m}`;
+const secToStr = (seconds: number): string => {
+  const minutes = Math.floor(seconds / 60);
+  const m = ("" + (minutes % 60)).padStart(2, "0");
+  const hours = Math.floor(minutes / 60);
+  return `${hours}:${m}`;
 };
 
 const view = ({
