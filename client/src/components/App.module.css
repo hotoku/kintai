@@ -1,19 +1,5 @@
 @import "../vars.css";
 
-header {
-  background: var(--color-main);
-  color: var(--color-base);
-  padding: 20px;
-  position: sticky;
-  top: 0;
-}
-
-header a {
-  color: var(--color-white);
-  padding-right: 10px;
-  text-decoration: none;
-}
-
 .appRoot {
   margin: 10px;
 }

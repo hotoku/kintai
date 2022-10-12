@@ -5,16 +5,13 @@ import Home from "./Home";
 import WorkHours from "./WorkHours";
 
 import Style from "./App.module.css";
+import Header from "./Header";
 
 const App = () => {
   return (
     <div>
       <BrowserRouter>
-        <header>
-          <Link to="/">home</Link>
-          <Link to="/clients">clients</Link>
-          <Link to="/deals">deals</Link>
-        </header>
+        <Header />
         <div className={Style.appRoot}>
           <Routes>
             <Route index element={<Home />} />
