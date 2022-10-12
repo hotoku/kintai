@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { fetchClients, postClient, putClient } from "../api/fetches";
 import { Client, HalfwayClient } from "../api/types";
 import { Table } from "./Table";
@@ -11,7 +12,9 @@ type ViewProps = {
 const view = ({ originalObj, onEditClick }: ViewProps): JSX.Element[] => {
   return [
     <div>{originalObj.id}</div>,
-    <div>{originalObj.name}</div>,
+    <div>
+      <Link to={`/deals?clientId=${originalObj.id}`}>{originalObj.name}</Link>
+    </div>,
     <div>
       <button onClick={() => onEditClick(originalObj)}>edit</button>
     </div>,
