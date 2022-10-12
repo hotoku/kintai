@@ -1,5 +1,7 @@
+@import "../vars.css";
+
 header {
-  background: black;
+  background: var(--color-black);
   padding: 20px;
   position: sticky;
   top: 0;
