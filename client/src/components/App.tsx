@@ -6,6 +6,7 @@ import WorkHours from "./WorkHours";
 
 import Style from "./App.module.css";
 import Header from "./Header";
+import ErrorBoundary from "./ErrorBoundary";
 
 const App = () => {
   return (
@@ -13,12 +14,14 @@ const App = () => {
       <BrowserRouter>
         <Header />
         <div className={Style.appRoot}>
-          <Routes>
-            <Route index element={<Home />} />
-            <Route path="/clients" element={<Clients />} />
-            <Route path="/workHours" element={<WorkHours />} />
-            <Route path="/deals" element={<Deals />} />
-          </Routes>
+          <ErrorBoundary>
+            <Routes>
+              <Route index element={<Home />} />
+              <Route path="/clients" element={<Clients />} />
+              <Route path="/workHours" element={<WorkHours />} />
+              <Route path="/deals" element={<Deals />} />
+            </Routes>
+          </ErrorBoundary>
         </div>
       </BrowserRouter>
     </div>
