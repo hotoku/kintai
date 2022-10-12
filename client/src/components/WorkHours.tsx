@@ -149,7 +149,7 @@ const view = ({
         edit
       </button>
       <button
-        className={Style.button}
+        className={`${Style.button} ${Style.deleteButton}`}
         onClick={() => onDeleteClick(originalObj)}
       >
         delete

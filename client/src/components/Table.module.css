@@ -1,7 +1,8 @@
 @import ("../vars.css");
 
 .header {
-  background: var(--color-accent);
+  background: var(--color-light1);
+  color: var(--color-main);
 }
 
 .rowOdd {

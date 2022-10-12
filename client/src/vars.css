@@ -1,5 +1,8 @@
 :root {
-  --color-base: #fefefe;
-  --color-main: #222;
-  --color-accent: pink;
+  --color-base: #fbfbfb;
+  --color-main: #041119;
+  --color-light1: #afc5cb;
+  --color-light2: #d1c0b2;
+  --color-dark: #113c49;
+  --color-vivid: #e30613;
 }
