@@ -1,0 +1,30 @@
+@import "../vars.css";
+
+.date {
+  width: 13ch;
+  text-align: center;
+}
+
+.time {
+  width: 8ch;
+  text-align: center;
+}
+
+.action {
+  width: 16ch;
+  text-align: center;
+}
+
+.dateDiffAlert {
+  color: var(--color-vivid);
+}
+
+.button {
+  width: 8ch;
+  margin-left: 1px;
+  margin-right: 1px;
+}
+
+.deleteButton {
+  color: var(--color-vivid);
+}

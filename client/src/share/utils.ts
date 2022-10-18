@@ -44,11 +44,5 @@ export const formatDate = (d: Date, isUtc: boolean = false): string => {
 
 export const formatTime = (d: Date, isUtc: boolean = false): string => {
   const d2 = isUtc ? toUtc(d) : d;
-  return (
-    formatInt(d2.getHours(), 2) +
-    ":" +
-    formatInt(d2.getMinutes(), 2) +
-    ":" +
-    formatInt(d2.getSeconds(), 2)
-  );
+  return formatInt(d2.getHours(), 2) + ":" + formatInt(d2.getMinutes(), 2);
 };

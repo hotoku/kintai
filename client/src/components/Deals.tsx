@@ -1,28 +1,59 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { fetchClients, fetchDeals, postDeal, putDeal } from "../api/fetches";
 
 import { Client, Deal, HalfwayDeal } from "../api/types";
+import { parseQuery } from "../utils";
+import { Table } from "./Table";
+
+type FilterProps = {
+  selectedClientId: number | undefined;
+  clients: Client[];
+  onChange: (id: number | undefined) => void;
+};
+
+const filter = ({
+  selectedClientId,
+  clients,
+  onChange,
+}: FilterProps): JSX.Element => {
+  const choices = clients.map((c) => {
+    return (
+      <option key={c.id} value={c.id}>
+        {c.id}: {c.name}
+      </option>
+    );
+  });
+  choices.push(<option key="undefined" value="undefined" />);
+  return (
+    <select
+      value={selectedClientId}
+      onChange={(e) =>
+        onChange(
+          e.target.value === "undefined" ? undefined : parseInt(e.target.value)
+        )
+      }
+    >
+      {choices}
+    </select>
+  );
+};
 
 type ViewProps = {
   originalObj: Deal;
   onEditClick: (obj: Deal) => void;
 };
 
-const View = ({ originalObj, onEditClick }: ViewProps): JSX.Element => {
-  return (
-    <tr>
-      <td>
-        <Link to={`/workHours?dealId=${originalObj.id}`}>
-          {originalObj.name}
-        </Link>
-      </td>
-      <td>{originalObj.clientName}</td>
-      <td>
-        <button onClick={() => onEditClick(originalObj)}>edit</button>
-      </td>
-    </tr>
-  );
+const view = ({ originalObj, onEditClick }: ViewProps): JSX.Element[] => {
+  return [
+    <div>
+      <Link to={`/workHours?dealId=${originalObj.id}`}>{originalObj.name}</Link>
+    </div>,
+    <div>{originalObj.clientName}</div>,
+    <div>
+      <button onClick={() => onEditClick(originalObj)}>edit</button>
+    </div>,
+  ];
 };
 
 type EditorProps = {
@@ -33,14 +64,14 @@ type EditorProps = {
   saveButtonLabel: string;
   clients: Client[];
 };
-const Editor = ({
+const editor = ({
   editedObj,
   onChange,
   onSaveClick,
   onCancelClick,
   saveButtonLabel,
   clients,
-}: EditorProps): JSX.Element => {
+}: EditorProps): JSX.Element[] => {
   const choices = clients.map((c) => {
     return (
       <option key={c.id} value={c.id}>
@@ -49,64 +80,64 @@ const Editor = ({
     );
   });
   choices.push(<option key="undefined" value="undefined" />);
-  return (
-    <tr>
-      <td>
-        <input
-          value={editedObj.name || ""}
-          onChange={(e) => {
-            const newOne = { ...editedObj };
-            newOne.name = e.target.value;
-            onChange(newOne);
-          }}
-        />
-      </td>
-      <td>
-        <select
-          value={editedObj.clientId || "undefined"}
-          onChange={(e) => {
-            const newOne = { ...editedObj };
-            newOne.clientId = parseInt(e.target.value) || undefined;
-            onChange(newOne);
-          }}
-        >
-          {choices}
-        </select>
-      </td>
-      <td>
-        <button onClick={() => onSaveClick(editedObj)}>
-          {saveButtonLabel}
-        </button>
-        <button onClick={() => onCancelClick(editedObj)}>cancel</button>
-      </td>
-    </tr>
-  );
+  return [
+    <div>
+      <input
+        value={editedObj.name || ""}
+        onChange={(e) => {
+          const newOne = { ...editedObj };
+          newOne.name = e.target.value;
+          onChange(newOne);
+        }}
+      />
+    </div>,
+    <div>
+      <select
+        value={editedObj.clientId || "undefined"}
+        onChange={(e) => {
+          const newOne = { ...editedObj };
+          newOne.clientId = parseInt(e.target.value) || undefined;
+          onChange(newOne);
+        }}
+      >
+        {choices}
+      </select>
+    </div>,
+    <div>
+      <button onClick={() => onSaveClick(editedObj)}>{saveButtonLabel}</button>
+      <button onClick={() => onCancelClick(editedObj)}>cancel</button>
+    </div>,
+  ];
 };
 
-const updateEditor = (originalObj: Deal, props: EditorProps): JSX.Element => {
-  return <Editor key={originalObj.id} {...props} />;
+const updateEditor = (props: EditorProps): JSX.Element[] => {
+  return editor(props);
 };
 
-const addEditor = (props: EditorProps): JSX.Element => {
-  return <Editor key="new" {...props} />;
+const addEditor = (props: EditorProps): JSX.Element[] => {
+  return editor(props);
 };
 
 const createItem = (
   editedId: number | "new" | undefined,
   props: EditorProps & ViewProps
-): JSX.Element => {
+): JSX.Element[] => {
   if (editedId === props.originalObj.id) {
-    return updateEditor(props.originalObj, props);
+    return updateEditor(props);
   } else {
-    return <View key={props.originalObj.id} {...props} />;
+    return view(props);
   }
 };
 
 const Deals = () => {
+  const query = parseQuery(useLocation().search);
   const [deals, setDeals] = useState<Deal[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [editedRecord, setEditedRecord] = useState<HalfwayDeal>({});
   const [editedId, setEditedId] = useState<number | "new" | undefined>();
+  const [selectedClientId, setSelectedClientId] = useState<number | undefined>(
+    query["clientId"] ? parseInt(query["clientId"]) : undefined
+  );
 
   useEffect(() => {
     fetchDeals(setDeals);
@@ -158,18 +189,23 @@ const Deals = () => {
     fetchDeals(setDeals);
   };
 
-  const records = deals.map((obj) =>
-    createItem(editedId, {
-      originalObj: obj,
-      editedObj: editedRecord,
-      onChange: setEditedRecord,
-      onSaveClick: updateDeal,
-      onCancelClick: disableEditing,
-      saveButtonLabel: "update",
-      onEditClick: enableEditing,
-      clients: clients,
-    })
-  );
+  const records: JSX.Element[][] = deals
+    .filter(
+      (obj) =>
+        selectedClientId === undefined || selectedClientId === obj.clientId
+    )
+    .map((obj) =>
+      createItem(editedId, {
+        originalObj: obj,
+        editedObj: editedRecord,
+        onChange: setEditedRecord,
+        onSaveClick: updateDeal,
+        onCancelClick: disableEditing,
+        saveButtonLabel: "update",
+        onEditClick: enableEditing,
+        clients: clients,
+      })
+    );
 
   if (editedId === "new") {
     records.push(
@@ -186,16 +222,15 @@ const Deals = () => {
 
   return (
     <div className="Deals">
-      <table>
-        <thead>
-          <tr>
-            <th>name</th>
-            <th>client name</th>
-            <th>actions</th>
-          </tr>
-        </thead>
-        <tbody>{records}</tbody>
-      </table>
+      {filter({
+        selectedClientId: selectedClientId,
+        clients: clients,
+        onChange: setSelectedClientId,
+      })}
+      <Table
+        thead={[<div>name</div>, <div>client name</div>, <div>actions</div>]}
+        rows={records}
+      ></Table>
       <button onClick={startAdding}>add</button>
     </div>
   );

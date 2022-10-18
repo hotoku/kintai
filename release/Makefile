@@ -1,17 +1,61 @@
-build: build-server build-client
+PLIST_FILE := info.hotoku.kintai.plist
+DEST := $(HOME)/Library/LaunchAgents/$(PLIST_FILE)
 
 
+.PHONY: load
+load: unload build clear-log $(PLIST_FILE)
+	cp $(PLIST_FILE) $(DEST)
+	launchctl load $(DEST)
+
+
+$(PLIST_FILE): $(PLIST_FILE).jinja
+	jinja2 $< \
+		-D pwd=$(shell pwd) \
+		-D KINTAI_SYNC_DATA_PATH=$(KINTAI_SYNC_DATA_PATH) \
+		-D KINTAI_PORT=$(KINTAI_PORT) \
+		-o $@
+
+
+.PHONY: clean
+clean: unload clear-log
+	rm -f $(PLIST_FILE)
+	rm -f $(DEST)
+
+
+.PHONY: clear-log
+clear-log:
+	rm -f log/*
+
+
+.PHONY: unload
+unload:
+	launchctl unload $(DEST)
+
+
+.PHONY: build
+build: tree-clean build-server build-client
+
+
+.PHONY: build-server
 build-server:
 	cd server && npm run build
 
 
+.PHONY: build-client
 build-client:
 	cd ../client && npm run build
 
 
+.PHONY: start
 start:
 	cd server && node dist/index.js
 
 
+.PHONY: migrate
 migrate:
 	cd server && npm run migrate
+
+
+.PHONY: tree-clean
+tree-clean:
+	@if [ $$(git status -s | wc -l) -ge 1 ]; then echo "Error: local tree is dirty."; false; fi

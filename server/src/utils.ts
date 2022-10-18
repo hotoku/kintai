@@ -5,3 +5,14 @@
 export const sync_data_path = (): string => {
   return process.env.KINTAI_SYNC_DATA_PATH || process.cwd();
 };
+
+/**
+ * WEBサーバーの待受ポート
+ */
+export const port = (): number => {
+  if (process.env.KINTAI_PORT) {
+    return parseInt(process.env.KINTAI_PORT);
+  } else {
+    return 8080;
+  }
+};

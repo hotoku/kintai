@@ -1,0 +1,10 @@
+@import ("../vars.css");
+
+.header {
+  background: var(--color-light1);
+  color: var(--color-main);
+}
+
+.rowOdd {
+  background: #eee;
+}

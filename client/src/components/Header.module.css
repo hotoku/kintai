@@ -1,0 +1,13 @@
+.header {
+  background: var(--color-main);
+  color: var(--color-base);
+  padding: 20px;
+  position: sticky;
+  top: 0;
+}
+
+.link {
+  color: var(--color-base);
+  padding-right: 10px;
+  text-decoration: none;
+}

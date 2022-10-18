@@ -5,3 +5,6 @@
 - [ ] 値のバリデーションなど、例外チェックと例外ハンドリングの戦略を考える
 - [ ] dealとclientの間にforeign key制約
 - [ ] dealとworkhoursの間にforeign key制約
+- [ ] 色を考える。グローバル変数で、名前を付ける
+- [ ] tree cleanでなければmake releaseは失敗にする
+- [ ] 本番と開発で色を変える

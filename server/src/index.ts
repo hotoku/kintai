@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import morgan from "morgan";
 
 import { clients, deals, staticFiles, workHours } from "./server/routes";
+import { port } from "./utils";
 
 const start = () => {
   const app = express();
@@ -14,7 +15,7 @@ const start = () => {
   clients(app);
   staticFiles(app);
 
-  app.listen(8080);
+  app.listen(port());
 };
 
 start();

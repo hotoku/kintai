@@ -2,17 +2,26 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>KINTAI_SYNC_DATA_PATH</key>
+		<string>{{KINTAI_SYNC_DATA_PATH}}</string>
+		<key>KINTAI_PORT</key>
+		<string>{{KINTAI_PORT}}</string>
+	</dict>
+	<key>KeepAlive</key>
+	<true/>
 	<key>Label</key>
 	<string>info.hotoku.kintai</string>
 	<key>Program</key>
-	<string>/Users/hotoku/projects/hotoku/kintai/release/run</string>
+	<string>{{pwd}}/run</string>
 	<key>RunAtLoad</key>
 	<true/>
 	<key>StandardErrorPath</key>
-	<string>/Users/hotoku/projects/hotoku/kintai/release/log/stderr</string>
+	<string>{{pwd}}/log/stderr</string>
 	<key>StandardOutPath</key>
-	<string>/Users/hotoku/projects/hotoku/kintai/release/log/stdout</string>
+	<string>{{pwd}}/log/stdout</string>
 	<key>WorkingDirectory</key>
-	<string>/Users/hotoku/projects/hotoku/kintai/release</string>
+	<string>{{pwd}}/server</string>
 </dict>
 </plist>

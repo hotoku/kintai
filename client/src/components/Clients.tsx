@@ -1,21 +1,24 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { fetchClients, postClient, putClient } from "../api/fetches";
 import { Client, HalfwayClient } from "../api/types";
+import { Table } from "./Table";
 
 type ViewProps = {
   originalObj: Client;
   onEditClick: (obj: Client) => void;
 };
 
-const View = ({ originalObj, onEditClick }: ViewProps): JSX.Element => {
-  return (
-    <tr>
-      <td>{originalObj.name}</td>
-      <td>
-        <button onClick={() => onEditClick(originalObj)}>edit</button>
-      </td>
-    </tr>
-  );
+const view = ({ originalObj, onEditClick }: ViewProps): JSX.Element[] => {
+  return [
+    <div>{originalObj.id}</div>,
+    <div>
+      <Link to={`/deals?clientId=${originalObj.id}`}>{originalObj.name}</Link>
+    </div>,
+    <div>
+      <button onClick={() => onEditClick(originalObj)}>edit</button>
+    </div>,
+  ];
 };
 
 type EditorProps = {
@@ -26,71 +29,67 @@ type EditorProps = {
   saveButtonName: string;
 };
 
-const Editor = ({
+const editor = ({
   editedObj,
   onSaveClick,
   onCancelClick,
   onChange,
   saveButtonName,
-}: EditorProps): JSX.Element => {
-  return (
-    <tr>
-      <td>
-        <input
-          value={editedObj.name || ""}
-          onChange={(e) => {
-            const newOne = { ...editedObj };
-            newOne.name = e.target.value;
-            onChange(newOne);
-          }}
-        ></input>
-      </td>
-      <td>
-        <button
-          onClick={() => {
-            if (editedObj.name === undefined) return;
-            const obj: HalfwayClient = { ...editedObj };
-            obj.name = editedObj.name;
-            onSaveClick(obj);
-          }}
-        >
-          {saveButtonName}
-        </button>
-        <button onClick={() => onCancelClick(editedObj)}>cancel</button>
-      </td>
-    </tr>
-  );
+}: EditorProps): JSX.Element[] => {
+  return [
+    <div />,
+    <div>
+      <input
+        value={editedObj.name || ""}
+        onChange={(e) => {
+          const newOne = { ...editedObj };
+          newOne.name = e.target.value;
+          onChange(newOne);
+        }}
+      ></input>
+    </div>,
+    <div>
+      <button
+        onClick={() => {
+          if (editedObj.name === undefined) return;
+          const obj: HalfwayClient = { ...editedObj };
+          obj.name = editedObj.name;
+          onSaveClick(obj);
+        }}
+      >
+        {saveButtonName}
+      </button>
+      <button onClick={() => onCancelClick(editedObj)}>cancel</button>
+    </div>,
+  ];
 };
 
 const updateEditor = (
   originalObj: Client,
   { editedObj, onSaveClick, onCancelClick, onChange }: EditorProps
-): JSX.Element => {
+): JSX.Element[] => {
   editedObj.id = originalObj.id;
-  return (
-    <Editor
-      key={originalObj.id}
-      editedObj={editedObj}
-      onSaveClick={onSaveClick}
-      onCancelClick={onCancelClick}
-      onChange={onChange}
-      saveButtonName="update"
-    />
-  );
+  return editor({
+    editedObj: editedObj,
+    onSaveClick: onSaveClick,
+    onCancelClick: onCancelClick,
+    onChange: onChange,
+    saveButtonName: "update",
+  });
 };
 
-const addEditor = (props: EditorProps): JSX.Element => {
-  return <Editor key="new" {...props} />;
+const addEditor = (props: EditorProps): JSX.Element[] => {
+  return editor(props);
 };
 
 const createItem = (
   editedId: number | "new" | undefined,
   props: ViewProps & EditorProps
-): JSX.Element => {
+): JSX.Element[] => {
   if (editedId === props.originalObj.id) {
     return updateEditor(props.originalObj, props);
   } else {
-    return <View key={props.originalObj.id} {...props} />;
+    return view(props);
   }
 };
 
@@ -135,7 +134,7 @@ const Clients = () => {
     fetchClients(setClients);
   };
 
-  const records = clients.map((obj) => {
+  const records: JSX.Element[][] = clients.map((obj) => {
     return createItem(editedId, {
       originalObj: obj,
       editedObj: editedRecord,
@@ -161,15 +160,10 @@ const Clients = () => {
 
   return (
     <div className="Clients">
-      <table>
-        <thead>
-          <tr>
-            <th>name</th>
-            <th>actions</th>
-          </tr>
-        </thead>
-        <tbody>{records}</tbody>
-      </table>
+      <Table
+        thead={[<span>id</span>, <span>name</span>, <span>actions</span>]}
+        rows={records}
+      ></Table>
       <button onClick={startEditing}>add</button>
     </div>
   );

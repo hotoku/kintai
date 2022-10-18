@@ -4,12 +4,17 @@ import DateTimePicker from "react-datetime-picker";
 import "react-datetime-picker/dist/DateTimePicker.css";
 
 import { formatDate, formatTime } from "../share/utils";
-
-import { fetchWorkHours, postWorkHour, putWorkHour } from "../api/fetches";
+import {
+  fetchWorkHours,
+  postWorkHour,
+  putWorkHour,
+  deleteWorkHour as _deleteWorkHour,
+} from "../api/fetches";
 import { WorkHour, HalfwayWorkHour } from "../api/types";
 import { parseQuery } from "../utils";
+import { Table } from "./Table";
 
-import "./WorkHours.css";
+import Style from "./WorkHours.module.css";
 
 type EditorProps = {
   originalObj?: WorkHour;
@@ -24,19 +29,20 @@ type EditorProps = {
 type ViewProps = {
   originalObj: WorkHour;
   onEditClick: (obj: WorkHour) => void;
+  onDeleteClick: (obj: WorkHour) => void;
   key: string;
 };
 
 type ViewOrEditorProps = EditorProps & ViewProps;
 
-const Editor = ({
+const editor = ({
   originalObj,
   editedObj,
   onChange,
   onSaveClick,
   onUpdateClick,
   onCancelClick,
-}: EditorProps) => {
+}: EditorProps): JSX.Element[] => {
   const handleChange = (name: "startTime" | "endTime") => (e: Date) => {
     const newOne = { ...editedObj };
     newOne[name] = e;
@@ -54,13 +60,18 @@ const Editor = ({
 
   let saveOrUpdate: JSX.Element;
   if (onSaveClick !== undefined) {
-    saveOrUpdate = <button onClick={() => onSaveClick(editedObj)}>save</button>;
+    saveOrUpdate = (
+      <button className={Style.button} onClick={() => onSaveClick(editedObj)}>
+        save
+      </button>
+    );
   } else if (onUpdateClick !== undefined) {
     if (originalObj === undefined) {
       throw Error("originalObj is not defined");
     }
     saveOrUpdate = (
       <button
+        className={Style.button}
         onClick={() =>
           onUpdateClick({
             id: originalObj.id,
@@ -75,61 +86,114 @@ const Editor = ({
   } else {
     throw Error("onSave click or onUpdateClick must be non null");
   }
-  return (
-    <tr>
-      <td>
-        <DateTimePicker
-          onChange={handleChange("startTime")}
-          onClockOpen={handleClockOpen("startTime")}
-          value={editedObj.startTime}
-        />
-      </td>
-      <td>
-        <DateTimePicker
-          onChange={handleChange("endTime")}
-          onClockOpen={handleClockOpen("endTime")}
-          value={editedObj.endTime}
-        />
-      </td>
-      <td className="list-buttons">
-        {saveOrUpdate}
-        <button onClick={() => onCancelClick(editedObj)}>cancel</button>
-      </td>
-    </tr>
-  );
+  return [
+    <div></div>,
+    <div>
+      <DateTimePicker
+        onChange={handleChange("startTime")}
+        onClockOpen={handleClockOpen("startTime")}
+        value={editedObj.startTime}
+      />
+    </div>,
+    <div>
+      <DateTimePicker
+        onChange={handleChange("endTime")}
+        onClockOpen={handleClockOpen("endTime")}
+        value={editedObj.endTime}
+      />
+    </div>,
+    <div />,
+    <div className={Style.action}>
+      {saveOrUpdate}
+      <button className={Style.button} onClick={() => onCancelClick(editedObj)}>
+        cancel
+      </button>
+    </div>,
+  ];
 };
 
-const View = ({ originalObj, onEditClick }: ViewProps) => {
-  const st = originalObj.startTime;
-  const startDate = st ? `${formatDate(st, false)}` : "";
-  const startTime = st ? `${formatTime(st, false)}` : "";
-  const et = originalObj.endTime;
-  const endDate = et ? `${formatDate(et, false)}` : "";
-  const endTime = et ? `${formatTime(et, false)}` : "";
+const secToStr = (seconds: number): string => {
+  const minutes = Math.floor(seconds / 60);
+  const m = ("" + (minutes % 60)).padStart(2, "0");
+  const hours = Math.floor(minutes / 60);
+  return `${hours}:${m}`;
+};
 
-  return (
-    <tr>
-      <td className="list-item">{`${startDate} ${startTime}`}</td>
-      <td className="list-item">{`${endDate} ${endTime}`}</td>
-      <td className="list-buttons">
-        <button onClick={() => onEditClick(originalObj)}>edit</button>
-      </td>
-    </tr>
-  );
+const view = ({
+  originalObj,
+  onEditClick,
+  onDeleteClick,
+}: ViewProps): JSX.Element[] => {
+  const st = originalObj.startTime;
+  const date = formatDate(st);
+  const startTime = formatTime(st);
+  const endTiime = originalObj.endTime ? formatTime(originalObj.endTime) : "";
+  const dateDiffers = (() => {
+    if (!originalObj.endTime) return false;
+    return date !== formatDate(originalObj.endTime);
+  })();
+
+  const duration = originalObj.endTime
+    ? (originalObj.endTime.getTime() - originalObj.startTime.getTime()) / 1000
+    : 0;
+
+  return [
+    <div className={Style.date}>{date}</div>,
+    <div className={Style.time}>{startTime}</div>,
+    <div className={`${Style.time} ${dateDiffers ? Style.dateDiffAlert : ""}`}>
+      {endTiime}
+    </div>,
+    <div className={Style.time}>{secToStr(duration)}</div>,
+    <div className={Style.action}>
+      <button className={Style.button} onClick={() => onEditClick(originalObj)}>
+        edit
+      </button>
+      <button
+        className={`${Style.button} ${Style.deleteButton}`}
+        onClick={() => onDeleteClick(originalObj)}
+      >
+        delete
+      </button>
+    </div>,
+  ];
 };
 
 const createViewOrEditor = (
   editedId: number | "new" | undefined,
   props: ViewOrEditorProps
-): JSX.Element => {
+): JSX.Element[] => {
   const wh = props.originalObj;
-  let ret: JSX.Element;
+  let ret: JSX.Element[];
   if (wh.id === editedId) {
-    ret = <Editor {...props} />;
+    ret = editor(props);
   } else {
-    ret = <View {...props} />;
+    ret = view(props);
   }
   return ret;
+};
+
+type SumProps = {
+  whs: WorkHour[];
+};
+
+const Sum = ({ whs }: SumProps): JSX.Element => {
+  let sum = 0;
+  for (const wh of whs) {
+    if (wh.endTime) {
+      sum += wh.endTime.getTime() - wh.startTime.getTime();
+    }
+  }
+  sum /= 1000 * 3600;
+  return (
+    <div>
+      <span>合計時間</span>:
+      <span>
+        {Intl.NumberFormat("ja-JP", { maximumSignificantDigits: 4 }).format(
+          sum
+        )}
+      </span>
+    </div>
+  );
 };
 
 const WorkHours = () => {
@@ -183,7 +247,13 @@ const WorkHours = () => {
     setEditedRecord({ dealId: dealId });
   };
 
-  const items = workHours.map((wh) => {
+  const deleteWorkHour = async (obj: WorkHour): Promise<void> => {
+    disableEditing();
+    await _deleteWorkHour(obj);
+    fetchWorkHours(dealId, setWorkHours);
+  };
+
+  const items: JSX.Element[][] = workHours.map((wh) => {
     return createViewOrEditor(editedId, {
       originalObj: wh,
       editedObj: editedRecord,
@@ -191,34 +261,36 @@ const WorkHours = () => {
       onCancelClick: disableEditing,
       onEditClick: enableEditing,
       onUpdateClick: updateWorkHour,
+      onDeleteClick: deleteWorkHour,
       key: "" + wh.id,
     });
   });
 
   if (isAdding()) {
     items.push(
-      <Editor
-        editedObj={editedRecord}
-        onChange={setEditedRecord}
-        onSaveClick={saveWorkHour}
-        onCancelClick={disableEditing}
-        key="new"
-      />
+      editor({
+        editedObj: editedRecord,
+        onChange: setEditedRecord,
+        onSaveClick: saveWorkHour,
+        onCancelClick: disableEditing,
+        key: "new",
+      })
     );
   }
 
   return (
     <div className="WorkHours" tabIndex={0}>
-      <table>
-        <thead>
-          <tr>
-            <th>start time</th>
-            <th>end time</th>
-            <th>actions</th>
-          </tr>
-        </thead>
-        <tbody>{items}</tbody>
-      </table>
+      <Sum whs={workHours} />
+      <Table
+        thead={[
+          <div>date</div>,
+          <div>start</div>,
+          <div>end</div>,
+          <div>duration</div>,
+          <div>actions</div>,
+        ]}
+        rows={items}
+      />
       <button onClick={startAdding}>add</button>
     </div>
   );
