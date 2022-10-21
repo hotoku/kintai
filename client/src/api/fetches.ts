@@ -64,22 +64,29 @@ export const fetchWorkHours = async (
 };
 
 const halfwayWorkHourToJson = (obj: HalfwayWorkHour): string => {
-  return JSON.stringify({
-    id: obj.id,
-    dealId: obj.dealId,
-    startTime: obj.startTime ? formatDateTime(obj.startTime, false) : undefined,
-    endTime: obj.endTime ? formatDateTime(obj.endTime, false) : undefined,
+  return toJson(obj, (obj: HalfwayWorkHour): any => {
+    return {
+      ...obj,
+      startTime: obj.startTime
+        ? formatDateTime(obj.startTime, false)
+        : undefined,
+      endTime: obj.endTime ? formatDateTime(obj.endTime, false) : undefined,
+    };
   });
 };
 
 const workHourToJson = (obj: WorkHour): string => {
-  return JSON.stringify({
-    id: obj.id,
-    dealId: obj.dealId,
-    startTime: formatDateTime(obj.startTime, false),
-    endTime: obj.endTime ? formatDateTime(obj.endTime, false) : undefined,
-    isDeleted: obj.isDeleted,
+  return toJson(obj, (obj: WorkHour): any => {
+    return {
+      ...obj,
+      startTime: formatDateTime(obj.startTime, false),
+      endTime: obj.endTime ? formatDateTime(obj.endTime, false) : undefined,
+    };
   });
+};
+
+const toJson = (obj: any, myfilter: (obj: any) => any): string => {
+  return JSON.stringify(myfilter(obj));
 };
 
 export const postWorkHour = (obj: HalfwayWorkHour): Promise<Response> => {
