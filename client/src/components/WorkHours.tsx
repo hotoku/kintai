@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import DateTimePicker from "react-datetime-picker";
 import "react-datetime-picker/dist/DateTimePicker.css";
 
@@ -286,7 +286,12 @@ const WorkHours = () => {
         ]}
         rows={items}
       />
-      <button onClick={startAdding}>add</button>
+      <p>
+        <button onClick={startAdding}>add</button>
+      </p>
+      <p>
+        <Link to="/deletedWorkHours">deleted</Link>
+      </p>
     </div>
   );
 };
