@@ -118,6 +118,7 @@ export const workHours = (app: Application): Application => {
     const db = getInstance();
     await db.open();
     const dealId = (req.query as any).dealId; // todo: reqの型付け調べる
+    const deleted = (req.query as any).deleted !== undefined;
     const ret = await db.all(
       `
       select
@@ -129,8 +130,9 @@ export const workHours = (app: Application): Application => {
         workHours
       where
         dealId=${dealId} and
-        not isDeleted
-      `
+        isDeleted = ?
+      `,
+      deleted
     );
     res.send(ret);
   });

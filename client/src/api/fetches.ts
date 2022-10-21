@@ -48,9 +48,11 @@ export const fetchClients = async (cb: (ds: Deal[]) => void) => {
 
 export const fetchWorkHours = async (
   dealId: number,
-  cb: (ws: WorkHour[]) => void
+  cb: (ws: WorkHour[]) => void,
+  deleted?: boolean
 ) => {
-  const res = await fetch(`/api/workHours?dealId=${dealId}`);
+  const url = `/api/workHours?dealId=${dealId}` + (deleted ? "&deleted" : "");
+  const res = await fetch(url);
   const data = await res.json();
   const ret: WorkHour[] = data.map((x: any) => {
     return {
