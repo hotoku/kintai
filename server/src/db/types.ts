@@ -9,6 +9,7 @@ export type WorkHour = {
   dealId: number;
   startTime: string;
   endTime?: string;
+  isDeleted?: boolean;
 };
 
 export type Client = {

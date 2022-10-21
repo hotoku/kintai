@@ -125,7 +125,8 @@ export const workHours = (app: Application): Application => {
       from
         workHours
       where
-        dealId=${dealId}
+        dealId=${dealId} and
+        not isDeleted
       `
     );
     res.send(ret);
@@ -164,13 +165,15 @@ export const workHours = (app: Application): Application => {
       set
         dealId = ?,
         startTime = ?,
-        endTime = ?
+        endTime = ?,
+        isDeleted = ?
       where
         id=?
       `,
       obj.dealId,
       obj.startTime,
       obj.endTime,
+      obj.isDeleted ? "TRUE" : "FALSE",
       obj.id
     );
     res.send("ok");
