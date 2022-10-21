@@ -1,8 +1,25 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { fetchWorkHours } from "../api/fetches";
+import { fetchWorkHours, putWorkHour } from "../api/fetches";
 import { WorkHour } from "../api/types";
 import { parseQuery } from "../utils";
+import { Table } from "./Table";
+import { formatDate, formatTime } from "./utils";
+
+const view = (
+  wh: WorkHour,
+  onRecoverClick: (wh: WorkHour) => void
+): JSX.Element[] => {
+  const st = `${formatDate(wh.startTime)} ${formatTime(wh.startTime)}`;
+  const et = wh.endTime
+    ? `${formatDate(wh.endTime)} ${formatTime(wh.endTime)}`
+    : "";
+  return [
+    <div>{st}</div>,
+    <div>{et}</div>,
+    <button onClick={() => onRecoverClick(wh)}>recover</button>,
+  ];
+};
 
 const DeletedWorkHours = (): JSX.Element => {
   const query = parseQuery(useLocation().search);
@@ -16,7 +33,7 @@ const DeletedWorkHours = (): JSX.Element => {
 
   const [workHours, setWorkHours] = useState<WorkHour[]>([]);
 
-  useEffect(() => {
+  const fetch = useCallback(() => {
     fetchWorkHours(
       dealId,
       (x: WorkHour[]) => {
@@ -24,8 +41,27 @@ const DeletedWorkHours = (): JSX.Element => {
       },
       true
     );
-  }, []);
-  return <div />;
+  }, [setWorkHours, dealId]);
+
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
+
+  const recoverWorkHour = async (wh: WorkHour) => {
+    await putWorkHour({
+      ...wh,
+      isDeleted: false,
+    });
+    fetch();
+  };
+
+  const lines = workHours.map((w) => view(w, recoverWorkHour));
+  return (
+    <Table
+      thead={[<div>start time</div>, <div>end time</div>, <div>actions</div>]}
+      rows={lines}
+    />
+  );
 };
 
 export default DeletedWorkHours;
