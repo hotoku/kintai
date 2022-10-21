@@ -10,6 +10,7 @@ import { parseQuery } from "../utils";
 import { Table } from "./Table";
 
 import Style from "./WorkHours.module.css";
+import { secToStr } from "./utils";
 
 type EditorProps = {
   originalObj?: WorkHour;
@@ -105,13 +106,6 @@ const editor = ({
       </button>
     </div>,
   ];
-};
-
-const secToStr = (seconds: number): string => {
-  const minutes = Math.floor(seconds / 60);
-  const m = ("" + (minutes % 60)).padStart(2, "0");
-  const hours = Math.floor(minutes / 60);
-  return `${hours}:${m}`;
 };
 
 const view = ({

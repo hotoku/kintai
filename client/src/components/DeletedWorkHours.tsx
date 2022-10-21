@@ -4,7 +4,7 @@ import { fetchWorkHours, putWorkHour } from "../api/fetches";
 import { WorkHour } from "../api/types";
 import { parseQuery } from "../utils";
 import { Table } from "./Table";
-import { formatDate, formatTime } from "./utils";
+import { formatDate, formatTime, secToStr } from "./utils";
 
 const view = (
   wh: WorkHour,
@@ -14,9 +14,13 @@ const view = (
   const et = wh.endTime
     ? `${formatDate(wh.endTime)} ${formatTime(wh.endTime)}`
     : "";
+  const duration = wh.endTime
+    ? (wh.endTime.getTime() - wh.startTime.getTime()) / 1000
+    : 0;
   return [
     <div>{st}</div>,
     <div>{et}</div>,
+    <div>{secToStr(duration)}</div>,
     <button onClick={() => onRecoverClick(wh)}>recover</button>,
   ];
 };
@@ -59,7 +63,12 @@ const DeletedWorkHours = (): JSX.Element => {
   return (
     <div>
       <Table
-        thead={[<div>start time</div>, <div>end time</div>, <div>actions</div>]}
+        thead={[
+          <div>start time</div>,
+          <div>end time</div>,
+          <div>duration</div>,
+          <div>actions</div>,
+        ]}
         rows={lines}
       />
       <p>

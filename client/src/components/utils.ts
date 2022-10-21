@@ -52,3 +52,10 @@ export const formatTime = (d: Date, isUtc: boolean = false): string => {
     formatInt(d2.getSeconds(), 2)
   );
 };
+
+export const secToStr = (seconds: number): string => {
+  const minutes = Math.floor(seconds / 60);
+  const m = ("" + (minutes % 60)).padStart(2, "0");
+  const hours = Math.floor(minutes / 60);
+  return `${hours}:${m}`;
+};
