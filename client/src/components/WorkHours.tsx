@@ -4,12 +4,7 @@ import DateTimePicker from "react-datetime-picker";
 import "react-datetime-picker/dist/DateTimePicker.css";
 
 import { formatDate, formatTime } from "../share/utils";
-import {
-  fetchWorkHours,
-  postWorkHour,
-  putWorkHour,
-  deleteWorkHour as _deleteWorkHour,
-} from "../api/fetches";
+import { fetchWorkHours, postWorkHour, putWorkHour } from "../api/fetches";
 import { WorkHour, HalfwayWorkHour } from "../api/types";
 import { parseQuery } from "../utils";
 import { Table } from "./Table";
@@ -247,9 +242,9 @@ const WorkHours = () => {
     setEditedRecord({ dealId: dealId });
   };
 
-  const deleteWorkHour = async (obj: WorkHour): Promise<void> => {
+  const markAsDeleted = async (obj: WorkHour): Promise<void> => {
     disableEditing();
-    await _deleteWorkHour(obj);
+    await putWorkHour({ ...obj, isDeleted: true });
     fetchWorkHours(dealId, setWorkHours);
   };
 
@@ -261,7 +256,7 @@ const WorkHours = () => {
       onCancelClick: disableEditing,
       onEditClick: enableEditing,
       onUpdateClick: updateWorkHour,
-      onDeleteClick: deleteWorkHour,
+      onDeleteClick: markAsDeleted,
       key: "" + wh.id,
     });
   });

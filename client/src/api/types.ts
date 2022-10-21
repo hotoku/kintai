@@ -17,6 +17,7 @@ export type WorkHour = {
   dealId: number;
   startTime: Date;
   endTime?: Date;
+  isDeleted?: boolean;
 };
 
 export type HalfwayWorkHour = {

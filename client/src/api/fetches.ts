@@ -78,6 +78,7 @@ const workHourToJson = (obj: WorkHour): string => {
     dealId: obj.dealId,
     startTime: formatDateTime(obj.startTime, false),
     endTime: obj.endTime ? formatDateTime(obj.endTime, false) : undefined,
+    isDeleted: obj.isDeleted,
   });
 };
 

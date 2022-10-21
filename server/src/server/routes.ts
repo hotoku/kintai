@@ -2,6 +2,9 @@ import express, { Application } from "express";
 import { getInstance } from "../db/db";
 import { WorkHour, Client, Deal } from "../db/types";
 
+const TRUE = 1;
+const FALSE = 0;
+
 export const deals = (app: Application): Application => {
   app.get("/api/deals", async (_, res) => {
     const db = getInstance();
@@ -173,7 +176,7 @@ export const workHours = (app: Application): Application => {
       obj.dealId,
       obj.startTime,
       obj.endTime,
-      obj.isDeleted ? "TRUE" : "FALSE",
+      obj.isDeleted ? TRUE : FALSE,
       obj.id
     );
     res.send("ok");
