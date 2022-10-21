@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { fetchWorkHours, putWorkHour } from "../api/fetches";
 import { WorkHour } from "../api/types";
 import { parseQuery } from "../utils";
@@ -57,10 +57,15 @@ const DeletedWorkHours = (): JSX.Element => {
 
   const lines = workHours.map((w) => view(w, recoverWorkHour));
   return (
-    <Table
-      thead={[<div>start time</div>, <div>end time</div>, <div>actions</div>]}
-      rows={lines}
-    />
+    <div>
+      <Table
+        thead={[<div>start time</div>, <div>end time</div>, <div>actions</div>]}
+        rows={lines}
+      />
+      <p>
+        <Link to={`/workHours?dealId=${dealId}`}>back</Link>
+      </p>
+    </div>
   );
 };
 

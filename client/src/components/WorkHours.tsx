@@ -290,7 +290,9 @@ const WorkHours = () => {
         <button onClick={startAdding}>add</button>
       </p>
       <p>
-        <Link to={`/deletedWorkHours?dealId=${dealId}`}>deleted</Link>
+        <Link to={`/deletedWorkHours?dealId=${dealId}`}>
+          view deleted items
+        </Link>
       </p>
     </div>
   );
