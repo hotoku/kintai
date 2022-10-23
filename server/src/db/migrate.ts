@@ -1,8 +1,7 @@
 import { getInstance } from "./db";
 
 const migrate = async () => {
-  const db = getInstance();
-  await db.open();
+  const db = await getInstance();
   await db.migrate({});
 };
 

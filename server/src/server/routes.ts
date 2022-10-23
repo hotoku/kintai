@@ -7,8 +7,7 @@ const FALSE = 0;
 
 export const deals = (app: Application): Application => {
   app.get("/api/deals", async (_, res) => {
-    const db = getInstance();
-    await db.open();
+    const db = await getInstance();
     const ret = await db.all(`
 select
   l.id,
@@ -23,8 +22,7 @@ from
   });
 
   app.put("/api/deals", async (req, res) => {
-    const db = getInstance();
-    await db.open();
+    const db = await getInstance();
     const obj = req.body as Deal;
     await db.run(
       `
@@ -43,8 +41,7 @@ where
   });
 
   app.post("/api/deals", async (req, res) => {
-    const db = getInstance();
-    await db.open();
+    const db = await getInstance();
     const obj = req.body as Deal;
     await db.run(
       `
@@ -62,8 +59,7 @@ values (?, ?)
 
 export const clients = (app: Application): Application => {
   app.get("/api/clients", async (_, res) => {
-    const db = getInstance();
-    await db.open();
+    const db = await getInstance();
     const ret = await db.all(`
 select
   id,
@@ -75,8 +71,7 @@ from
   });
 
   app.put("/api/clients", async (req, res) => {
-    const db = getInstance();
-    await db.open();
+    const db = await getInstance();
     const obj = req.body as Client;
     await db.run(
       `
@@ -93,8 +88,7 @@ where
   });
 
   app.post("/api/clients", async (req, res) => {
-    const db = getInstance();
-    await db.open();
+    const db = await getInstance();
     const obj = req.body as Client;
     await db.run(
       `
@@ -115,8 +109,7 @@ values (
 
 export const workHours = (app: Application): Application => {
   app.get("/api/workHours", async (req, res) => {
-    const db = getInstance();
-    await db.open();
+    const db = await getInstance();
     const dealId = (req.query as any).dealId; // todo: reqの型付け調べる
     const deleted = (req.query as any).deleted !== undefined;
     const ret = await db.all(
@@ -138,8 +131,7 @@ export const workHours = (app: Application): Application => {
   });
 
   app.post("/api/workHours", async (req, res) => {
-    const db = getInstance();
-    await db.open();
+    const db = await getInstance();
     const obj = req.body as WorkHour;
     await db.run(
       `
@@ -161,8 +153,7 @@ export const workHours = (app: Application): Application => {
   });
 
   app.put("/api/workHours", async (req, res) => {
-    const db = getInstance();
-    await db.open();
+    const db = await getInstance();
     const obj = req.body as WorkHour;
     await db.run(
       `
@@ -185,8 +176,7 @@ export const workHours = (app: Application): Application => {
   });
 
   app.delete("/api/workHours", async (req, res) => {
-    const db = getInstance();
-    await db.open();
+    const db = await getInstance();
     const obj = req.body as WorkHour;
     await db.run(
       `

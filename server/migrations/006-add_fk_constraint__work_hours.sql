@@ -8,6 +8,7 @@ create table WorkHours (
        dealId integer not null,
        startTime text not null,
        endTime text,
+       isDeleted integer default FALSE,
        foreign key(dealId) references Deals(id)
 );
 
@@ -25,7 +26,8 @@ CREATE TABLE WorkHours (
        id integer primary key,
        dealId integer not null,
        startTime text not null,
-       endTime text
+       endTime text,
+       isDeleted integer default FALSE,
 );
 
 INSERT INTO WorkHours (id, dealId, startTime, endTime)

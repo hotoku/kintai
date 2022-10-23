@@ -9,8 +9,7 @@ const makeLoader = (
   const ret = async () => {
     const contents = fs.readFileSync(path).toString();
     const objs = JSON.parse(contents) as any[];
-    const db = getInstance();
-    db.open();
+    const db = await getInstance();
     for (const obj of objs) {
       await db.run(sql, ...names.map((n) => obj[n]));
     }
