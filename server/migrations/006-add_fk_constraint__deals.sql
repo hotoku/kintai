@@ -27,7 +27,7 @@ CREATE TABLE Deals
   id INTEGER PRIMARY KEY,
   name TEXT NOT NULL,
   clientId integer not null
-)
+);
 
 INSERT INTO Deals (id, name, clientId)
   SELECT id, name, clientId
