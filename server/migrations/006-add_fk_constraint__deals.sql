@@ -10,7 +10,7 @@ CREATE TABLE Deals
   name TEXT NOT NULL,
   clientId integer not null,
   foreign key(clientId) references Clients(id)
-)
+);
 
 insert into Deals (id, name, clientId)
   select id, name, clientId from _Deals_old;
