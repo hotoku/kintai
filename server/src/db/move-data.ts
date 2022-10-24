@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as mysql from "mysql2/promise";
-import { getConnection, getInstance } from "./db";
+import { getInstance, getPool } from "./db";
 
 const makeLoader = (
   sql: string,
@@ -32,19 +32,36 @@ const join = (ss: string[]): string => {
   return ret;
 };
 
-const moveClients = async (cols: string[], table: string) => {
+const move = async (db: mysql.Pool, cols: string[], table: string) => {
   const sql1 = `
     select ${join(cols)}    
     from ${table}
   `;
-  console.log(sql1);
   const obj = await getInstance();
-  const data = await obj.run(sql1);
-  console.log(data);
+  const data = await obj.all(sql1);
+  const sql2 = `
+    insert into ${table} (${join(cols)})
+    values (${join(cols.map((_) => "?"))})
+  `;
+
+  for (let i = 0; i < data.length; i++) {
+    await db.query(
+      sql2,
+      cols.map((n) => data[i][n])
+    );
+  }
 };
 
 const run = async () => {
-  await moveClients(["id", "name"], "Clients");
+  const db = getPool();
+  await move(db, ["id", "name"], "Clients");
+  await move(db, ["id", "name", "clientId"], "Deals");
+  await move(
+    db,
+    ["id", "startTime", "endTime", "isDeleted", "dealId"],
+    "WorkHours"
+  );
+  db.end();
 };
 
 run();
