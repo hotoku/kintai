@@ -1,5 +1,5 @@
 import express, { Application } from "express";
-import { getInstance } from "../db/db";
+import { getPool } from "../db/db";
 import { WorkHour, Client, Deal } from "../db/types";
 
 const TRUE = 1;
@@ -7,8 +7,8 @@ const FALSE = 0;
 
 export const deals = (app: Application): Application => {
   app.get("/api/deals", async (_, res) => {
-    const db = await getInstance();
-    const ret = await db.all(`
+    const db = getPool();
+    const ret = await db.query(`
 select
   l.id,
   l.name,
@@ -22,9 +22,9 @@ from
   });
 
   app.put("/api/deals", async (req, res) => {
-    const db = await getInstance();
+    const db = getPool();
     const obj = req.body as Deal;
-    await db.run(
+    await db.query(
       `
 update Deals
 set
@@ -33,23 +33,20 @@ set
 where
   id=?      
 `,
-      obj.name,
-      obj.clientId,
-      obj.id
+      [obj.name, obj.clientId, obj.id]
     );
     res.send("ok");
   });
 
   app.post("/api/deals", async (req, res) => {
-    const db = await getInstance();
+    const db = getPool();
     const obj = req.body as Deal;
-    await db.run(
+    await db.query(
       `
 insert into Deals (name, clientId)
 values (?, ?)      
 `,
-      obj.name,
-      obj.clientId
+      [obj.name, obj.clientId]
     );
     res.send("ok");
   });
@@ -59,8 +56,8 @@ values (?, ?)
 
 export const clients = (app: Application): Application => {
   app.get("/api/clients", async (_, res) => {
-    const db = await getInstance();
-    const ret = await db.all(`
+    const db = getPool();
+    const ret = await db.query(`
 select
   id,
   name
@@ -71,9 +68,9 @@ from
   });
 
   app.put("/api/clients", async (req, res) => {
-    const db = await getInstance();
+    const db = getPool();
     const obj = req.body as Client;
-    await db.run(
+    await db.query(
       `
 update Clients
 set
@@ -81,16 +78,15 @@ set
 where
   id=?
 `,
-      obj.name,
-      obj.id
+      [obj.name, obj.id]
     );
     res.send("ok");
   });
 
   app.post("/api/clients", async (req, res) => {
-    const db = await getInstance();
+    const db = getPool();
     const obj = req.body as Client;
-    await db.run(
+    await db.query(
       `
 insert into Clients (
   name
@@ -109,10 +105,10 @@ values (
 
 export const workHours = (app: Application): Application => {
   app.get("/api/workHours", async (req, res) => {
-    const db = await getInstance();
+    const db = getPool();
     const dealId = (req.query as any).dealId; // todo: reqの型付け調べる
     const deleted = (req.query as any).deleted !== undefined;
-    const ret = await db.all(
+    const ret = await db.query(
       `
       select
         id,
@@ -131,9 +127,9 @@ export const workHours = (app: Application): Application => {
   });
 
   app.post("/api/workHours", async (req, res) => {
-    const db = await getInstance();
+    const db = getPool();
     const obj = req.body as WorkHour;
-    await db.run(
+    await db.query(
       `
       insert into workHours (
         dealId,
@@ -145,17 +141,15 @@ export const workHours = (app: Application): Application => {
         ?
       )
       `,
-      obj.dealId,
-      obj.startTime,
-      obj.endTime
+      [obj.dealId, obj.startTime, obj.endTime]
     );
     res.send("ok");
   });
 
   app.put("/api/workHours", async (req, res) => {
-    const db = await getInstance();
+    const db = getPool();
     const obj = req.body as WorkHour;
-    await db.run(
+    await db.query(
       `
       update workHours
       set
@@ -166,19 +160,21 @@ export const workHours = (app: Application): Application => {
       where
         id=?
       `,
-      obj.dealId,
-      obj.startTime,
-      obj.endTime,
-      obj.isDeleted ? TRUE : FALSE,
-      obj.id
+      [
+        obj.dealId,
+        obj.startTime,
+        obj.endTime,
+        obj.isDeleted ? TRUE : FALSE,
+        obj.id,
+      ]
     );
     res.send("ok");
   });
 
   app.delete("/api/workHours", async (req, res) => {
-    const db = await getInstance();
+    const db = getPool();
     const obj = req.body as WorkHour;
-    await db.run(
+    await db.query(
       `
       delete from WorkHours
       where
