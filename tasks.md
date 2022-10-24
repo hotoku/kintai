@@ -45,3 +45,5 @@
 - [x] release2から本番データが移行できることを確認
 - [x] 旧dbを削除
 - [x] 開発環境のmigrate, seedの動作を確認
+- [ ] move関連のソースを削除
+- [ ] sqlite, sqlite3のソースを削除
