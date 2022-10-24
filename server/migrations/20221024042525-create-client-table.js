@@ -15,15 +15,15 @@ exports.setup = function (options, seedLink) {
 };
 
 exports.up = function (db) {
-  db.createTable("clients", {
+  db.createTable("Clients", {
     id: { type: "int", primaryKey: true, autoIncrement: true },
-    name: "string",
+    name: { type: "string", notNull: true },
   });
   return null;
 };
 
 exports.down = function (db) {
-  db.dropTable("clients");
+  db.dropTable("Clients");
   return null;
 };
 

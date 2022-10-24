@@ -16,8 +16,21 @@ exports.setup = function (options, seedLink) {
 
 exports.up = function (db) {
   db.createTable("Deals", {
-    id: { type: "int", primaryKey: true, autoIncrement: true },
-    name: "string",
+    id: { type: "int", primaryKey: true, autoIncrement: true, notNull: true },
+    name: { type: "string", notNull: true },
+    clientId: {
+      type: "int",
+      notNull: true,
+      foreignKey: {
+        name: "Deals_clientId",
+        table: "Clients",
+        rules: {
+          onDelete: "NO ACTION",
+          onUpdate: "NO ACTION",
+        },
+        mapping: "id",
+      },
+    },
   });
   return null;
 };
