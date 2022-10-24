@@ -1,18 +1,20 @@
 import * as fs from "fs";
-import { getInstance, getConnection } from "./db";
+import * as mysql from "mysql2/promise";
+import { getConnection } from "./db";
 
 const makeLoader = (
   sql: string,
   path: string,
   names: string[]
-): (() => Promise<void>) => {
-  const ret = async () => {
+): ((db: mysql.Connection) => Promise<void>) => {
+  const ret = async (db: mysql.Connection) => {
     const contents = fs.readFileSync(path).toString();
     const objs = JSON.parse(contents) as any[];
-    const db = await getInstance();
-
     for (const obj of objs) {
-      await db.run(sql, ...names.map((n) => obj[n]));
+      await db.query(
+        sql,
+        names.map((n) => obj[n])
+      );
     }
   };
   return ret;
@@ -21,63 +23,63 @@ const makeLoader = (
 const queryForDeals = `
 insert into deals
 (
+  id,
   name,
   clientId
-)
-values
-(
-  ?, ?
-)
-`;
-const loadDeals = makeLoader(
-  queryForDeals,
-  `${process.cwd()}/seeds/deals.json`,
-  ["name", "clientId"]
-);
-
-const queryForWorkHours = `
-insert into workHours
-(
-  dealId,
-  startTime,
-  endTime
 )
 values
 (
   ?, ?, ?
 )
 `;
+const loadDeals = makeLoader(
+  queryForDeals,
+  `${process.cwd()}/seeds/deals.json`,
+  ["id", "name", "clientId"]
+);
+
+const queryForWorkHours = `
+insert into workHours
+(
+  id,
+  dealId,
+  startTime,
+  endTime
+)
+values
+(
+  ?, ?, ?, ?
+)
+`;
 const loadWorkHours = makeLoader(
   queryForWorkHours,
   `${process.cwd()}/seeds/work_hours.json`,
-  ["dealId", "startTime", "endTime"]
+  ["id", "dealId", "startTime", "endTime"]
 );
 
 const queryForClients = `
 insert into clients
 (
+  id,
   name 
 )
   values
 (
+  ?,
   ?
 )
 `;
 const loadClients = makeLoader(
   queryForClients,
   `${process.cwd()}/seeds/clients.json`,
-  ["name"]
+  ["id", "name"]
 );
 
 const run = async () => {
   const db = await getConnection();
-  const r = await db.query(`
-    with
-      temp1 as (select 1 as x)
-    select * from temp1 union all
-    select * from temp1
-  `);
-  console.log(r);
+  await loadClients(db);
+  await loadDeals(db);
+  await loadWorkHours(db);
   db.end();
 };
 
