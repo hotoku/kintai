@@ -8,7 +8,7 @@ const FALSE = 0;
 export const deals = (app: Application): Application => {
   app.get("/api/deals", async (_, res) => {
     const db = getPool();
-    const ret = await db.query(`
+    const [rows, _2] = await db.query(`
 select
   l.id,
   l.name,
@@ -17,8 +17,9 @@ select
 from
   deals l inner join
   clients r on (l.clientId = r.id)
-`);
-    res.send(ret);
+    `);
+    console.log(rows);
+    res.send(rows);
   });
 
   app.put("/api/deals", async (req, res) => {
@@ -57,7 +58,7 @@ values (?, ?)
 export const clients = (app: Application): Application => {
   app.get("/api/clients", async (_, res) => {
     const db = getPool();
-    const ret = await db.query(`
+    const [ret, _2] = await db.query(`
 select
   id,
   name
@@ -108,7 +109,7 @@ export const workHours = (app: Application): Application => {
     const db = getPool();
     const dealId = (req.query as any).dealId; // todo: reqの型付け調べる
     const deleted = (req.query as any).deleted !== undefined;
-    const ret = await db.query(
+    const [ret, _] = await db.query(
       `
       select
         id,
