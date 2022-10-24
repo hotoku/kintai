@@ -18,7 +18,6 @@ from
   deals l inner join
   clients r on (l.clientId = r.id)
     `);
-    console.log(rows);
     res.send(rows);
   });
 
