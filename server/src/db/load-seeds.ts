@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { getInstance } from "./db";
+import { getInstance, getConnection } from "./db";
 
 const makeLoader = (
   sql: string,
@@ -10,6 +10,7 @@ const makeLoader = (
     const contents = fs.readFileSync(path).toString();
     const objs = JSON.parse(contents) as any[];
     const db = await getInstance();
+
     for (const obj of objs) {
       await db.run(sql, ...names.map((n) => obj[n]));
     }
@@ -69,9 +70,15 @@ const loadClients = makeLoader(
 );
 
 const run = async () => {
-  await loadClients();
-  await loadDeals();
-  await loadWorkHours();
+  const db = await getConnection();
+  const r = await db.query(`
+    with
+      temp1 as (select 1 as x)
+    select * from temp1 union all
+    select * from temp1
+  `);
+  console.log(r);
+  db.end();
 };
 
 run();
