@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "migrate": "ts-node src/db/migrate.ts",
+    "migrate": "db-migrate up",
+    "migrate-prd": "db-migrate up -e prd",
     "seeds": "ts-node src/db/load-seeds.ts",
     "test": "mocha -r ts-node/register 'tests/**/*.ts'",
     "start": "nodemon",
