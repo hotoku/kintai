@@ -23,3 +23,25 @@
 
 - server/sample.envrcを置いておく。
 - release/readmeなどに、リリース時にはserver/sample.envrcから.envrcを作るという手順を書いておく。
+
+落ち穂拾い
+
+- 消すべきものたち
+- db, db2
+  - db
+  - db2
+    - dbにrename
+    - release2の中のmakefileを編集
+- release2
+  - releaseにmakefileの名前を変えてコピー
+  - readmeにDBの構築手順を残しておく
+
+落ち穂拾い2
+
+- [x] dbをrename
+- [x] db2をdbにrename
+- [x] release2とreleaseをマージ
+- [x] release2から本番DBが作れることを確認
+- [x] release2から本番データが移行できることを確認
+- [x] 旧dbを削除
+- [x] 開発環境のmigrate, seedの動作を確認
