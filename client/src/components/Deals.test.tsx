@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import Deals from "./Deals";
 
 test("renders learn react link", () => {
-  render(<Deals clientId={1} />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  const ret = render(<Deals clientId={1} />);
+  const table = ret.container.querySelector("table");
+  expect(table).not.toBeNull();
 });
