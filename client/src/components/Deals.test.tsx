@@ -112,7 +112,7 @@ test("render deals", async () => {
 
   /**
    * There should be a select.
-   * When an item having value 2 is selected, navigate to /deals/2.
+   * When an item having value 2 is selected, navigate to /deals?clientId=2.
    * Right now, I don't know how I can test if the navigation occurs as expected.
    * Maybe, this api document helps..
    * https://reactrouter.com/en/v6.3.0/api
