@@ -114,7 +114,8 @@ export const workHours = (app: Application): Application => {
         id,
         dealId,
         startTime,
-        endTime
+        endTime,
+        note
       from
         workHours
       where

@@ -60,6 +60,7 @@ export const fetchWorkHours = async (
       dealId: x["dealId"],
       startTime: new Date(x["startTime"]),
       endTime: x["endTime"] ? new Date(x["endTime"]) : undefined,
+      note: x["note"],
     };
   });
   cb(ret);
