@@ -53,10 +53,8 @@ test("render work hours", async () => {
 
   const table = screen.getByRole("table");
   getByText(table, "note");
-  await waitFor(() => {
-    screen.getByText("client 1");
-    screen.getByText("deal 1");
-  });
+  screen.findByText("client 1"); // about findBy api, refer to https://bufferings.hatenablog.com/entry/2021/11/18/015809
+  screen.findByText("deal 1");
 
   spy1.mockRestore();
   spy2.mockRestore();
