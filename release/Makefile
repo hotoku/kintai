@@ -62,3 +62,9 @@ migrate:
 .PHONY: tree-clean
 tree-clean:
 	@if [ $$(git status -s | wc -l) -ge 1 ]; then echo "Error: local tree is dirty."; false; fi
+
+
+.PHONY: backup
+backup:
+	mkdir -p backup
+	mysqldump -p"$(MYSQL_ROOT_PASSWORD)" -u root $(DATABASE_NAME) > backup/kintai_prd-$(shell date +"%Y-%m-%d_%H-%M-%S").sql
