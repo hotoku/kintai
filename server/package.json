@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "migrate": "set",
+    "migrate": "db-migrate up",
     "migrate-prd": "db-migrate up -e prd",
     "seeds": "ts-node src/db/load-seeds.ts",
     "test": "mocha -r ts-node/register 'tests/**/*.ts'",
