@@ -56,7 +56,7 @@ test("render work hours", async () => {
   render(
     <MemoryRouter initialEntries={["/workHours?dealId=1"]}>
       <Routes>
-        <Route path="/deals" element={<WorkHours clientId="1" />} />
+        <Route path="/deals" element={<WorkHours dealId="1" />} />
       </Routes>
     </MemoryRouter>
   );

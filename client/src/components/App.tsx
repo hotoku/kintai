@@ -19,7 +19,10 @@ const AppBody = () => {
         <Routes>
           <Route index element={<Home />} />
           <Route path="/clients" element={<Clients />} />
-          <Route path="/workHours" element={<WorkHours />} />
+          <Route
+            path="/workHours"
+            element={<WorkHours dealId={query.dealId} />}
+          />
           <Route path="/deals" element={<Deals clientId={query.clientId} />} />
           <Route path="/deletedWorkHours" element={<DeletedWorkHours />} />
         </Routes>

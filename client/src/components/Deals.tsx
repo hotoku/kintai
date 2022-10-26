@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { fetchClients, fetchDeals, postDeal, putDeal } from "../api/fetches";
 
 import { Client, Deal, HalfwayDeal } from "../api/types";
+import { maybeInt } from "../utils";
 import { Table } from "./Table";
 
 type FilterProps = {
@@ -129,12 +130,6 @@ const createItem = (
   }
 };
 
-const parseClientId = (s: string | undefined): number | undefined => {
-  if (s === undefined) return undefined;
-  const ret = parseInt(s);
-  return isNaN(ret) ? undefined : ret;
-};
-
 type DealsProp = {
   clientId?: string;
 };
@@ -145,7 +140,7 @@ const Deals = ({ clientId }: DealsProp) => {
   const [editedRecord, setEditedRecord] = useState<HalfwayDeal>({});
   const [editedId, setEditedId] = useState<number | "new" | undefined>();
   const [selectedClientId, setSelectedClientId] = useState<number | undefined>(
-    parseClientId(clientId)
+    maybeInt(clientId)
   );
   const navigate = useNavigate();
 

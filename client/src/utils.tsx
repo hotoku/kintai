@@ -19,3 +19,10 @@ export const parseQuery = (query: string): { [keys: string]: string } => {
   }
   return ret;
 };
+
+export const maybeInt = (s: string | undefined): number | undefined => {
+  if (s === undefined) return undefined;
+  const ret = parseInt(s);
+  if (isNaN(ret)) return undefined;
+  return ret;
+};

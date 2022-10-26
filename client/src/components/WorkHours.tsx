@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import DateTimePicker from "react-datetime-picker";
 import "react-datetime-picker/dist/DateTimePicker.css";
 
 import { formatDate, formatTime } from "../share/utils";
 import { fetchWorkHours, postWorkHour, putWorkHour } from "../api/fetches";
 import { WorkHour, HalfwayWorkHour } from "../api/types";
-import { parseQuery } from "../utils";
+import { maybeInt } from "../utils";
 import { Table } from "./Table";
 
 import Style from "./WorkHours.module.css";
@@ -185,17 +185,18 @@ const Sum = ({ whs }: SumProps): JSX.Element => {
   );
 };
 
-const WorkHours = () => {
-  const query = parseQuery(useLocation().search);
-  if (query["dealId"] === undefined) {
-    throw Error("query parameter dealId is not given");
-  }
-  const dealId = parseInt(query["dealId"]);
-  if (Number.isNaN(dealId)) {
-    throw Error(`query parameter dealId is invalid: ${query["dealId"]}`);
+type WorkHoursProp = {
+  dealId?: string;
+};
+
+const WorkHours = ({ dealId: dealId_ }: WorkHoursProp) => {
+  const dealId = maybeInt(dealId_);
+  if (dealId === undefined) {
+    throw Error(`query parameter dealId is invalid: ${dealId_}`);
   }
 
   const [workHours, setWorkHours] = useState<WorkHour[]>([]);
+
   const [editedRecord, setEditedRecord] = useState<HalfwayWorkHour>({
     dealId: dealId,
   });
