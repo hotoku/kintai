@@ -1,5 +1,5 @@
 import { unmountComponentAtNode } from "react-dom";
-import { getByText, render, screen } from "@testing-library/react";
+import { getByText, render, screen, waitFor } from "@testing-library/react";
 
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
@@ -53,8 +53,10 @@ test("render work hours", async () => {
 
   const table = screen.getByRole("table");
   getByText(table, "note");
-  screen.getByText("client 1");
-  screen.getByText("deal 1");
+  await waitFor(() => {
+    screen.getByText("client 1");
+    screen.getByText("deal 1");
+  });
 
   spy1.mockRestore();
   spy2.mockRestore();
