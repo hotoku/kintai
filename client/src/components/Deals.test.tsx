@@ -71,11 +71,7 @@ test("render deals", async () => {
     }) as jest.Mock
   );
 
-  render(
-    <BrowserRouter>
-      <Deals clientId={"1"} />
-    </BrowserRouter>
-  );
+  render(<Deals clientId={"1"} />, { wrapper: BrowserRouter });
 
   // screen.debug();
 
