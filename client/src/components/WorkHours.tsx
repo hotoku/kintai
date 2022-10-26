@@ -89,6 +89,8 @@ const editor = ({
         onChange={handleDateChange("startTime")}
         onClockOpen={handleClockOpen("startTime")}
         value={editedObj.startTime}
+        calendarIcon={null}
+        clearIcon={null}
       />
     </div>,
     <div>
@@ -96,6 +98,8 @@ const editor = ({
         onChange={handleDateChange("endTime")}
         onClockOpen={handleClockOpen("endTime")}
         value={editedObj.endTime}
+        calendarIcon={null}
+        clearIcon={null}
       />
     </div>,
     <div />,
