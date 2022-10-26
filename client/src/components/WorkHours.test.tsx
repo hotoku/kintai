@@ -1,17 +1,10 @@
 import { unmountComponentAtNode } from "react-dom";
-import {
-  getAllByRole,
-  getAllByText,
-  getByRole,
-  render,
-  screen,
-} from "@testing-library/react";
+import { getByText, render, screen } from "@testing-library/react";
 
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import userEvent from "@testing-library/user-event";
 
 import * as fetches from "../api/fetches";
-import { Deal, WorkHour } from "../api/types";
+import { WorkHour } from "../api/types";
 import { makeObject } from "./utils";
 import WorkHours from "./WorkHours";
 
@@ -48,18 +41,24 @@ test("render work hours", async () => {
 
   const spy1 = jest.spyOn(fetches, "fetchWorkHours");
   spy1.mockImplementation(
-    jest.fn((cb: (ws: WorkHour[]) => void) => {
-      cb(fakeWorkHours);
-    }) as jest.Mock
+    jest.fn(
+      (_: number, cb: (ws: WorkHour[]) => void, _2: boolean | undefined) => {
+        console.log("cb =", cb);
+        cb(fakeWorkHours);
+      }
+    ) as jest.Mock
   );
 
   render(
     <MemoryRouter initialEntries={["/workHours?dealId=1"]}>
       <Routes>
-        <Route path="/deals" element={<WorkHours dealId="1" />} />
+        <Route path="/workHours" element={<WorkHours dealId="1" />} />
       </Routes>
     </MemoryRouter>
   );
+
+  const table = screen.getByRole("table");
+  getByText(table, "note");
 
   spy1.mockRestore();
 });

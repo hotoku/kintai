@@ -197,6 +197,8 @@ const WorkHours = ({ dealId: dealId_ }: WorkHoursProp) => {
 
   const [workHours, setWorkHours] = useState<WorkHour[]>([]);
 
+  console.log("setWorkHours =", setWorkHours);
+
   const [editedRecord, setEditedRecord] = useState<HalfwayWorkHour>({
     dealId: dealId,
   });
