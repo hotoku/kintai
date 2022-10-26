@@ -73,9 +73,9 @@ test("render deals", async () => {
   );
 
   render(
-    <MemoryRouter initialEntries={["/deals/1"]}>
+    <MemoryRouter initialEntries={["/deals?clientId=1"]}>
       <Routes>
-        <Route path="/deals/:id" element={<Deals />} />
+        <Route path="/deals" element={<Deals clientId="1" />} />
       </Routes>
     </MemoryRouter>
   );

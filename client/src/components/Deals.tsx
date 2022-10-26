@@ -135,9 +135,11 @@ const parseClientId = (s: string | undefined): number | undefined => {
   return isNaN(ret) ? undefined : ret;
 };
 
-const Deals = () => {
-  const params = useParams();
-  const clientId = params.id;
+type DealsProp = {
+  clientId?: string;
+};
+
+const Deals = ({ clientId }: DealsProp) => {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [editedRecord, setEditedRecord] = useState<HalfwayDeal>({});
@@ -198,7 +200,7 @@ const Deals = () => {
 
   const onClientSelect = (n: number | undefined): void => {
     setSelectedClientId(n);
-    const url = "/deals" + (n === undefined ? "" : `/${n}`);
+    const url = "/deals" + (n === undefined ? "" : `?clientId=${n}`);
     navigate(url);
   };
 

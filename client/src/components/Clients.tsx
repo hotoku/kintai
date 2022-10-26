@@ -13,7 +13,7 @@ const view = ({ originalObj, onEditClick }: ViewProps): JSX.Element[] => {
   return [
     <div>{originalObj.id}</div>,
     <div>
-      <Link to={`/deals/${originalObj.id}`}>{originalObj.name}</Link>
+      <Link to={`/deals?clientId=${originalObj.id}`}>{originalObj.name}</Link>
     </div>,
     <div>
       <button onClick={() => onEditClick(originalObj)}>edit</button>
