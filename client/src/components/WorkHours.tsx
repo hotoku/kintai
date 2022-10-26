@@ -39,8 +39,8 @@ const editor = ({
   onUpdateClick,
   onCancelClick,
 }: EditorProps): JSX.Element[] => {
-  const handleChange = (name: "startTime" | "endTime") => (e: Date) => {
-    const newOne = { ...editedObj };
+  const handleDateChange = (name: "startTime" | "endTime") => (e: Date) => {
+    const newOne: HalfwayWorkHour = { ...editedObj };
     newOne[name] = e;
     onChange(newOne);
   };
@@ -68,13 +68,13 @@ const editor = ({
     saveOrUpdate = (
       <button
         className={Style.button}
-        onClick={() =>
+        onClick={() => {
           onUpdateClick({
             id: originalObj.id,
             startTime: originalObj.startTime,
             ...editedObj,
-          })
-        }
+          });
+        }}
       >
         update
       </button>
@@ -86,19 +86,30 @@ const editor = ({
     <div></div>,
     <div>
       <DateTimePicker
-        onChange={handleChange("startTime")}
+        onChange={handleDateChange("startTime")}
         onClockOpen={handleClockOpen("startTime")}
         value={editedObj.startTime}
       />
     </div>,
     <div>
       <DateTimePicker
-        onChange={handleChange("endTime")}
+        onChange={handleDateChange("endTime")}
         onClockOpen={handleClockOpen("endTime")}
         value={editedObj.endTime}
       />
     </div>,
     <div />,
+    <div>
+      <input
+        type="text"
+        onChange={(e) => {
+          const newOne = { ...editedObj };
+          newOne.note = e.target.value;
+          onChange(newOne);
+        }}
+        value={editedObj.note || ""}
+      />
+    </div>,
     <div className={Style.action}>
       {saveOrUpdate}
       <button className={Style.button} onClick={() => onCancelClick(editedObj)}>
@@ -121,6 +132,7 @@ const view = ({
     if (!originalObj.endTime) return false;
     return date !== formatDate(originalObj.endTime);
   })();
+  const note = originalObj.note;
 
   const duration = originalObj.endTime
     ? (originalObj.endTime.getTime() - originalObj.startTime.getTime()) / 1000
@@ -133,6 +145,7 @@ const view = ({
       {endTiime}
     </div>,
     <div className={Style.time}>{secToStr(duration)}</div>,
+    <div>{note}</div>,
     <div className={Style.action}>
       <button className={Style.button} onClick={() => onEditClick(originalObj)}>
         edit
@@ -196,8 +209,6 @@ const WorkHours = ({ dealId: dealId_ }: WorkHoursProp) => {
   }
 
   const [workHours, setWorkHours] = useState<WorkHour[]>([]);
-
-  console.log("setWorkHours =", setWorkHours);
 
   const [editedRecord, setEditedRecord] = useState<HalfwayWorkHour>({
     dealId: dealId,
@@ -279,6 +290,7 @@ const WorkHours = ({ dealId: dealId_ }: WorkHoursProp) => {
           <div>start</div>,
           <div>end</div>,
           <div>duration</div>,
+          <div>note</div>,
           <div>actions</div>,
         ]}
         rows={items}

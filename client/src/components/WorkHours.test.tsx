@@ -24,7 +24,7 @@ afterEach(() => {
 });
 
 test("render work hours", async () => {
-  type workHourSeed = [number, number, Date, Date?, boolean?];
+  type workHourSeed = [number, number, Date, Date?, boolean?, string?];
   const makeWorkHour = (data: workHourSeed): WorkHour => {
     return makeObject(data, [
       "id",
@@ -32,18 +32,18 @@ test("render work hours", async () => {
       "startTime",
       "endTime",
       "isDeleted",
+      "note",
     ]) as WorkHour;
   };
 
   const fakeWorkHours = (
-    [[1, 1, new Date(), undefined, undefined]] as workHourSeed[]
+    [[1, 1, new Date(), undefined, undefined, "mock"]] as workHourSeed[]
   ).map(makeWorkHour);
 
   const spy1 = jest.spyOn(fetches, "fetchWorkHours");
   spy1.mockImplementation(
     jest.fn(
       (_: number, cb: (ws: WorkHour[]) => void, _2: boolean | undefined) => {
-        console.log("cb =", cb);
         cb(fakeWorkHours);
       }
     ) as jest.Mock
