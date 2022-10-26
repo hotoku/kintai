@@ -55,7 +55,7 @@ start:
 
 
 .PHONY: migrate
-migrate:
+migrate: tree-clean
 	cd server && npm run migrate
 
 
