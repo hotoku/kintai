@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { isNonNullChain } from "typescript";
 import { fetchClients, fetchDeals, postDeal, putDeal } from "../api/fetches";
 
 import { Client, Deal, HalfwayDeal } from "../api/types";
@@ -129,7 +130,13 @@ const createItem = (
 };
 
 type DealsProp = {
-  clientId?: number;
+  clientId?: string;
+};
+
+const parseClientId = (s: string | undefined): number | undefined => {
+  if (s === undefined) return undefined;
+  const ret = parseInt(s);
+  return isNaN(ret) ? undefined : ret;
 };
 
 const Deals = ({ clientId }: DealsProp) => {
@@ -138,7 +145,7 @@ const Deals = ({ clientId }: DealsProp) => {
   const [editedRecord, setEditedRecord] = useState<HalfwayDeal>({});
   const [editedId, setEditedId] = useState<number | "new" | undefined>();
   const [selectedClientId, setSelectedClientId] = useState<number | undefined>(
-    clientId
+    parseClientId(clientId)
   );
 
   useEffect(() => {

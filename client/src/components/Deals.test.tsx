@@ -73,7 +73,7 @@ test("render deals", async () => {
 
   render(
     <BrowserRouter>
-      <Deals clientId={1} />
+      <Deals clientId={"1"} />
     </BrowserRouter>
   );
 
