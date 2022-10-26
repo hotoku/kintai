@@ -5,8 +5,8 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import * as fetches from "../api/fetches";
 import { WorkHour } from "../api/types";
-import { makeObject } from "./utils";
 import WorkHours from "./WorkHours";
+import { makeWorkHour, WorkHourSeed } from "./test-utils";
 
 let container: HTMLDivElement | null = null;
 beforeEach(() => {
@@ -24,20 +24,8 @@ afterEach(() => {
 });
 
 test("render work hours", async () => {
-  type workHourSeed = [number, number, Date, Date?, boolean?, string?];
-  const makeWorkHour = (data: workHourSeed): WorkHour => {
-    return makeObject(data, [
-      "id",
-      "dealId",
-      "startTime",
-      "endTime",
-      "isDeleted",
-      "note",
-    ]) as WorkHour;
-  };
-
   const fakeWorkHours = (
-    [[1, 1, new Date(), undefined, undefined, "mock"]] as workHourSeed[]
+    [[1, 1, new Date(), undefined, undefined, "mock"]] as WorkHourSeed[]
   ).map(makeWorkHour);
 
   const spy1 = jest.spyOn(fetches, "fetchWorkHours");
@@ -59,6 +47,8 @@ test("render work hours", async () => {
 
   const table = screen.getByRole("table");
   getByText(table, "note");
+  screen.getByText("Client 1");
+  screen.getByText("Deal 1");
 
   spy1.mockRestore();
 });

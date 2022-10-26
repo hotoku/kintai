@@ -15,6 +15,7 @@ import { Client, Deal } from "../api/types";
 
 import Deals from "./Deals";
 import { makeObject } from "./utils";
+import { DealSeed, makeClient, makeDeal } from "./test-utils";
 
 let container: HTMLDivElement | null = null;
 beforeEach(() => {
@@ -32,24 +33,13 @@ afterEach(() => {
 });
 
 test("render deals", async () => {
-  const makeDeal = (data: [number, number]): Deal => {
-    return makeObject(
-      [data[0], `deal ${data[0]}`, data[1], `client ${data[1]}`],
-      ["id", "name", "clientId", "clientName"]
-    ) as Deal;
-  };
-
-  const makeClient = (id: number): Client => {
-    return makeObject([id], ["id"]) as Client;
-  };
-
   const fakeDeals = (
     [
       [1, 1],
       [2, 1],
       [3, 1],
       [4, 2],
-    ] as [number, number][]
+    ] as DealSeed[]
   ).map(makeDeal);
 
   const fakeClients = [1, 2].map(makeClient);
