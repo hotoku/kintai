@@ -227,8 +227,8 @@ const WorkHours = ({ dealId: dealId_ }: WorkHoursProp) => {
   const isAdding = () => editedId === "new";
 
   useEffect(() => {
-    fetchWorkHours(dealId, setWorkHours);
-    fetchDeals((ds) => {
+    fetchWorkHours(dealId).then(setWorkHours);
+    fetchDeals().then((ds) => {
       for (let i = 0; i < ds.length; i++) {
         if (ds[i].id === dealId) setDeal(ds[i]);
       }
@@ -243,7 +243,7 @@ const WorkHours = ({ dealId: dealId_ }: WorkHoursProp) => {
       disableEditing();
       if (!obj.startTime) return;
       await sendMethod(obj);
-      fetchWorkHours(dealId, setWorkHours);
+      fetchWorkHours(dealId).then(setWorkHours);
     };
 
   const saveWorkHour = sendWorkHour(postWorkHour);
@@ -267,7 +267,7 @@ const WorkHours = ({ dealId: dealId_ }: WorkHoursProp) => {
   const markAsDeleted = async (obj: WorkHour): Promise<void> => {
     disableEditing();
     await putWorkHour({ ...obj, isDeleted: true });
-    fetchWorkHours(dealId, setWorkHours);
+    fetchWorkHours(dealId).then(setWorkHours);
   };
 
   const items: JSX.Element[][] = workHours.map((wh) => {

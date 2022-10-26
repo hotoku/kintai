@@ -98,7 +98,7 @@ const Clients = () => {
   const [editedId, setEditedId] = useState<number | "new" | undefined>();
   const [editedRecord, setEditedRecord] = useState<HalfwayClient>({});
   useEffect(() => {
-    fetchClients(setClients);
+    fetchClients().then(setClients);
   }, []);
 
   const startEditing = () => {
@@ -124,14 +124,14 @@ const Clients = () => {
     if (obj.name === undefined) return;
     disableEditing();
     await putClient({ ...obj } as Client);
-    fetchClients(setClients);
+    fetchClients().then(setClients);
   };
 
   const addClient = async (obj: HalfwayClient) => {
     if (obj.name === undefined) return;
     disableEditing();
     await postClient(obj);
-    fetchClients(setClients);
+    fetchClients().then(setClients);
   };
 
   const records: JSX.Element[][] = clients.map((obj) => {

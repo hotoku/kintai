@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { fetchClients, fetchDeals, postDeal, putDeal } from "../api/fetches";
 
@@ -145,8 +145,8 @@ const Deals = ({ clientId }: DealsProp) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchDeals(setDeals);
-    fetchClients(setClients);
+    fetchDeals().then(setDeals);
+    fetchClients().then(setClients);
   }, []);
 
   const startAdding = () => {
@@ -173,7 +173,7 @@ const Deals = ({ clientId }: DealsProp) => {
       clientId: obj.clientId,
     });
     disableEditing();
-    fetchDeals(setDeals);
+    fetchDeals().then(setDeals);
   };
 
   const updateDeal = async (obj: HalfwayDeal) => {
@@ -190,7 +190,7 @@ const Deals = ({ clientId }: DealsProp) => {
       clientId: obj.clientId,
     });
     disableEditing();
-    fetchDeals(setDeals);
+    fetchDeals().then(setDeals);
   };
 
   const onClientSelect = (n: number | undefined): void => {

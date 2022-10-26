@@ -30,18 +30,16 @@ test("render work hours", async () => {
   ).map(makeWorkHour);
   const spy1 = jest.spyOn(fetches, "fetchWorkHours");
   spy1.mockImplementation(
-    jest.fn(
-      (_: number, cb: (ws: WorkHour[]) => void, _2: boolean | undefined) => {
-        cb(fakeWorkHours);
-      }
-    ) as jest.Mock
+    jest.fn((_: number, _2: boolean | undefined) => {
+      return new Promise((resolve) => resolve(fakeWorkHours));
+    }) as jest.Mock
   );
 
   const fakeDeals = ([[1, 1]] as DealSeed[]).map(makeDeal);
   const spy2 = jest.spyOn(fetches, "fetchDeals");
   spy2.mockImplementation(
-    jest.fn((cb: (deals: Deal[]) => void) => {
-      cb(fakeDeals);
+    jest.fn(() => {
+      return new Promise((resolve) => resolve(fakeDeals));
     }) as jest.Mock
   );
 
@@ -59,4 +57,5 @@ test("render work hours", async () => {
   screen.getByText("deal 1");
 
   spy1.mockRestore();
+  spy2.mockRestore();
 });
