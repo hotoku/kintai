@@ -14,7 +14,6 @@ import * as fetches from "../api/fetches";
 import { Client, Deal } from "../api/types";
 
 import Deals from "./Deals";
-import { makeObject } from "./utils";
 import { DealSeed, makeClient, makeDeal } from "./test-utils";
 
 let container: HTMLDivElement | null = null;

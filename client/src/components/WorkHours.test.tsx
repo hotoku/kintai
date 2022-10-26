@@ -4,9 +4,10 @@ import { getByText, render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import * as fetches from "../api/fetches";
-import { WorkHour } from "../api/types";
+import { Deal, WorkHour } from "../api/types";
 import WorkHours from "./WorkHours";
-import { makeWorkHour, WorkHourSeed } from "./test-utils";
+import { DealSeed, makeDeal, makeWorkHour, WorkHourSeed } from "./test-utils";
+import { DefaultSerializer } from "v8";
 
 let container: HTMLDivElement | null = null;
 beforeEach(() => {
@@ -27,7 +28,6 @@ test("render work hours", async () => {
   const fakeWorkHours = (
     [[1, 1, new Date(), undefined, undefined, "mock"]] as WorkHourSeed[]
   ).map(makeWorkHour);
-
   const spy1 = jest.spyOn(fetches, "fetchWorkHours");
   spy1.mockImplementation(
     jest.fn(
@@ -35,6 +35,14 @@ test("render work hours", async () => {
         cb(fakeWorkHours);
       }
     ) as jest.Mock
+  );
+
+  const fakeDeals = ([[1, 1]] as DealSeed[]).map(makeDeal);
+  const spy2 = jest.spyOn(fetches, "fetchDeals");
+  spy2.mockImplementation(
+    jest.fn((cb: (deals: Deal[]) => void) => {
+      cb(fakeDeals);
+    }) as jest.Mock
   );
 
   render(
@@ -47,8 +55,8 @@ test("render work hours", async () => {
 
   const table = screen.getByRole("table");
   getByText(table, "note");
-  screen.getByText("Client 1");
-  screen.getByText("Deal 1");
+  screen.getByText("client 1");
+  screen.getByText("deal 1");
 
   spy1.mockRestore();
 });

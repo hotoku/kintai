@@ -4,8 +4,13 @@ import DateTimePicker from "react-datetime-picker";
 import "react-datetime-picker/dist/DateTimePicker.css";
 
 import { formatDate, formatTime } from "../share/utils";
-import { fetchWorkHours, postWorkHour, putWorkHour } from "../api/fetches";
-import { WorkHour, HalfwayWorkHour } from "../api/types";
+import {
+  fetchDeals,
+  fetchWorkHours,
+  postWorkHour,
+  putWorkHour,
+} from "../api/fetches";
+import { WorkHour, HalfwayWorkHour, Deal } from "../api/types";
 import { maybeInt } from "../utils";
 import { Table } from "./Table";
 
@@ -213,7 +218,7 @@ const WorkHours = ({ dealId: dealId_ }: WorkHoursProp) => {
   }
 
   const [workHours, setWorkHours] = useState<WorkHour[]>([]);
-
+  const [deal, setDeal] = useState<Deal | undefined>();
   const [editedRecord, setEditedRecord] = useState<HalfwayWorkHour>({
     dealId: dealId,
   });
@@ -223,6 +228,11 @@ const WorkHours = ({ dealId: dealId_ }: WorkHoursProp) => {
 
   useEffect(() => {
     fetchWorkHours(dealId, setWorkHours);
+    fetchDeals((ds) => {
+      for (let i = 0; i < ds.length; i++) {
+        if (ds[i].id === dealId) setDeal(ds[i]);
+      }
+    });
   }, [dealId]);
 
   const sendWorkHour =
@@ -287,6 +297,8 @@ const WorkHours = ({ dealId: dealId_ }: WorkHoursProp) => {
 
   return (
     <div className="WorkHours" tabIndex={0}>
+      <div>{deal ? deal.clientName : ""}</div>
+      <div>{deal ? deal.name : ""}</div>
       <Sum whs={workHours} />
       <Table
         thead={[
