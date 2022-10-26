@@ -59,3 +59,14 @@ export const secToStr = (seconds: number): string => {
   const hours = Math.floor(minutes / 60);
   return `${hours}:${m}`;
 };
+
+export const makeObject = (
+  data: any[],
+  names: string[]
+): { [type: string]: any } => {
+  const ret: { [type: string]: any } = {};
+  for (let i = 0; i < names.length; i++) {
+    ret[names[i]] = data[i];
+  }
+  return ret;
+};

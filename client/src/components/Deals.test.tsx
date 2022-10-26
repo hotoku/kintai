@@ -14,6 +14,7 @@ import * as fetches from "../api/fetches";
 import { Client, Deal } from "../api/types";
 
 import Deals from "./Deals";
+import { makeObject } from "./utils";
 
 let container: HTMLDivElement | null = null;
 beforeEach(() => {
@@ -32,19 +33,14 @@ afterEach(() => {
 
 test("render deals", async () => {
   const makeDeal = (data: [number, number]): Deal => {
-    return {
-      id: data[0],
-      name: `deal ${data[0]}`,
-      clientId: data[1],
-      clientName: `client ${data[1]}`,
-    };
+    return makeObject(
+      [data[0], `deal ${data[0]}`, data[1], `client ${data[1]}`],
+      ["id", "name", "clientId", "clientName"]
+    ) as Deal;
   };
 
-  const makeClient = (data: [number]): Client => {
-    return {
-      id: data[0],
-      name: `client ${data[0]}`,
-    };
+  const makeClient = (id: number): Client => {
+    return makeObject([id], ["id"]) as Client;
   };
 
   const fakeDeals = (
@@ -56,7 +52,7 @@ test("render deals", async () => {
     ] as [number, number][]
   ).map(makeDeal);
 
-  const fakeClients = ([[1], [2]] as [number][]).map(makeClient);
+  const fakeClients = [1, 2].map(makeClient);
 
   const spy1 = jest.spyOn(fetches, "fetchClients");
   spy1.mockImplementation(
