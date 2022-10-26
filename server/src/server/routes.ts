@@ -134,14 +134,16 @@ export const workHours = (app: Application): Application => {
       insert into workHours (
         dealId,
         startTime,
-        endTime)
+        endTime,
+        note)
       values (
+        ?,
         ?,
         ?,
         ?
       )
       `,
-      [obj.dealId, obj.startTime, obj.endTime]
+      [obj.dealId, obj.startTime, obj.endTime, obj.note || ""]
     );
     res.send("ok");
   });
@@ -156,7 +158,8 @@ export const workHours = (app: Application): Application => {
         dealId = ?,
         startTime = ?,
         endTime = ?,
-        isDeleted = ?
+        isDeleted = ?,
+        note = ?
       where
         id=?
       `,
@@ -165,6 +168,7 @@ export const workHours = (app: Application): Application => {
         obj.startTime,
         obj.endTime,
         obj.isDeleted ? TRUE : FALSE,
+        obj.note || "",
         obj.id,
       ]
     );
