@@ -20,7 +20,8 @@ const AppBody = () => {
           <Route index element={<Home />} />
           <Route path="/clients" element={<Clients />} />
           <Route path="/workHours" element={<WorkHours />} />
-          <Route path="/deals" element={<Deals clientId={query.clientId} />} />
+          <Route path="/deals/:id" element={<Deals />} />
+          <Route path="/deals" element={<Deals />} />
           <Route path="/deletedWorkHours" element={<DeletedWorkHours />} />
         </Routes>
       </ErrorBoundary>

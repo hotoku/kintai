@@ -7,12 +7,13 @@ import {
   screen,
 } from "@testing-library/react";
 
+import { MemoryRouter, Route, Routes } from "react-router-dom";
+import userEvent from "@testing-library/user-event";
+
 import * as fetches from "../api/fetches";
+import { Client, Deal } from "../api/types";
 
 import Deals from "./Deals";
-import { Client, Deal } from "../api/types";
-import { BrowserRouter } from "react-router-dom";
-import userEvent from "@testing-library/user-event";
 
 let container: HTMLDivElement | null = null;
 beforeEach(() => {
@@ -71,7 +72,13 @@ test("render deals", async () => {
     }) as jest.Mock
   );
 
-  render(<Deals clientId={"1"} />, { wrapper: BrowserRouter });
+  render(
+    <MemoryRouter initialEntries={["/deals/1"]}>
+      <Routes>
+        <Route path="/deals/:id" element={<Deals />} />
+      </Routes>
+    </MemoryRouter>
+  );
 
   // screen.debug();
 
@@ -102,6 +109,16 @@ test("render deals", async () => {
   userEvent.click(cancelButton);
   const editButtons3 = getAllByRole(table, "button", { name: "edit" });
   expect(editButtons3.length).toBe(3);
+
+  /**
+   * There should be a select.
+   * When an item having value 2 is selected, navigate to /deals/2.
+   * Right now, I don't know how I can test if the navigation occurs as expected.
+   * Maybe, this api document helps..
+   * https://reactrouter.com/en/v6.3.0/api
+   */
+  const select = screen.getByRole("combobox");
+  userEvent.selectOptions(select, ["2"]);
 
   spy1.mockRestore();
   spy2.mockRestore();

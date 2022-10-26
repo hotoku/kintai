@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { isNonNullChain } from "typescript";
 import { fetchClients, fetchDeals, postDeal, putDeal } from "../api/fetches";
 
 import { Client, Deal, HalfwayDeal } from "../api/types";
@@ -129,17 +129,15 @@ const createItem = (
   }
 };
 
-type DealsProp = {
-  clientId?: string;
-};
-
 const parseClientId = (s: string | undefined): number | undefined => {
   if (s === undefined) return undefined;
   const ret = parseInt(s);
   return isNaN(ret) ? undefined : ret;
 };
 
-const Deals = ({ clientId }: DealsProp) => {
+const Deals = () => {
+  const params = useParams();
+  const clientId = params.id;
   const [deals, setDeals] = useState<Deal[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [editedRecord, setEditedRecord] = useState<HalfwayDeal>({});
@@ -147,6 +145,7 @@ const Deals = ({ clientId }: DealsProp) => {
   const [selectedClientId, setSelectedClientId] = useState<number | undefined>(
     parseClientId(clientId)
   );
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchDeals(setDeals);
@@ -169,7 +168,6 @@ const Deals = ({ clientId }: DealsProp) => {
   };
 
   const addDeal = async (obj: HalfwayDeal) => {
-    console.log("addDeal", JSON.stringify(obj));
     if (obj.name === undefined || obj.clientId === undefined) {
       return;
     }
@@ -196,6 +194,12 @@ const Deals = ({ clientId }: DealsProp) => {
     });
     disableEditing();
     fetchDeals(setDeals);
+  };
+
+  const onClientSelect = (n: number | undefined): void => {
+    setSelectedClientId(n);
+    const url = "/deals" + (n === undefined ? "" : `/${n}`);
+    navigate(url);
   };
 
   const records: JSX.Element[][] = deals
@@ -234,7 +238,7 @@ const Deals = ({ clientId }: DealsProp) => {
       {filter({
         selectedClientId: selectedClientId,
         clients: clients,
-        onChange: setSelectedClientId,
+        onChange: onClientSelect,
       })}
       <Table
         thead={[<div>name</div>, <div>client name</div>, <div>actions</div>]}
