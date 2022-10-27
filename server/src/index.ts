@@ -2,7 +2,13 @@ import express from "express";
 import bodyParser from "body-parser";
 import morgan from "morgan";
 
-import { clients, deals, staticFiles, workHours } from "./server/routes";
+import {
+  clients,
+  deals,
+  publicDir,
+  staticFiles,
+  workHours,
+} from "./server/routes";
 import { port } from "./utils";
 
 const start = () => {
@@ -14,7 +20,7 @@ const start = () => {
   workHours(app);
   clients(app);
   staticFiles(app);
-
+  app.use("*", express.static(`${publicDir}/index.html`));
   app.listen(port());
 };
 

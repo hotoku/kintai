@@ -189,7 +189,8 @@ export const workHours = (app: Application): Application => {
 };
 
 export const staticFiles = (app: Application): Application => {
-  const publicDir = process.cwd() + "/../client/build";
   app.use("/", express.static(publicDir));
   return app;
 };
+
+export const publicDir = process.cwd() + "/../client/build";
