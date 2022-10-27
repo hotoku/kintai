@@ -38,13 +38,7 @@ const DeletedWorkHours = (): JSX.Element => {
   const [workHours, setWorkHours] = useState<WorkHour[]>([]);
 
   const fetch = useCallback(() => {
-    fetchWorkHours(
-      dealId,
-      (x: WorkHour[]) => {
-        setWorkHours(x);
-      },
-      true
-    );
+    fetchWorkHours(dealId, true).then(setWorkHours);
   }, [setWorkHours, dealId]);
 
   useEffect(() => {

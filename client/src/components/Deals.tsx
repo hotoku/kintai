@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { fetchClients, fetchDeals, postDeal, putDeal } from "../api/fetches";
 
 import { Client, Deal, HalfwayDeal } from "../api/types";
+import { maybeInt } from "../utils";
 import { Table } from "./Table";
 
 type FilterProps = {
@@ -129,7 +131,7 @@ const createItem = (
 };
 
 type DealsProp = {
-  clientId?: number;
+  clientId?: string;
 };
 
 const Deals = ({ clientId }: DealsProp) => {
@@ -138,12 +140,13 @@ const Deals = ({ clientId }: DealsProp) => {
   const [editedRecord, setEditedRecord] = useState<HalfwayDeal>({});
   const [editedId, setEditedId] = useState<number | "new" | undefined>();
   const [selectedClientId, setSelectedClientId] = useState<number | undefined>(
-    clientId
+    maybeInt(clientId)
   );
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchDeals(setDeals);
-    fetchClients(setClients);
+    fetchDeals().then(setDeals);
+    fetchClients().then(setClients);
   }, []);
 
   const startAdding = () => {
@@ -162,7 +165,6 @@ const Deals = ({ clientId }: DealsProp) => {
   };
 
   const addDeal = async (obj: HalfwayDeal) => {
-    console.log("addDeal", JSON.stringify(obj));
     if (obj.name === undefined || obj.clientId === undefined) {
       return;
     }
@@ -171,7 +173,7 @@ const Deals = ({ clientId }: DealsProp) => {
       clientId: obj.clientId,
     });
     disableEditing();
-    fetchDeals(setDeals);
+    fetchDeals().then(setDeals);
   };
 
   const updateDeal = async (obj: HalfwayDeal) => {
@@ -188,7 +190,13 @@ const Deals = ({ clientId }: DealsProp) => {
       clientId: obj.clientId,
     });
     disableEditing();
-    fetchDeals(setDeals);
+    fetchDeals().then(setDeals);
+  };
+
+  const onClientSelect = (n: number | undefined): void => {
+    setSelectedClientId(n);
+    const url = "/deals" + (n === undefined ? "" : `?clientId=${n}`);
+    navigate(url);
   };
 
   const records: JSX.Element[][] = deals
@@ -227,7 +235,7 @@ const Deals = ({ clientId }: DealsProp) => {
       {filter({
         selectedClientId: selectedClientId,
         clients: clients,
-        onChange: setSelectedClientId,
+        onChange: onClientSelect,
       })}
       <Table
         thead={[<div>name</div>, <div>client name</div>, <div>actions</div>]}

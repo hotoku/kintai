@@ -10,6 +10,7 @@ export type WorkHour = {
   startTime: string;
   endTime?: string;
   isDeleted?: boolean;
+  note?: string;
 };
 
 export type Client = {

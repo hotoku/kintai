@@ -1,12 +1,17 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import DateTimePicker from "react-datetime-picker";
 import "react-datetime-picker/dist/DateTimePicker.css";
 
 import { formatDate, formatTime } from "../share/utils";
-import { fetchWorkHours, postWorkHour, putWorkHour } from "../api/fetches";
-import { WorkHour, HalfwayWorkHour } from "../api/types";
-import { parseQuery } from "../utils";
+import {
+  fetchDeals,
+  fetchWorkHours,
+  postWorkHour,
+  putWorkHour,
+} from "../api/fetches";
+import { WorkHour, HalfwayWorkHour, Deal } from "../api/types";
+import { maybeInt } from "../utils";
 import { Table } from "./Table";
 
 import Style from "./WorkHours.module.css";
@@ -39,8 +44,8 @@ const editor = ({
   onUpdateClick,
   onCancelClick,
 }: EditorProps): JSX.Element[] => {
-  const handleChange = (name: "startTime" | "endTime") => (e: Date) => {
-    const newOne = { ...editedObj };
+  const handleDateChange = (name: "startTime" | "endTime") => (e: Date) => {
+    const newOne: HalfwayWorkHour = { ...editedObj };
     newOne[name] = e;
     onChange(newOne);
   };
@@ -68,13 +73,13 @@ const editor = ({
     saveOrUpdate = (
       <button
         className={Style.button}
-        onClick={() =>
+        onClick={() => {
           onUpdateClick({
             id: originalObj.id,
             startTime: originalObj.startTime,
             ...editedObj,
-          })
-        }
+          });
+        }}
       >
         update
       </button>
@@ -86,19 +91,34 @@ const editor = ({
     <div></div>,
     <div>
       <DateTimePicker
-        onChange={handleChange("startTime")}
+        onChange={handleDateChange("startTime")}
         onClockOpen={handleClockOpen("startTime")}
         value={editedObj.startTime}
+        calendarIcon={null}
+        clearIcon={null}
       />
     </div>,
     <div>
       <DateTimePicker
-        onChange={handleChange("endTime")}
+        onChange={handleDateChange("endTime")}
         onClockOpen={handleClockOpen("endTime")}
         value={editedObj.endTime}
+        calendarIcon={null}
+        clearIcon={null}
       />
     </div>,
     <div />,
+    <div>
+      <input
+        type="text"
+        onChange={(e) => {
+          const newOne = { ...editedObj };
+          newOne.note = e.target.value;
+          onChange(newOne);
+        }}
+        value={editedObj.note || ""}
+      />
+    </div>,
     <div className={Style.action}>
       {saveOrUpdate}
       <button className={Style.button} onClick={() => onCancelClick(editedObj)}>
@@ -121,6 +141,7 @@ const view = ({
     if (!originalObj.endTime) return false;
     return date !== formatDate(originalObj.endTime);
   })();
+  const note = originalObj.note;
 
   const duration = originalObj.endTime
     ? (originalObj.endTime.getTime() - originalObj.startTime.getTime()) / 1000
@@ -133,6 +154,7 @@ const view = ({
       {endTiime}
     </div>,
     <div className={Style.time}>{secToStr(duration)}</div>,
+    <div>{note}</div>,
     <div className={Style.action}>
       <button className={Style.button} onClick={() => onEditClick(originalObj)}>
         edit
@@ -185,17 +207,18 @@ const Sum = ({ whs }: SumProps): JSX.Element => {
   );
 };
 
-const WorkHours = () => {
-  const query = parseQuery(useLocation().search);
-  if (query["dealId"] === undefined) {
-    throw Error("query parameter dealId is not given");
-  }
-  const dealId = parseInt(query["dealId"]);
-  if (Number.isNaN(dealId)) {
-    throw Error(`query parameter dealId is invalid: ${query["dealId"]}`);
+type WorkHoursProp = {
+  dealId?: string;
+};
+
+const WorkHours = ({ dealId: dealId_ }: WorkHoursProp) => {
+  const dealId = maybeInt(dealId_);
+  if (dealId === undefined) {
+    throw Error(`query parameter dealId is invalid: ${dealId_}`);
   }
 
   const [workHours, setWorkHours] = useState<WorkHour[]>([]);
+  const [deal, setDeal] = useState<Deal | undefined>();
   const [editedRecord, setEditedRecord] = useState<HalfwayWorkHour>({
     dealId: dealId,
   });
@@ -204,7 +227,12 @@ const WorkHours = () => {
   const isAdding = () => editedId === "new";
 
   useEffect(() => {
-    fetchWorkHours(dealId, setWorkHours);
+    fetchWorkHours(dealId).then(setWorkHours);
+    fetchDeals().then((ds) => {
+      for (let i = 0; i < ds.length; i++) {
+        if (ds[i].id === dealId) setDeal(ds[i]);
+      }
+    });
   }, [dealId]);
 
   const sendWorkHour =
@@ -215,7 +243,7 @@ const WorkHours = () => {
       disableEditing();
       if (!obj.startTime) return;
       await sendMethod(obj);
-      fetchWorkHours(dealId, setWorkHours);
+      fetchWorkHours(dealId).then(setWorkHours);
     };
 
   const saveWorkHour = sendWorkHour(postWorkHour);
@@ -239,7 +267,7 @@ const WorkHours = () => {
   const markAsDeleted = async (obj: WorkHour): Promise<void> => {
     disableEditing();
     await putWorkHour({ ...obj, isDeleted: true });
-    fetchWorkHours(dealId, setWorkHours);
+    fetchWorkHours(dealId).then(setWorkHours);
   };
 
   const items: JSX.Element[][] = workHours.map((wh) => {
@@ -269,6 +297,8 @@ const WorkHours = () => {
 
   return (
     <div className="WorkHours" tabIndex={0}>
+      <div>{deal ? deal.clientName : ""}</div>
+      <div>{deal ? deal.name : ""}</div>
       <Sum whs={workHours} />
       <Table
         thead={[
@@ -276,6 +306,7 @@ const WorkHours = () => {
           <div>start</div>,
           <div>end</div>,
           <div>duration</div>,
+          <div>note</div>,
           <div>actions</div>,
         ]}
         rows={items}

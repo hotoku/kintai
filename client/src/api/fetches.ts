@@ -7,10 +7,10 @@ import {
 } from "./types";
 import { formatDateTime } from "../share/utils";
 
-export const fetchDeals = async (cb: (ds: Deal[]) => void) => {
+export const fetchDeals = async (): Promise<Deal[]> => {
   const res = await fetch("/api/deals");
   const data = (await res.json()) as Deal[];
-  cb(data);
+  return data;
 };
 
 export const putDeal = (obj: {
@@ -40,17 +40,16 @@ export const postDeal = (obj: {
   return fetch("/api/deals", { method, headers, body });
 };
 
-export const fetchClients = async (cb: (ds: Deal[]) => void) => {
+export const fetchClients = async (): Promise<Client[]> => {
   const res = await fetch("/api/clients");
-  const data = (await res.json()) as Deal[];
-  cb(data);
+  const data = (await res.json()) as Client[];
+  return data;
 };
 
 export const fetchWorkHours = async (
   dealId: number,
-  cb: (ws: WorkHour[]) => void,
   deleted?: boolean
-) => {
+): Promise<WorkHour[]> => {
   const url = `/api/workHours?dealId=${dealId}` + (deleted ? "&deleted" : "");
   const res = await fetch(url);
   const data = await res.json();
@@ -60,9 +59,10 @@ export const fetchWorkHours = async (
       dealId: x["dealId"],
       startTime: new Date(x["startTime"]),
       endTime: x["endTime"] ? new Date(x["endTime"]) : undefined,
+      note: x["note"],
     };
   });
-  cb(ret);
+  return ret;
 };
 
 const halfwayWorkHourToJson = (obj: HalfwayWorkHour): string => {

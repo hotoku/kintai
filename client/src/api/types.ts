@@ -18,6 +18,7 @@ export type WorkHour = {
   startTime: Date;
   endTime?: Date;
   isDeleted?: boolean;
+  note?: string;
 };
 
 export type HalfwayWorkHour = {
@@ -25,6 +26,7 @@ export type HalfwayWorkHour = {
   dealId: number;
   startTime?: Date;
   endTime?: Date;
+  note?: string;
 };
 
 export type Client = {

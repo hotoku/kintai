@@ -5,14 +5,18 @@ import {
   getByRole,
   render,
   screen,
+  waitFor,
 } from "@testing-library/react";
 
+import { MemoryRouter, Route, Routes } from "react-router-dom";
+import userEvent from "@testing-library/user-event";
+
 import * as fetches from "../api/fetches";
+import { Client, Deal } from "../api/types";
 
 import Deals from "./Deals";
-import { Client, Deal } from "../api/types";
-import { BrowserRouter } from "react-router-dom";
-import userEvent from "@testing-library/user-event";
+import { DealSeed, makeClient, makeDeal } from "./test-utils";
+import { act } from "react-dom/test-utils";
 
 let container: HTMLDivElement | null = null;
 beforeEach(() => {
@@ -30,59 +34,46 @@ afterEach(() => {
 });
 
 test("render deals", async () => {
-  const makeDeal = (data: [number, number]): Deal => {
-    return {
-      id: data[0],
-      name: `deal ${data[0]}`,
-      clientId: data[1],
-      clientName: `client ${data[1]}`,
-    };
-  };
-
-  const makeClient = (data: [number]): Client => {
-    return {
-      id: data[0],
-      name: `client ${data[0]}`,
-    };
-  };
-
   const fakeDeals = (
     [
       [1, 1],
       [2, 1],
       [3, 1],
       [4, 2],
-    ] as [number, number][]
+    ] as DealSeed[]
   ).map(makeDeal);
 
-  const fakeClients = ([[1], [2]] as [number][]).map(makeClient);
+  const fakeClients = [1, 2].map(makeClient);
 
   const spy1 = jest.spyOn(fetches, "fetchClients");
   spy1.mockImplementation(
-    jest.fn((cb: (clients: Client[]) => void) => {
-      cb(fakeClients);
+    jest.fn(() => {
+      return new Promise((resolve) => resolve(fakeClients));
     }) as jest.Mock
   );
 
   const spy2 = jest.spyOn(fetches, "fetchDeals");
   spy2.mockImplementation(
-    jest.fn((cb: (deals: Deal[]) => void) => {
-      cb(fakeDeals);
+    jest.fn(() => {
+      return new Promise((resolve) => resolve(fakeDeals));
     }) as jest.Mock
   );
 
   render(
-    <BrowserRouter>
-      <Deals clientId={1} />
-    </BrowserRouter>
+    <MemoryRouter initialEntries={["/deals?clientId=1"]}>
+      <Routes>
+        <Route path="/deals" element={<Deals clientId="1" />} />
+      </Routes>
+    </MemoryRouter>
   );
 
   // screen.debug();
 
   /* There is a table, including 4 rows (1 header + 3 record). */
   const table = screen.getByRole("table");
-  const rows = getAllByRole(table, "row");
-  expect(rows.length).toBe(4);
+  await waitFor(() => {
+    expect(getAllByRole(table, "row").length).toBe(4);
+  });
 
   /* There are 3 cells including client name "client 1" */
   const client1 = getAllByText(table, "client 1");
@@ -106,6 +97,16 @@ test("render deals", async () => {
   userEvent.click(cancelButton);
   const editButtons3 = getAllByRole(table, "button", { name: "edit" });
   expect(editButtons3.length).toBe(3);
+
+  /**
+   * There should be a select.
+   * When an item having value 2 is selected, navigate to /deals?clientId=2.
+   * Right now, I don't know how I can test if the navigation occurs as expected.
+   * Maybe, this api document helps..
+   * https://reactrouter.com/en/v6.3.0/api
+   */
+  const select = screen.getByRole("combobox");
+  userEvent.selectOptions(select, ["2"]);
 
   spy1.mockRestore();
   spy2.mockRestore();
