@@ -9,6 +9,8 @@ import {
   staticFiles,
   workHours,
 } from "./server/routes";
+
+import graphql from "./server/graphql";
 import { port } from "./utils";
 
 const start = () => {
@@ -20,6 +22,7 @@ const start = () => {
   workHours(app);
   clients(app);
   staticFiles(app);
+  graphql(app);
   app.use("*", express.static(`${publicDir}/index.html`));
   app.listen(port());
 };
