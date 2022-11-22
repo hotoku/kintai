@@ -50,9 +50,7 @@ function createDealLoader(): DataLoader<number, DealRecord> {
 
 function createClientDealsLoader(): DataLoader<number, number[]> {
   return new DataLoader<number, number[]>(async (ids) => {
-    const db = getPool();
-    const rows = (
-      await db.query(`
+    const rows = await query<{ clientId: number; dealId: number }>(`
       select
         c.id as clientId,
         d.id as dealId
@@ -63,21 +61,49 @@ function createClientDealsLoader(): DataLoader<number, number[]> {
           on c.id = d.clientId
       where
         c.id in (${ids.join(",")})
-    `)
-    )[0] as { clientId: number; dealId: number }[];
+    `);
 
     const map = new Map<number, number[]>();
     for (const row of rows) {
       const ar = map.get(row.clientId);
       if (ar) {
-        map.set(row.clientId, ar);
+        ar.push(row.dealId);
       } else {
         map.set(row.clientId, [row.dealId]);
       }
     }
     return ids.map((id) => {
-      const ret = map.get(id);
-      return ret || [];
+      return map.get(id) || [];
+    });
+  });
+}
+
+function createDealWorkHoursLoader(): DataLoader<number, number[]> {
+  return new DataLoader<number, number[]>(async (ids) => {
+    const rows = await query<{ dealId: number; workHourId: number }>(`
+      select
+        d.id as dealId,
+        w.id as workHourId
+      from
+        Deals d
+          left join
+        WorkHours w
+          on d.id = wh.dealId
+      where
+        d.id in (${ids.join(",")})
+    `);
+
+    const map = new Map<number, number[]>();
+    for (const row of rows) {
+      const ar = map.get(row.dealId);
+      if (ar) {
+        ar.push(row.workHourId);
+      } else {
+        map.set(row.dealId, [row.workHourId]);
+      }
+    }
+    return ids.map((id) => {
+      return map.get(id) || [];
     });
   });
 }
@@ -100,7 +126,7 @@ function createWorkHourLoader(): DataLoader<number, WorkHourRecord> {
 
     return ids.map((id) => {
       const ret = rows.find((row) => row.id === id);
-      return ret || new Error(`No Client of id ${id}`);
+      return ret || new Error(`No WorkHour of id ${id}`);
     });
   });
 }
@@ -109,6 +135,7 @@ export type MyDataLoader = {
   clientLoader: DataLoader<number, ClientRecord>;
   clientDealsLoader: DataLoader<number, number[]>;
   dealLoader: DataLoader<number, DealRecord>;
+  dealWorkHoursLoader: DataLoader<number, number[]>;
   workHourLoader: DataLoader<number, WorkHourRecord>;
 };
 
@@ -117,6 +144,7 @@ export default function createDataLoaders(): MyDataLoader {
     clientLoader: createClientLoader(),
     clientDealsLoader: createClientDealsLoader(),
     dealLoader: createDealLoader(),
+    dealWorkHoursLoader: createDealWorkHoursLoader(),
     workHourLoader: createWorkHourLoader(),
   };
 }

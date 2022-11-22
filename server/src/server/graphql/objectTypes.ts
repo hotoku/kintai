@@ -52,6 +52,17 @@ export const DealType: GraphQLObjectType<DealRecord, ContextType> =
           return loaders.clientLoader.load(obj.clientId);
         },
       },
+      workHours: {
+        type: new GraphQLList(WorkHourType),
+        resolve: async (obj, _, { loaders }) => {
+          const whIds = await loaders.dealWorkHoursLoader.load(obj.id);
+          return await Promise.all(
+            whIds.map((whId) => {
+              return loaders.workHourLoader.load(whId);
+            })
+          );
+        },
+      },
     }),
   });
 
