@@ -4,6 +4,7 @@ import { GraphQLSchema } from "graphql";
 
 import { queryType } from "./resolvers";
 import {
+  createClientDealsLoader,
   createClientLoader,
   createDealLoader,
   MyDataLoader,
@@ -13,6 +14,7 @@ function graphql(app: Application) {
   app.use("/graphql", (req, res) => {
     const loaders: MyDataLoader = {
       clientLoader: createClientLoader(),
+      clientDealsLoader: createClientDealsLoader(),
       dealLoader: createDealLoader(),
     };
     return graphqlHTTP({

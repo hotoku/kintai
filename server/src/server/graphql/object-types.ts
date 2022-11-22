@@ -1,6 +1,10 @@
-import { GraphQLID, GraphQLObjectType, GraphQLString } from "graphql";
+import {
+  GraphQLList,
+  GraphQLID,
+  GraphQLObjectType,
+  GraphQLString,
+} from "graphql";
 
-import { MyDataLoader } from "./data-loaders";
 import { ClientRecord, DealRecord } from "./record-types";
 import { ContextType } from "./resolvers";
 
@@ -13,6 +17,17 @@ export const ClientType: GraphQLObjectType<ClientRecord, ContextType> =
       },
       name: {
         type: GraphQLString,
+      },
+      deals: {
+        type: new GraphQLList(DealType),
+        resolve: async (obj, _, { loaders }) => {
+          const dealIds = await loaders.clientDealsLoader.load(obj.id);
+          return await Promise.all(
+            dealIds.map((dealId) => {
+              loaders.dealLoader.load(dealId);
+            })
+          );
+        },
       },
     }),
   });
