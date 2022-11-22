@@ -3,7 +3,7 @@ import { graphqlHTTP } from "express-graphql";
 import { GraphQLSchema } from "graphql";
 
 import { queryType } from "./resolvers";
-import createDataLoader from "./data-loaders";
+import createDataLoader from "./dataLoaders";
 
 function graphql(app: Application) {
   app.use("/graphql", (req, res) => {

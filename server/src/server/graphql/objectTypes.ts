@@ -6,7 +6,7 @@ import {
   GraphQLBoolean,
 } from "graphql";
 
-import { ClientRecord, DealRecord, WorkHourRecord } from "./record-types";
+import { ClientRecord, DealRecord, WorkHourRecord } from "./recordTypes";
 import { ContextType } from "./resolvers";
 
 export const ClientType: GraphQLObjectType<ClientRecord, ContextType> =

@@ -1,6 +1,6 @@
 import DataLoader from "dataloader";
 import { getPool } from "../../db/db";
-import { ClientRecord, DealRecord, WorkHourRecord } from "./record-types";
+import { ClientRecord, DealRecord, WorkHourRecord } from "./recordTypes";
 
 async function query<T>(sql: string): Promise<T[]> {
   // sqlのselect結果の列名/型とTが整合してないと実行時エラーになる
