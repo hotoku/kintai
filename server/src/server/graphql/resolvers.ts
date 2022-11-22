@@ -10,20 +10,21 @@ import {
 // import { UserRecord, TeamRecord, MyDataLoader } from "./data-loaders";
 import { ClientRecord, MyDataLoader } from "./data-loaders";
 
-export const ClientType: GraphQLObjectType<
-  ClientRecord,
-  { loaders: MyDataLoader }
-> = new GraphQLObjectType<ClientRecord, { loaders: MyDataLoader }>({
-  name: "Client",
-  fields: () => ({
-    id: {
-      type: GraphQLID,
-    },
-    name: {
-      type: GraphQLString,
-    },
-  }),
-});
+export const ClientType: GraphQLObjectType<ClientRecord, {}> =
+  new GraphQLObjectType<ClientRecord, {}>({
+    name: "Client",
+    fields: () => ({
+      id: {
+        type: GraphQLID,
+      },
+      name: {
+        type: GraphQLString,
+        resolve: (obj) => {
+          return `client-${obj.name}-${obj.id}`;
+        },
+      },
+    }),
+  });
 
 export const queryType = new GraphQLObjectType<{}, {}>({
   name: "Query",
