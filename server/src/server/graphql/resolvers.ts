@@ -19,9 +19,6 @@ export const ClientType: GraphQLObjectType<ClientRecord, {}> =
       },
       name: {
         type: GraphQLString,
-        resolve: (obj) => {
-          return `client-${obj.name}-${obj.id}`;
-        },
       },
     }),
   });
