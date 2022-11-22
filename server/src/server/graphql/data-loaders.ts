@@ -1,6 +1,6 @@
 import DataLoader from "dataloader";
 import { getPool } from "../../db/db";
-import { ClientRecord, DealRecord } from "./record-types";
+import { ClientRecord, DealRecord, WorkHourRecord } from "./record-types";
 
 async function query<T>(sql: string): Promise<T[]> {
   // sqlのselect結果の列名/型とTが整合してないと実行時エラーになる
@@ -9,7 +9,7 @@ async function query<T>(sql: string): Promise<T[]> {
   return rows as T[];
 }
 
-export function createClientLoader(): DataLoader<number, ClientRecord> {
+function createClientLoader(): DataLoader<number, ClientRecord> {
   return new DataLoader<number, ClientRecord>(async (ids) => {
     const rows = await query<ClientRecord>(`
       select
@@ -28,7 +28,7 @@ export function createClientLoader(): DataLoader<number, ClientRecord> {
   });
 }
 
-export function createDealLoader(): DataLoader<number, DealRecord> {
+function createDealLoader(): DataLoader<number, DealRecord> {
   return new DataLoader<number, DealRecord>(async (ids) => {
     const rows = await query<DealRecord>(`
       select
@@ -48,7 +48,7 @@ export function createDealLoader(): DataLoader<number, DealRecord> {
   });
 }
 
-export function createClientDealsLoader(): DataLoader<number, number[]> {
+function createClientDealsLoader(): DataLoader<number, number[]> {
   return new DataLoader<number, number[]>(async (ids) => {
     const db = getPool();
     const rows = (
@@ -82,8 +82,41 @@ export function createClientDealsLoader(): DataLoader<number, number[]> {
   });
 }
 
+function createWorkHourLoader(): DataLoader<number, WorkHourRecord> {
+  return new DataLoader<number, WorkHourRecord>(async (ids) => {
+    const rows = await query<WorkHourRecord>(`
+      select
+        id,
+        startTime,
+        endTime,
+        dealId,
+        isDeleted,
+        note
+      from
+        Workhours
+      where
+        id in (${ids.join(",")})
+    `);
+
+    return ids.map((id) => {
+      const ret = rows.find((row) => row.id === id);
+      return ret || new Error(`No Client of id ${id}`);
+    });
+  });
+}
+
 export type MyDataLoader = {
   clientLoader: DataLoader<number, ClientRecord>;
   clientDealsLoader: DataLoader<number, number[]>;
   dealLoader: DataLoader<number, DealRecord>;
+  workHourLoader: DataLoader<number, WorkHourRecord>;
 };
+
+export default function createDataLoaders(): MyDataLoader {
+  return {
+    clientLoader: createClientLoader(),
+    clientDealsLoader: createClientDealsLoader(),
+    dealLoader: createDealLoader(),
+    workHourLoader: createWorkHourLoader(),
+  };
+}

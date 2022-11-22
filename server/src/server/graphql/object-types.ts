@@ -1,11 +1,12 @@
 import {
   GraphQLList,
-  GraphQLID,
+  GraphQLInt,
   GraphQLObjectType,
   GraphQLString,
+  GraphQLBoolean,
 } from "graphql";
 
-import { ClientRecord, DealRecord } from "./record-types";
+import { ClientRecord, DealRecord, WorkHourRecord } from "./record-types";
 import { ContextType } from "./resolvers";
 
 export const ClientType: GraphQLObjectType<ClientRecord, ContextType> =
@@ -13,7 +14,7 @@ export const ClientType: GraphQLObjectType<ClientRecord, ContextType> =
     name: "Client",
     fields: () => ({
       id: {
-        type: GraphQLID,
+        type: GraphQLInt,
       },
       name: {
         type: GraphQLString,
@@ -37,19 +38,37 @@ export const DealType: GraphQLObjectType<DealRecord, ContextType> =
     name: "Deal",
     fields: () => ({
       id: {
-        type: GraphQLID,
+        type: GraphQLInt,
       },
       name: {
         type: GraphQLString,
       },
       clientId: {
-        type: GraphQLID,
+        type: GraphQLInt,
       },
       client: {
         type: ClientType,
         resolve: (obj, _, { loaders }) => {
-          const ret = loaders.clientLoader.load(obj.clientId);
-          return ret;
+          return loaders.clientLoader.load(obj.clientId);
+        },
+      },
+    }),
+  });
+
+export const WorkHourType: GraphQLObjectType<WorkHourRecord, ContextType> =
+  new GraphQLObjectType<WorkHourRecord, ContextType>({
+    name: "WorkHour",
+    fields: () => ({
+      id: { type: GraphQLInt },
+      startTime: { type: GraphQLString },
+      endTime: { type: GraphQLString },
+      dealId: { type: GraphQLInt },
+      isDeleted: { type: GraphQLBoolean },
+      note: { type: GraphQLString },
+      deal: {
+        type: DealType,
+        resolve: (obj, _, { loaders }) => {
+          return loaders.workHourLoader.load(obj.dealId);
         },
       },
     }),
