@@ -8,3 +8,12 @@ export type DealRecord = {
   name: string;
   clientId: number;
 };
+
+export type WorkHourRecord = {
+  id: number;
+  startTime: string;
+  endTime?: string;
+  dealId: number;
+  isDeleted: boolean;
+  note: string;
+};
