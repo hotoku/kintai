@@ -7,7 +7,6 @@ import {
   GraphQLString,
 } from "graphql";
 
-// import { UserRecord, TeamRecord, MyDataLoader } from "./data-loaders";
 import { MyDataLoader } from "./data-loaders";
 import { ClientRecord, DealRecord } from "./record-types";
 
@@ -24,8 +23,8 @@ export const ClientType: GraphQLObjectType<ClientRecord, {}> =
     }),
   });
 
-export const DealType: GraphQLObjectType<DealRecord, {}> =
-  new GraphQLObjectType<DealRecord, {}>({
+export const DealType: GraphQLObjectType<DealRecord, { loader: MyDataLoader }> =
+  new GraphQLObjectType<DealRecord, { loader: MyDataLoader }>({
     name: "Deal",
     fields: () => ({
       id: {
@@ -36,6 +35,13 @@ export const DealType: GraphQLObjectType<DealRecord, {}> =
       },
       clientId: {
         type: GraphQLID,
+      },
+      client: {
+        type: ClientType,
+        resolve: (obj, _, { loader }) => {
+          const ret = loader.clientLoader.load(obj.clientId);
+          return ret;
+        },
       },
     }),
   });
