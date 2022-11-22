@@ -11,14 +11,14 @@ import {
 
 function graphql(app: Application) {
   app.use("/graphql", (req, res) => {
-    const loader: MyDataLoader = {
+    const loaders: MyDataLoader = {
       clientLoader: createClientLoader(),
       dealLoader: createDealLoader(),
     };
     return graphqlHTTP({
       schema: new GraphQLSchema({ query: queryType }),
       graphiql: true,
-      context: { loader },
+      context: { loaders },
     })(req, res);
   });
 }

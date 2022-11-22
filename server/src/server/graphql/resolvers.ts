@@ -1,52 +1,13 @@
-import {
-  GraphQLID,
-  GraphQLInt,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString,
-} from "graphql";
+import { GraphQLID, GraphQLNonNull, GraphQLObjectType } from "graphql";
 
 import { MyDataLoader } from "./data-loaders";
-import { ClientRecord, DealRecord } from "./record-types";
+import { ClientType, DealType } from "./object-types";
 
-export const ClientType: GraphQLObjectType<ClientRecord, {}> =
-  new GraphQLObjectType<ClientRecord, {}>({
-    name: "Client",
-    fields: () => ({
-      id: {
-        type: GraphQLID,
-      },
-      name: {
-        type: GraphQLString,
-      },
-    }),
-  });
+export type ContextType = {
+  loaders: MyDataLoader;
+};
 
-export const DealType: GraphQLObjectType<DealRecord, { loader: MyDataLoader }> =
-  new GraphQLObjectType<DealRecord, { loader: MyDataLoader }>({
-    name: "Deal",
-    fields: () => ({
-      id: {
-        type: GraphQLID,
-      },
-      name: {
-        type: GraphQLString,
-      },
-      clientId: {
-        type: GraphQLID,
-      },
-      client: {
-        type: ClientType,
-        resolve: (obj, _, { loader }) => {
-          const ret = loader.clientLoader.load(obj.clientId);
-          return ret;
-        },
-      },
-    }),
-  });
-
-export const queryType = new GraphQLObjectType<{}, { loader: MyDataLoader }>({
+export const queryType = new GraphQLObjectType<{}, ContextType>({
   name: "Query",
   fields: {
     getClient: {
@@ -56,8 +17,8 @@ export const queryType = new GraphQLObjectType<{}, { loader: MyDataLoader }>({
           type: new GraphQLNonNull(GraphQLID),
         },
       },
-      resolve: (_, args, { loader }) => {
-        return loader.clientLoader.load(args.id);
+      resolve: (_, args, { loaders }) => {
+        return loaders.clientLoader.load(args.id);
       },
     },
     getDeal: {
@@ -67,8 +28,8 @@ export const queryType = new GraphQLObjectType<{}, { loader: MyDataLoader }>({
           type: new GraphQLNonNull(GraphQLID),
         },
       },
-      resolve: (_, args, { loader }) => {
-        return loader.dealLoader.load(args.id);
+      resolve: (_, args, { loaders }) => {
+        return loaders.dealLoader.load(args.id);
       },
     },
   },
