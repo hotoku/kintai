@@ -42,7 +42,7 @@ export function createDealLoader(): DataLoader<number, DealRecord> {
     `);
 
     return ids.map((id) => {
-      const ret = rows.find((row) => row.id == id);
+      const ret = rows.find((row) => row.id === id);
       return ret || new Error(`No Deal of id ${id}`);
     });
   });
