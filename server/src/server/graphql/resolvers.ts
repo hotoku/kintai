@@ -1,4 +1,4 @@
-import { GraphQLID, GraphQLNonNull, GraphQLObjectType } from "graphql";
+import { GraphQLInt, GraphQLNonNull, GraphQLObjectType } from "graphql";
 
 import { MyDataLoader } from "./data-loaders";
 import { ClientType, DealType } from "./object-types";
@@ -14,7 +14,7 @@ export const queryType = new GraphQLObjectType<{}, ContextType>({
       type: ClientType,
       args: {
         id: {
-          type: new GraphQLNonNull(GraphQLID),
+          type: new GraphQLNonNull(GraphQLInt),
         },
       },
       resolve: (_, args, { loaders }) => {
@@ -25,7 +25,7 @@ export const queryType = new GraphQLObjectType<{}, ContextType>({
       type: DealType,
       args: {
         id: {
-          type: new GraphQLNonNull(GraphQLID),
+          type: new GraphQLNonNull(GraphQLInt),
         },
       },
       resolve: (_, args, { loaders }) => {

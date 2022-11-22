@@ -22,7 +22,7 @@ export function createClientLoader(): DataLoader<number, ClientRecord> {
     `);
 
     return ids.map((id) => {
-      const ret = rows.find((row) => row.id == id);
+      const ret = rows.find((row) => row.id === id);
       return ret || new Error(`No Client of id ${id}`);
     });
   });

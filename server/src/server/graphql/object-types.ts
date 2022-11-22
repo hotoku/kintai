@@ -24,7 +24,7 @@ export const ClientType: GraphQLObjectType<ClientRecord, ContextType> =
           const dealIds = await loaders.clientDealsLoader.load(obj.id);
           return await Promise.all(
             dealIds.map((dealId) => {
-              loaders.dealLoader.load(dealId);
+              return loaders.dealLoader.load(dealId);
             })
           );
         },
