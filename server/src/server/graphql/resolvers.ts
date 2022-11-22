@@ -26,7 +26,7 @@ export const ClientType: GraphQLObjectType<ClientRecord, {}> =
     }),
   });
 
-export const queryType = new GraphQLObjectType<{}, {}>({
+export const queryType = new GraphQLObjectType<{}, { loader: MyDataLoader }>({
   name: "Query",
   fields: {
     getClient: {
@@ -36,8 +36,8 @@ export const queryType = new GraphQLObjectType<{}, {}>({
           type: new GraphQLNonNull(GraphQLID),
         },
       },
-      resolve: (_, args) => {
-        return { id: args.id };
+      resolve: (_, args, { loader }) => {
+        return loader.clientLoader.load(args.id);
       },
     },
   },
