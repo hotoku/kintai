@@ -24,7 +24,10 @@ const start = () => {
   staticFiles(app);
   graphql(app);
   app.use("*", express.static(`${publicDir}/index.html`));
-  app.listen(port());
+
+  const portNum = port();
+  console.log(`port=${portNum}`);
+  app.listen(portNum);
 };
 
 start();
