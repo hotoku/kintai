@@ -88,7 +88,7 @@ function createDealWorkHoursLoader(): DataLoader<number, number[]> {
         Deals d
           left join
         WorkHours w
-          on d.id = wh.dealId
+          on d.id = w.dealId
       where
         d.id in (${ids.join(",")})
     `);
