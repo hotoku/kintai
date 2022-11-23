@@ -1,61 +1,41 @@
-import * as fs from "fs";
+import { readFileSync } from "fs";
 import * as mysql from "mysql2/promise";
 import { getConnection } from "./db";
 
-const makeLoader = (
+type Object = { [key: string]: string };
+
+function readCsv(path: string): (Object | undefined)[] {
+  const lines = readFileSync(path).toString().split("\n");
+  const header = lines[0].split(",");
+  const makeObj = (s: string) => {
+    const ret = {} as Object;
+    const items = s.split(",");
+    if (header.length !== items.length) {
+      return undefined;
+    }
+    header.map((v, i) => {
+      ret[v] = items[i];
+    });
+    return ret;
+  };
+  return lines.slice(1).map(makeObj);
+}
+
+function makeLoader(
   sql: string,
   path: string,
-  names: string[]
-): ((db: mysql.Connection) => Promise<void>) => {
+  parser: (o: Object) => any[]
+): (db: mysql.Connection) => Promise<void> {
   const ret = async (db: mysql.Connection) => {
-    const contents = fs.readFileSync(path).toString();
-    const objs = JSON.parse(contents) as any[];
+    const objs = readCsv(path);
     for (const obj of objs) {
-      await db.query(
-        sql,
-        names.map((n) => obj[n])
-      );
+      if (obj) {
+        await db.query(sql, parser(obj));
+      }
     }
   };
   return ret;
-};
-
-const queryForDeals = `
-insert into deals
-(
-  id,
-  name,
-  clientId
-)
-values
-(
-  ?, ?, ?
-)
-`;
-const loadDeals = makeLoader(
-  queryForDeals,
-  `${process.cwd()}/seeds/deals.json`,
-  ["id", "name", "clientId"]
-);
-
-const queryForWorkHours = `
-insert into workHours
-(
-  id,
-  dealId,
-  startTime,
-  endTime
-)
-values
-(
-  ?, ?, ?, ?
-)
-`;
-const loadWorkHours = makeLoader(
-  queryForWorkHours,
-  `${process.cwd()}/seeds/work_hours.json`,
-  ["id", "dealId", "startTime", "endTime"]
-);
+}
 
 const queryForClients = `
 insert into clients
@@ -71,8 +51,60 @@ insert into clients
 `;
 const loadClients = makeLoader(
   queryForClients,
-  `${process.cwd()}/seeds/clients.json`,
-  ["id", "name"]
+  `${process.cwd()}/seeds/clients.csv`,
+  (o: Object) => {
+    return [parseInt(o["id"]), o["name"]];
+  }
+);
+
+const queryForDeals = `
+insert into deals
+(
+  id,
+  name,
+  clientId
+)
+values
+(
+  ?, ?, ?
+)
+`;
+const loadDeals = makeLoader(
+  queryForDeals,
+  `${process.cwd()}/seeds/deals.csv`,
+  (o: Object) => {
+    return [parseInt(o["id"]), o["name"], parseInt(o["clientId"])];
+  }
+);
+
+const queryForWorkHours = `
+insert into workHours
+(
+  id,
+  dealId,
+  startTime,
+  endTime,
+  isDeleted,
+  note
+)
+values
+(
+  ?, ?, ?, ?, ?, ?
+)
+`;
+const loadWorkHours = makeLoader(
+  queryForWorkHours,
+  `${process.cwd()}/seeds/workHours.csv`,
+  (o: Object) => {
+    return [
+      parseInt(o["id"]),
+      parseInt(o["dealId"]),
+      o["startTime"],
+      o["endTime"],
+      o["isDeleted"] !== "0",
+      o["note"],
+    ];
+  }
 );
 
 const run = async () => {
