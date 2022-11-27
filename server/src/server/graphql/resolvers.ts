@@ -1,4 +1,9 @@
-import { GraphQLInt, GraphQLNonNull, GraphQLObjectType } from "graphql";
+import {
+  GraphQLList,
+  GraphQLInt,
+  GraphQLNonNull,
+  GraphQLObjectType,
+} from "graphql";
 
 import { MyDataLoader } from "./dataLoaders";
 import { ClientType, DealType, WorkHourType } from "./objectTypes";
@@ -41,6 +46,13 @@ export const queryType = new GraphQLObjectType<{}, ContextType>({
       },
       resolve: (_, args, { loaders }) => {
         return loaders.workHourLoader.load(args.id);
+      },
+    },
+    getAllClients: {
+      type: new GraphQLList(ClientType),
+      args: {},
+      resolve: (_, args, { loaders }) => {
+        return loaders.clientLoader.load();
       },
     },
   },
