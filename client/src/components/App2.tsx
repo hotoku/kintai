@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import Clients from "./Clients";
+import Clients from "./Clients2";
 import Deals from "./Deals";
 import Home from "./Home";
 import WorkHours from "./WorkHours";
