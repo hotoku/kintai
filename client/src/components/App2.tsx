@@ -39,9 +39,21 @@ const AppBody = () => {
   );
 };
 
-const App = () => {
-  // const query = parseQuery(useLocation().search);
+function MyRoutes() {
+  const query = parseQuery(useLocation().search);
 
+  return (
+    <Routes>
+      <Route index element={<Home />} />,
+      <Route path="/clients" element={<Clients />} />,
+      <Route path="/workHours" element={<WorkHours />} />,
+      <Route path="/deals" element={<Deals />} />,
+      <Route path="/deletedWorkHours" element={<DeletedWorkHours />} />,
+    </Routes>
+  );
+}
+
+const App = () => {
   return (
     <ErrorBoundary>
       <Box sx={{ flexGrow: 1 }}>
@@ -56,13 +68,7 @@ const App = () => {
           </Toolbar>
         </AppBar>
         <BrowserRouter>
-          <Routes>
-            <Route index element={<Home />} />
-            <Route path="/clients" element={<Clients />} />
-            <Route path="/workHours" element={<WorkHours />} />
-            <Route path="/deals" element={<Deals />} />
-            <Route path="/deletedWorkHours" element={<DeletedWorkHours />} />
-          </Routes>
+          <MyRoutes />
         </BrowserRouter>
       </Box>
     </ErrorBoundary>
