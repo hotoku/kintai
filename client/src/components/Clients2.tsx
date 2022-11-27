@@ -19,8 +19,11 @@ async function loadClients(): Promise<Client[]> {
     }),
   });
   const ret2 = (await ret.json()).data.clients;
-  console.log(ret2);
   return [];
+}
+
+function clientView(client: Client): JSX.Element {
+  return <div>{client.name}</div>;
 }
 
 function Clients(): JSX.Element {
@@ -32,7 +35,7 @@ function Clients(): JSX.Element {
     });
   }, []);
 
-  return <div> client</div>;
+  return <div>{clients.map((client) => clientView(client))}</div>;
 }
 
 export default Clients;
