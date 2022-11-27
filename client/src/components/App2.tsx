@@ -8,14 +8,7 @@ import Style from "./App.module.css";
 import ErrorBoundary from "./ErrorBoundary";
 import DeletedWorkHours from "./DeletedWorkHours";
 import { parseQuery } from "../utils";
-import {
-  AppBar,
-  Box,
-  Button,
-  IconButton,
-  Toolbar,
-  Typography,
-} from "@mui/material";
+import { AppBar, Box, IconButton, Toolbar, Typography } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 
 const AppBody = () => {
@@ -44,8 +37,7 @@ function MyRoutes() {
 
   return (
     <Routes>
-      <Route index element={<Home />} />,
-      <Route path="/clients" element={<Clients />} />,
+      <Route index element={<Clients />} />,
       <Route path="/workHours" element={<WorkHours dealId={query.dealId} />} />,
       <Route path="/deals" element={<Deals clientId={query.clientId} />} />,
       <Route path="/deletedWorkHours" element={<DeletedWorkHours />} />,
