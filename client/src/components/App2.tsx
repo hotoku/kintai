@@ -46,8 +46,8 @@ function MyRoutes() {
     <Routes>
       <Route index element={<Home />} />,
       <Route path="/clients" element={<Clients />} />,
-      <Route path="/workHours" element={<WorkHours />} />,
-      <Route path="/deals" element={<Deals />} />,
+      <Route path="/workHours" element={<WorkHours dealId={query.dealId} />} />,
+      <Route path="/deals" element={<Deals clientId={query.clientId} />} />,
       <Route path="/deletedWorkHours" element={<DeletedWorkHours />} />,
     </Routes>
   );
