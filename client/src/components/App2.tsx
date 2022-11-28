@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import Clients from "./Clients2";
+import ClientsPage from "./ClientsPage";
 import Deals from "./Deals";
 import Home from "./Home";
 import WorkHours from "./WorkHours";
@@ -19,7 +19,7 @@ const AppBody = () => {
       <ErrorBoundary>
         <Routes>
           <Route index element={<Home />} />
-          <Route path="/clients" element={<Clients />} />
+          <Route path="/clients" element={<ClientsPage />} />
           <Route
             path="/workHours"
             element={<WorkHours dealId={query.dealId} />}
@@ -37,7 +37,7 @@ function MyRoutes() {
 
   return (
     <Routes>
-      <Route index element={<Clients />} />,
+      <Route index element={<ClientsPage />} />,
       <Route path="/workHours" element={<WorkHours dealId={query.dealId} />} />,
       <Route path="/deals" element={<Deals clientId={query.clientId} />} />,
       <Route path="/deletedWorkHours" element={<DeletedWorkHours />} />,

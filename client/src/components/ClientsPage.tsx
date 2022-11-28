@@ -1,5 +1,12 @@
-import { Collapse, List, ListItemButton, ListItemText } from "@mui/material";
+import {
+  Collapse,
+  List,
+  ListItemButton,
+  ListItemText,
+  Link as MuiLink,
+} from "@mui/material";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 type Client = {
   id: number;
@@ -38,8 +45,13 @@ async function loadClients(): Promise<Client[]> {
 
 function dealListItem(deal: Deal): JSX.Element {
   return (
-    <ListItemButton sx={{ pl: 4 }}>
-      <ListItemText key={deal.id} primary={deal.name} />
+    <ListItemButton
+      key={deal.id}
+      sx={{ pl: 4 }}
+      component={Link}
+      to={`/workHours?dealId=${deal.id}`}
+    >
+      {deal.name}
     </ListItemButton>
   );
 }
@@ -70,7 +82,7 @@ function ClientListItem({
   );
 }
 
-function Clients(): JSX.Element {
+function ClientsPage(): JSX.Element {
   const [clients, setClients] = useState<Client[]>([]);
   const [selectedClientId, setSelectedClientId] = useState<
     number | undefined
@@ -104,4 +116,4 @@ function Clients(): JSX.Element {
   );
 }
 
-export default Clients;
+export default ClientsPage;
