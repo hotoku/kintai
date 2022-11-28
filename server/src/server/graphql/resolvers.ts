@@ -51,8 +51,8 @@ export const queryType = new GraphQLObjectType<{}, ContextType>({
     getAllClients: {
       type: new GraphQLList(ClientType),
       args: {},
-      resolve: (_, args, { loaders }) => {
-        return loaders.clientLoader.load();
+      resolve: (_, _2, { loaders }) => {
+        return loaders.clientLoader.all();
       },
     },
   },

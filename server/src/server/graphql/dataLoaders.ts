@@ -9,9 +9,10 @@ async function query<T>(sql: string): Promise<T[]> {
   return rows as T[];
 }
 
-function createClientLoader(): DataLoader<number, ClientRecord> {
-  return new DataLoader<number, ClientRecord>(async (ids) => {
-    const rows = await query<ClientRecord>(`
+class ClientLoader extends DataLoader<number, ClientRecord> {
+  constructor() {
+    super(async (ids: readonly number[]) => {
+      const rows = await query<ClientRecord>(`
       select
         id,
         name
@@ -21,11 +22,23 @@ function createClientLoader(): DataLoader<number, ClientRecord> {
         id in (${ids.join(",")})
     `);
 
-    return ids.map((id) => {
-      const ret = rows.find((row) => row.id === id);
-      return ret || new Error(`No Client of id ${id}`);
+      return ids.map((id) => {
+        const ret = rows.find((row) => row.id === id);
+        return ret || new Error(`No Client of id ${id}`);
+      });
     });
-  });
+  }
+
+  all = async (): Promise<ClientRecord[]> => {
+    const rows = await query<ClientRecord>(`
+      select
+        id,
+        name
+      from
+        Clients
+    `);
+    return rows;
+  };
 }
 
 function createDealLoader(): DataLoader<number, DealRecord> {
@@ -56,7 +69,7 @@ function createClientDealsLoader(): DataLoader<number, number[]> {
         d.id as dealId
       from
         Clients c
-          left join
+         inner join
         Deals d
           on c.id = d.clientId
       where
@@ -86,7 +99,7 @@ function createDealWorkHoursLoader(): DataLoader<number, number[]> {
         w.id as workHourId
       from
         Deals d
-          left join
+          inner join
         WorkHours w
           on d.id = w.dealId
       where
@@ -132,7 +145,7 @@ function createWorkHourLoader(): DataLoader<number, WorkHourRecord> {
 }
 
 export type MyDataLoader = {
-  clientLoader: DataLoader<number, ClientRecord>;
+  clientLoader: ClientLoader;
   clientDealsLoader: DataLoader<number, number[]>;
   dealLoader: DataLoader<number, DealRecord>;
   dealWorkHoursLoader: DataLoader<number, number[]>;
@@ -141,7 +154,7 @@ export type MyDataLoader = {
 
 export default function createDataLoaders(): MyDataLoader {
   return {
-    clientLoader: createClientLoader(),
+    clientLoader: new ClientLoader(),
     clientDealsLoader: createClientDealsLoader(),
     dealLoader: createDealLoader(),
     dealWorkHoursLoader: createDealWorkHoursLoader(),
