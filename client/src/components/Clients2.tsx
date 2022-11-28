@@ -37,17 +37,13 @@ async function loadClients(): Promise<Client[]> {
 }
 
 function dealListItem(deal: Deal): JSX.Element {
-  return (
-    <div>
-      <ListItemText>{deal.name}</ListItemText>
-    </div>
-  );
+  return <ListItemText key={deal.id}>{deal.name}</ListItemText>;
 }
 
 function clientListItem(client: Client): JSX.Element {
   return (
-    <div>
-      <ListItemText key={client.id}>{client.name}</ListItemText>
+    <div key={client.id}>
+      <ListItemText>{client.name}</ListItemText>
       <Collapse>
         <List>{client.deals.map(dealListItem)}</List>
       </Collapse>
