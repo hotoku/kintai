@@ -1,5 +1,16 @@
+import { Collapse, List, ListItemText } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Client } from "../graphql/types";
+
+type Client = {
+  id: number;
+  name: string;
+  deals: { id: number; name: string }[];
+};
+
+type Deal = {
+  id: number;
+  name: string;
+};
 
 async function loadClients(): Promise<Client[]> {
   const ret = await fetch("/graphql", {
@@ -10,20 +21,38 @@ async function loadClients(): Promise<Client[]> {
     body: JSON.stringify({
       query: `
         {
-          clients: getClient(id: 1) {
+          clients: getAllClients {
             id
             name
+            deals {
+              id
+              name
+            } 
           }
         }
       `,
     }),
   });
-  const ret2 = (await ret.json()).data.clients;
-  return [];
+  return (await ret.json()).data.clients;
 }
 
-function clientView(client: Client): JSX.Element {
-  return <div>{client.name}</div>;
+function dealListItem(deal: Deal): JSX.Element {
+  return (
+    <div>
+      <ListItemText>{deal.name}</ListItemText>
+    </div>
+  );
+}
+
+function clientListItem(client: Client): JSX.Element {
+  return (
+    <div>
+      <ListItemText key={client.id}>{client.name}</ListItemText>
+      <Collapse>
+        <List>{client.deals.map(dealListItem)}</List>
+      </Collapse>
+    </div>
+  );
 }
 
 function Clients(): JSX.Element {
@@ -35,7 +64,7 @@ function Clients(): JSX.Element {
     });
   }, []);
 
-  return <div>{clients.map((client) => clientView(client))}</div>;
+  return <List>{clients.map(clientListItem)}</List>;
 }
 
 export default Clients;
