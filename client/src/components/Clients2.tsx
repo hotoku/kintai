@@ -1,4 +1,4 @@
-import { Collapse, List, ListItemText } from "@mui/material";
+import { Collapse, List, ListItemButton, ListItemText } from "@mui/material";
 import { useEffect, useState } from "react";
 
 type Client = {
@@ -37,14 +37,33 @@ async function loadClients(): Promise<Client[]> {
 }
 
 function dealListItem(deal: Deal): JSX.Element {
-  return <ListItemText key={deal.id}>{deal.name}</ListItemText>;
+  return (
+    <ListItemButton sx={{ pl: 4 }}>
+      <ListItemText key={deal.id} primary={deal.name} />
+    </ListItemButton>
+  );
 }
 
-function clientListItem(client: Client): JSX.Element {
+type ClientListItemProps = {
+  client: Client;
+  selectedClientId?: number;
+  onClick: (c: Client) => void;
+};
+function ClientListItem({
+  client,
+  selectedClientId,
+  onClick,
+}: ClientListItemProps): JSX.Element {
   return (
-    <div key={client.id}>
-      <ListItemText>{client.name}</ListItemText>
-      <Collapse>
+    <div>
+      <ListItemButton
+        onClick={() => {
+          onClick(client);
+        }}
+      >
+        <ListItemText primary={client.name} />
+      </ListItemButton>
+      <Collapse in={client.id === selectedClientId}>
         <List>{client.deals.map(dealListItem)}</List>
       </Collapse>
     </div>
@@ -53,6 +72,9 @@ function clientListItem(client: Client): JSX.Element {
 
 function Clients(): JSX.Element {
   const [clients, setClients] = useState<Client[]>([]);
+  const [selectedClientId, setSelectedClientId] = useState<
+    number | undefined
+  >();
 
   useEffect(() => {
     loadClients().then((cs) => {
@@ -60,7 +82,26 @@ function Clients(): JSX.Element {
     });
   }, []);
 
-  return <List>{clients.map(clientListItem)}</List>;
+  const handleClientClick = (client: Client) => {
+    if (selectedClientId === client.id) {
+      setSelectedClientId(undefined);
+    } else {
+      setSelectedClientId(client.id);
+    }
+  };
+
+  return (
+    <List>
+      {clients.map((client) => (
+        <ClientListItem
+          key={client.id}
+          client={client}
+          selectedClientId={selectedClientId}
+          onClick={handleClientClick}
+        />
+      ))}
+    </List>
+  );
 }
 
 export default Clients;
