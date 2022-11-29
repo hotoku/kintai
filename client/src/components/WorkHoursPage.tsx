@@ -94,7 +94,7 @@ function WorkHourRow({ workHour, onDelete, onUpdate }: WorkHourRowProps) {
         {workHour.endTime ? formatTime(workHour.endTime) : ""}
       </TableCell>
       <TableCell align="center">{secToStr(duration)}</TableCell>
-      <Tooltip title={workHour.note} placement="top">
+      <Tooltip title={workHour.note} placement="left">
         <TableCell align="center">
           {workHour.note ? workHour.note.slice(0, 10) : ""}
         </TableCell>

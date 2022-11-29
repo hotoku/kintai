@@ -33,7 +33,7 @@ export const mutationType = new GraphQLObjectType<{}, ContextType>({
           } else {
             setStatemets.push(`endTime="${args.endTime}"`);
           }
-        } else setStatemets.push(`endTime=NULL`);
+        }
         if (args.isDeleted !== undefined)
           setStatemets.push(`isDeleted=${args.isDeleted}`);
         if (args.dealId) setStatemets.push(`dealId=${args.dealId}`);
