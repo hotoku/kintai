@@ -1,5 +1,6 @@
-import { Delete, Edit, Info } from "@mui/icons-material";
+import { Delete, Edit } from "@mui/icons-material";
 import {
+  Button,
   Paper,
   Table,
   TableBody,
@@ -72,12 +73,20 @@ function WorkHourRow({ workHour, onDelete, onUpdate }: WorkHourRowProps) {
         </TableCell>
       </Tooltip>
       <TableCell align="center">
-        <Edit />
-        <Delete
+        <Button
+          onClick={() => {
+            onUpdate(workHour);
+          }}
+        >
+          <Edit />
+        </Button>
+        <Button
           onClick={() => {
             onDelete(workHour);
           }}
-        />
+        >
+          <Delete />
+        </Button>
       </TableCell>
     </TableRow>
   );
@@ -94,6 +103,7 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
   }, []);
 
   const deleteWorkHour = async (wh: WorkHour): Promise<void> => {
+    const query = ``;
     console.log(`delete ${wh.id}`);
   };
   const updateWorkHour = async (wh: WorkHour): Promise<void> => {};

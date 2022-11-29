@@ -17,27 +17,36 @@ export const mutationType = new GraphQLObjectType<{}, ContextType>({
       type: WorkHourType,
       args: {
         id: { type: new GraphQLNonNull(GraphQLInt) },
-        startTime: { type: new GraphQLNonNull(GraphQLString) },
+        startTime: { type: GraphQLString },
         endTime: { type: GraphQLString },
-        isDeleted: { type: new GraphQLNonNull(GraphQLBoolean) },
+        isDeleted: { type: GraphQLBoolean },
         dealId: { type: GraphQLInt },
         note: { type: GraphQLString },
       },
-      resolve: async (_, args) => {
+      resolve: async (_, args, { loaders }) => {
         const db = getPool();
+        const setStatemets = [];
+        if (args.startTime) setStatemets.push(`startTime="${args.startTime}"`);
+        if (args.endTime) {
+          if (args.endTime.toUpperCase() === "NULL") {
+            setStatemets.push(`endTime=NULL`);
+          } else {
+            setStatemets.push(`endTime="${args.endTime}"`);
+          }
+        } else setStatemets.push(`endTime=NULL`);
+        if (args.isDeleted) setStatemets.push(`isDeleted=${args.isDeleted}`);
+        if (args.dealId) setStatemets.push(`dealId=${args.dealId}`);
+        if (args.note) setStatemets.push(`note = "${args.note}"`);
         const sql = `
           update WorkHours
           set
-          startTime = ${args.startTime},
-          endTime = ${args.endTime || "null"}
-          isDeleted = ${args.isDeleted || "null"}
-          
+            ${setStatemets.join(",")}
           where
             id = ${args.id}
         `;
         try {
           await db.query(sql);
-          return "ok";
+          return loaders.workHourLoader.load(args.id);
         } catch (e) {
           return new Error(JSON.stringify(e));
         }
