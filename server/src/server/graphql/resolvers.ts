@@ -55,5 +55,17 @@ export const queryType = new GraphQLObjectType<{}, ContextType>({
         return loaders.clientLoader.all();
       },
     },
+    getWorkHoursOfDeal: {
+      type: new GraphQLList(WorkHourType),
+      args: {
+        dealId: {
+          type: new GraphQLNonNull(GraphQLInt),
+        },
+      },
+      resolve: async (_, args, { loaders }) => {
+        const whIds = await loaders.dealWorkHoursLoader.load(args.dealId);
+        return whIds.map((whId) => loaders.workHourLoader.load(whId));
+      },
+    },
   },
 });

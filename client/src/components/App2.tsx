@@ -10,27 +10,7 @@ import DeletedWorkHours from "./DeletedWorkHours";
 import { parseQuery } from "../utils";
 import { AppBar, Box, IconButton, Toolbar, Typography } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-
-const AppBody = () => {
-  const query = parseQuery(useLocation().search);
-
-  return (
-    <div className={Style.appRoot}>
-      <ErrorBoundary>
-        <Routes>
-          <Route index element={<Home />} />
-          <Route path="/clients" element={<ClientsPage />} />
-          <Route
-            path="/workHours"
-            element={<WorkHours dealId={query.dealId} />}
-          />
-          <Route path="/deals" element={<Deals clientId={query.clientId} />} />
-          <Route path="/deletedWorkHours" element={<DeletedWorkHours />} />
-        </Routes>
-      </ErrorBoundary>
-    </div>
-  );
-};
+import WorkHoursPage from "./WorkHoursPage";
 
 function MyRoutes() {
   const query = parseQuery(useLocation().search);
@@ -38,13 +18,16 @@ function MyRoutes() {
   return (
     <Routes>
       <Route index element={<ClientsPage />} />,
-      <Route path="/workHours" element={<WorkHours dealId={query.dealId} />} />,
+      <Route
+        path="/workHours"
+        element={<WorkHoursPage dealId={parseInt(query.dealId)} />}
+      />
+      ,
       <Route path="/deals" element={<Deals clientId={query.clientId} />} />,
       <Route path="/deletedWorkHours" element={<DeletedWorkHours />} />,
     </Routes>
   );
 }
-
 const App = () => {
   return (
     <ErrorBoundary>
