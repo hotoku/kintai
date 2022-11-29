@@ -14,21 +14,28 @@ import { useEffect, useState } from "react";
 import { WorkHour } from "../api/types";
 import { formatDate, formatTime, secToStr } from "./utils";
 
-async function loadWorkHours(dealId: number): Promise<WorkHour[]> {
-  type TempObj = Omit<WorkHour, "startTime" | "endTime"> & {
-    startTime: string;
-    endTime?: string;
-  };
-
+async function throwQuery<T>(query: string, name?: string): Promise<T> {
+  name = name || "object";
   const ret = await fetch("/graphql", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      query: `
+      query: query,
+    }),
+  });
+  return (await ret.json()).data[name] as T;
+}
+
+async function loadWorkHours(dealId: number): Promise<WorkHour[]> {
+  type TempObj = Omit<WorkHour, "startTime" | "endTime"> & {
+    startTime: string;
+    endTime?: string;
+  };
+  const query = `
         {
-          workHours: getWorkHoursOfDeal(dealId: ${dealId}) {
+          object: getWorkHoursOfDeal(dealId: ${dealId}) {
             id
             dealId
             startTime
@@ -37,10 +44,8 @@ async function loadWorkHours(dealId: number): Promise<WorkHour[]> {
             note
           }
         }
-      `,
-    }),
-  });
-  const objs = (await ret.json()).data.workHours as TempObj[];
+      `;
+  const objs = await throwQuery<TempObj[]>(query);
   return objs.map((obj) => {
     return {
       ...obj,
@@ -103,7 +108,23 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
   }, []);
 
   const deleteWorkHour = async (wh: WorkHour): Promise<void> => {
-    const query = ``;
+    type TempObj = Omit<WorkHour, "startTime" | "endTime"> & {
+      startTime: string;
+      endTime?: string;
+    };
+
+    const query = `
+mutation {
+  object: updateWorkHour(id: ${wh.id}, isDeleted: true) {
+    id
+    startTime
+    endTime
+    dealId
+    isDeleted
+    note
+  }
+}
+`;
     console.log(`delete ${wh.id}`);
   };
   const updateWorkHour = async (wh: WorkHour): Promise<void> => {};
