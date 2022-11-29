@@ -59,7 +59,7 @@ export function updateArray<T extends { id: number }>(array: T[], obj: T): T[] {
     if (x.id === obj.id) {
       ret.push(obj);
     } else {
-      x;
+      ret.push(x);
     }
   }
   return ret;
