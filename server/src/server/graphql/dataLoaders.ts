@@ -12,6 +12,7 @@ async function query<T>(sql: string): Promise<T[]> {
 class ClientLoader extends DataLoader<number, ClientRecord> {
   constructor() {
     super(async (ids: readonly number[]) => {
+      // todo: パラメータとして渡す方法を調べる
       const rows = await query<ClientRecord>(`
       select
         id,

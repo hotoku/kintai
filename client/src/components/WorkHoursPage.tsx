@@ -59,27 +59,27 @@ function WorkHourRow({ workHour, onDelete, onUpdate }: WorkHourRowProps) {
     ? (workHour.endTime.getTime() - workHour.startTime.getTime()) / 1000
     : 0;
   return (
-    <Tooltip title={workHour.note} placement="top">
-      <TableRow key={workHour.id}>
-        <TableCell align="center">{formatDate(workHour.startTime)}</TableCell>
-        <TableCell align="center">{formatTime(workHour.startTime)}</TableCell>
-        <TableCell align="center">
-          {workHour.endTime ? formatTime(workHour.endTime) : ""}
-        </TableCell>
-        <TableCell align="center">{secToStr(duration)}</TableCell>
+    <TableRow key={workHour.id}>
+      <TableCell align="center">{formatDate(workHour.startTime)}</TableCell>
+      <TableCell align="center">{formatTime(workHour.startTime)}</TableCell>
+      <TableCell align="center">
+        {workHour.endTime ? formatTime(workHour.endTime) : ""}
+      </TableCell>
+      <TableCell align="center">{secToStr(duration)}</TableCell>
+      <Tooltip title={workHour.note} placement="top">
         <TableCell align="center">
           {workHour.note ? workHour.note.slice(0, 10) : ""}
         </TableCell>
-        <TableCell align="center">
-          <Edit />
-          <Delete
-            onClick={() => {
-              onDelete(workHour);
-            }}
-          />
-        </TableCell>
-      </TableRow>
-    </Tooltip>
+      </Tooltip>
+      <TableCell align="center">
+        <Edit />
+        <Delete
+          onClick={() => {
+            onDelete(workHour);
+          }}
+        />
+      </TableCell>
+    </TableRow>
   );
 }
 

@@ -5,12 +5,8 @@ import {
   GraphQLObjectType,
 } from "graphql";
 
-import { MyDataLoader } from "./dataLoaders";
-import { ClientType, DealType, WorkHourType } from "./objectTypes";
-
-export type ContextType = {
-  loaders: MyDataLoader;
-};
+import { ClientType, DealType, WorkHourType } from "../objectTypes";
+import { ContextType } from "./index";
 
 export const queryType = new GraphQLObjectType<{}, ContextType>({
   name: "Query",
