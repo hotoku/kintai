@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { WorkHour } from "../api/types";
+import { updateArray } from "../share/utils";
 import { formatDate, formatTime, secToStr } from "./utils";
 
 async function throwQuery<T>(query: string, name?: string): Promise<T> {
@@ -28,13 +29,22 @@ async function throwQuery<T>(query: string, name?: string): Promise<T> {
   return (await ret.json()).data[name] as T;
 }
 
-async function loadWorkHours(dealId: number): Promise<WorkHour[]> {
-  type TempObj = Omit<WorkHour, "startTime" | "endTime"> & {
-    startTime: string;
-    endTime?: string;
+type WorkHourRecord = Omit<WorkHour, "startTime" | "endTime"> & {
+  startTime: string;
+  endTime?: string;
+};
+
+function rec2obj(obj: WorkHourRecord): WorkHour {
+  return {
+    ...obj,
+    startTime: new Date(obj.startTime),
+    endTime: obj.endTime ? new Date(obj.endTime) : undefined,
   };
+}
+
+async function loadWorkHours(dealId: number): Promise<WorkHour[]> {
   const query = `
-        {
+        query {
           object: getWorkHoursOfDeal(dealId: ${dealId}) {
             id
             dealId
@@ -45,14 +55,25 @@ async function loadWorkHours(dealId: number): Promise<WorkHour[]> {
           }
         }
       `;
-  const objs = await throwQuery<TempObj[]>(query);
-  return objs.map((obj) => {
-    return {
-      ...obj,
-      startTime: new Date(obj.startTime),
-      endTime: obj.endTime ? new Date(obj.endTime) : undefined,
-    };
-  });
+  const objs = await throwQuery<WorkHourRecord[]>(query);
+  return objs.map(rec2obj);
+}
+
+async function markAsDeleted(id: number): Promise<WorkHour> {
+  const query = `
+    mutation {
+      object: updateWorkHour(id: ${id}, isDeleted: true) {
+        id
+        startTime
+        endTime
+        dealId
+        isDeleted
+        note
+      }
+    }    
+  `;
+  const obj = await throwQuery<WorkHourRecord>(query);
+  return rec2obj(obj);
 }
 
 type WorkHourRowProps = {
@@ -60,6 +81,7 @@ type WorkHourRowProps = {
   onDelete: (wh: WorkHour) => Promise<void>;
   onUpdate: (wh: WorkHour) => Promise<void>;
 };
+
 function WorkHourRow({ workHour, onDelete, onUpdate }: WorkHourRowProps) {
   const duration = workHour.endTime
     ? (workHour.endTime.getTime() - workHour.startTime.getTime()) / 1000
@@ -107,25 +129,9 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
     loadWorkHours(dealId).then(setWorkHours);
   }, []);
 
-  const deleteWorkHour = async (wh: WorkHour): Promise<void> => {
-    type TempObj = Omit<WorkHour, "startTime" | "endTime"> & {
-      startTime: string;
-      endTime?: string;
-    };
-
-    const query = `
-mutation {
-  object: updateWorkHour(id: ${wh.id}, isDeleted: true) {
-    id
-    startTime
-    endTime
-    dealId
-    isDeleted
-    note
-  }
-}
-`;
-    console.log(`delete ${wh.id}`);
+  const handleDeleteWorkHour = async (wh: WorkHour): Promise<void> => {
+    const ret = await markAsDeleted(wh.id);
+    setWorkHours((whs) => updateArray(whs, ret));
   };
   const updateWorkHour = async (wh: WorkHour): Promise<void> => {};
   return (
@@ -147,7 +153,7 @@ mutation {
               <WorkHourRow
                 key={wh.id}
                 workHour={wh}
-                onDelete={deleteWorkHour}
+                onDelete={handleDeleteWorkHour}
                 onUpdate={updateWorkHour}
               />
             );
