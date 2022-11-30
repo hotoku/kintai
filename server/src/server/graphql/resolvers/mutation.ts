@@ -5,7 +5,7 @@ import {
   GraphQLObjectType,
   GraphQLBoolean,
 } from "graphql";
-import { getPool } from "../../../db/db";
+import { getConnection, getPool } from "../../../db/db";
 import { WorkHourType } from "../objectTypes";
 
 import { ContextType } from "./index";
@@ -61,12 +61,12 @@ export const mutationType = new GraphQLObjectType<{}, ContextType>({
         },
       },
       resolve: async (_, args) => {
-        const db = getPool();
+        const db = await getConnection();
         const sql = `
-          delete from WorkHours where id=${args.id}
+          delete from WorkHours where id=?
         `;
         try {
-          await db.query(sql);
+          await db.query(sql, args.id);
           return "ok";
         } catch (e) {
           return new Error(JSON.stringify(e));
