@@ -1,7 +1,10 @@
 import { Delete, Edit } from "@mui/icons-material";
 import {
   Button,
+  FormControlLabel,
+  FormGroup,
   Paper,
+  Switch,
   Table,
   TableBody,
   TableCell,
@@ -76,16 +79,68 @@ async function markAsDeleted(id: number): Promise<WorkHour> {
   return rec2obj(obj);
 }
 
-type WorkHourRowProps = {
-  workHour: WorkHour;
-  onDelete: (wh: WorkHour) => Promise<void>;
-  onUpdate: (wh: WorkHour) => Promise<void>;
-};
+async function markAsActive(id: number): Promise<WorkHour> {
+  const query = `
+    mutation {
+      object: updateWorkHour(id: ${id}, isDeleted: false) {
+        id
+        startTime
+        endTime
+        dealId
+        isDeleted
+        note
+      }
+    }    
+  `;
+  const obj = await throwQuery<WorkHourRecord>(query);
+  return rec2obj(obj);
+}
 
-function WorkHourRow({ workHour, onDelete, onUpdate }: WorkHourRowProps) {
+type WorkHourRowProps =
+  | {
+      workHour: WorkHour;
+      deleted: false;
+      onDelete: (wh: WorkHour) => Promise<void>;
+      onUpdate: (wh: WorkHour) => Promise<void>;
+    }
+  | {
+      workHour: WorkHour;
+      deleted: true;
+      onRecover: (wh: WorkHour) => Promise<void>;
+    };
+
+function WorkHourRow({ workHour, ...props }: WorkHourRowProps) {
   const duration = workHour.endTime
     ? (workHour.endTime.getTime() - workHour.startTime.getTime()) / 1000
     : 0;
+
+  const actions = props.deleted ? (
+    <Button
+      onClick={() => {
+        props.onRecover(workHour);
+      }}
+    >
+      戻す
+    </Button>
+  ) : (
+    <>
+      <Button
+        onClick={() => {
+          props.onUpdate(workHour);
+        }}
+      >
+        <Edit />
+      </Button>
+      <Button
+        onClick={() => {
+          props.onDelete(workHour);
+        }}
+      >
+        <Delete />
+      </Button>
+    </>
+  );
+
   return (
     <TableRow key={workHour.id}>
       <TableCell align="center">{formatDate(workHour.startTime)}</TableCell>
@@ -99,22 +154,7 @@ function WorkHourRow({ workHour, onDelete, onUpdate }: WorkHourRowProps) {
           {workHour.note ? workHour.note.slice(0, 10) : ""}
         </TableCell>
       </Tooltip>
-      <TableCell align="center">
-        <Button
-          onClick={() => {
-            onUpdate(workHour);
-          }}
-        >
-          <Edit />
-        </Button>
-        <Button
-          onClick={() => {
-            onDelete(workHour);
-          }}
-        >
-          <Delete />
-        </Button>
-      </TableCell>
+      <TableCell align="center">{actions}</TableCell>
     </TableRow>
   );
 }
@@ -147,9 +187,48 @@ function ActiveWorkHourTable({
             return (
               <WorkHourRow
                 key={wh.id}
+                deleted={false}
                 workHour={wh}
                 onDelete={onDelete}
                 onUpdate={onUpdate}
+              />
+            );
+          })}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+}
+
+type DeletedWorkHourTableProps = {
+  workHours: WorkHour[];
+  onRecover: (wh: WorkHour) => Promise<void>;
+};
+function DeletedWorkHourTable({
+  workHours,
+  onRecover,
+}: DeletedWorkHourTableProps): JSX.Element {
+  return (
+    <TableContainer component={Paper}>
+      <Table style={{ maxWidth: "1000px", margin: "auto" }}>
+        <TableHead>
+          <TableRow>
+            <TableCell align="center">date</TableCell>
+            <TableCell align="center">start </TableCell>
+            <TableCell align="center">end</TableCell>
+            <TableCell align="center">duration</TableCell>
+            <TableCell align="center">note</TableCell>
+            <TableCell align="center">actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {workHours.map((wh) => {
+            return (
+              <WorkHourRow
+                key={wh.id}
+                deleted={true}
+                workHour={wh}
+                onRecover={onRecover}
               />
             );
           })}
@@ -164,6 +243,7 @@ type WorkHoursPageProps = {
 };
 function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
   const [workHours, setWorkHours] = useState<WorkHour[]>([]);
+  const [showDeleted, setShowDeleted] = useState<boolean>(false);
   useEffect(() => {
     loadWorkHours(dealId).then(setWorkHours);
   }, []);
@@ -172,13 +252,39 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
     const ret = await markAsDeleted(wh.id);
     setWorkHours((whs) => updateArray(whs, ret));
   };
+  const handleRecoverWorkHour = async (wh: WorkHour): Promise<void> => {
+    const ret = await markAsActive(wh.id);
+    setWorkHours((whs) => updateArray(whs, ret));
+  };
   const updateWorkHour = async (wh: WorkHour): Promise<void> => {};
   return (
-    <ActiveWorkHourTable
-      workHours={workHours.filter((wh) => !wh.isDeleted)}
-      onDelete={handleDeleteWorkHour}
-      onUpdate={updateWorkHour}
-    />
+    <>
+      <FormGroup>
+        <FormControlLabel
+          label="show deleted"
+          control={
+            <Switch
+              checked={showDeleted}
+              onChange={() => {
+                setShowDeleted((x) => !x);
+              }}
+            />
+          }
+        />
+      </FormGroup>
+      {showDeleted ? (
+        <DeletedWorkHourTable
+          workHours={workHours.filter((wh) => wh.isDeleted)}
+          onRecover={handleRecoverWorkHour}
+        />
+      ) : (
+        <ActiveWorkHourTable
+          workHours={workHours.filter((wh) => !wh.isDeleted)}
+          onDelete={handleDeleteWorkHour}
+          onUpdate={updateWorkHour}
+        />
+      )}
+    </>
   );
 }
 
