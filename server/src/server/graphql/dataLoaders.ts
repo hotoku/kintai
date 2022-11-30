@@ -1,27 +1,30 @@
 import DataLoader from "dataloader";
-import { getPool } from "../../db/db";
+import { getConnection } from "../../db/db";
 import { ClientRecord, DealRecord, WorkHourRecord } from "./recordTypes";
 
-async function query<T>(sql: string): Promise<T[]> {
+async function query<T>(sql: string, params?: readonly any[]): Promise<T[]> {
   // sqlのselect結果の列名/型とTが整合してないと実行時エラーになる
-  const db = getPool();
-  const [rows, _] = await db.query(sql);
+  // todo: zodを使えば実行時のチェックもできる
+  const db = await getConnection();
+  const [rows, _] = await db.query(sql, params);
   return rows as T[];
 }
 
 class ClientLoader extends DataLoader<number, ClientRecord> {
   constructor() {
     super(async (ids: readonly number[]) => {
-      // todo: パラメータとして渡す方法を調べる
-      const rows = await query<ClientRecord>(`
+      const rows = await query<ClientRecord>(
+        `
       select
         id,
         name
       from
         Clients
       where
-        id in (${ids.join(",")})
-    `);
+        id in (?)
+        `,
+        [ids]
+      );
 
       return ids.map((id) => {
         const ret = rows.find((row) => row.id === id);
@@ -44,7 +47,8 @@ class ClientLoader extends DataLoader<number, ClientRecord> {
 
 function createDealLoader(): DataLoader<number, DealRecord> {
   return new DataLoader<number, DealRecord>(async (ids) => {
-    const rows = await query<DealRecord>(`
+    const rows = await query<DealRecord>(
+      `
       select
         id,
         name,
@@ -52,8 +56,10 @@ function createDealLoader(): DataLoader<number, DealRecord> {
       from
         Deals
       where
-        id in (${ids.join(",")})
-    `);
+        id in (?)
+    `,
+      [ids]
+    );
 
     return ids.map((id) => {
       const ret = rows.find((row) => row.id === id);
@@ -64,7 +70,8 @@ function createDealLoader(): DataLoader<number, DealRecord> {
 
 function createClientDealsLoader(): DataLoader<number, number[]> {
   return new DataLoader<number, number[]>(async (ids) => {
-    const rows = await query<{ clientId: number; dealId: number }>(`
+    const rows = await query<{ clientId: number; dealId: number }>(
+      `
       select
         c.id as clientId,
         d.id as dealId
@@ -74,8 +81,10 @@ function createClientDealsLoader(): DataLoader<number, number[]> {
         Deals d
           on c.id = d.clientId
       where
-        c.id in (${ids.join(",")})
-    `);
+        c.id in (?)
+    `,
+      [ids]
+    );
 
     const map = new Map<number, number[]>();
     for (const row of rows) {
@@ -94,7 +103,8 @@ function createClientDealsLoader(): DataLoader<number, number[]> {
 
 function createDealWorkHoursLoader(): DataLoader<number, number[]> {
   return new DataLoader<number, number[]>(async (ids) => {
-    const rows = await query<{ dealId: number; workHourId: number }>(`
+    const rows = await query<{ dealId: number; workHourId: number }>(
+      `
       select
         d.id as dealId,
         w.id as workHourId
@@ -104,8 +114,10 @@ function createDealWorkHoursLoader(): DataLoader<number, number[]> {
         WorkHours w
           on d.id = w.dealId
       where
-        d.id in (${ids.join(",")})
-    `);
+        d.id in (?)
+    `,
+      [ids]
+    );
 
     const map = new Map<number, number[]>();
     for (const row of rows) {
@@ -124,7 +136,8 @@ function createDealWorkHoursLoader(): DataLoader<number, number[]> {
 
 function createWorkHourLoader(): DataLoader<number, WorkHourRecord> {
   return new DataLoader<number, WorkHourRecord>(async (ids) => {
-    const rows = await query<WorkHourRecord>(`
+    const rows = await query<WorkHourRecord>(
+      `
       select
         id,
         startTime,
@@ -135,8 +148,10 @@ function createWorkHourLoader(): DataLoader<number, WorkHourRecord> {
       from
         Workhours
       where
-        id in (${ids.join(",")})
-    `);
+        id in (?)
+    `,
+      [ids]
+    );
 
     return ids.map((id) => {
       const ret = rows.find((row) => row.id === id);
