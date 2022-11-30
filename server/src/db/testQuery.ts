@@ -21,8 +21,8 @@ async function main() {
     from
       clients
     where
-      id=?`,
-    [1]
+      id in (?)`,
+    [[1, 2]]
   );
   console.log(rows);
   await con.end();
