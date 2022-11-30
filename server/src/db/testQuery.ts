@@ -2,17 +2,10 @@
  * DBへのクエリの検証に使う
  */
 
-import mysql from "mysql2/promise";
-
-const DB_CONFIG = {
-  host: "127.0.0.1",
-  user: process.env.MYSQL_USER_NAME,
-  database: process.env.DATABASE_NAME,
-  password: process.env.MYSQL_USER_PASSWORD,
-};
+import { getConnection } from "./db";
 
 async function main() {
-  const con = await mysql.createConnection(DB_CONFIG);
+  const con = await getConnection();
   const [rows, _] = await con.query(
     `
     select
