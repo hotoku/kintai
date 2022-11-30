@@ -119,21 +119,16 @@ function WorkHourRow({ workHour, onDelete, onUpdate }: WorkHourRowProps) {
   );
 }
 
-type WorkHoursPageProps = {
-  dealId: number;
+type ActiveWorkHourTableProps = {
+  workHours: WorkHour[];
+  onDelete: (wh: WorkHour) => Promise<void>;
+  onUpdate: (wh: WorkHour) => Promise<void>;
 };
-
-function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
-  const [workHours, setWorkHours] = useState<WorkHour[]>([]);
-  useEffect(() => {
-    loadWorkHours(dealId).then(setWorkHours);
-  }, []);
-
-  const handleDeleteWorkHour = async (wh: WorkHour): Promise<void> => {
-    const ret = await markAsDeleted(wh.id);
-    setWorkHours((whs) => updateArray(whs, ret));
-  };
-  const updateWorkHour = async (wh: WorkHour): Promise<void> => {};
+function ActiveWorkHourTable({
+  workHours,
+  onDelete,
+  onUpdate,
+}: ActiveWorkHourTableProps): JSX.Element {
   return (
     <TableContainer component={Paper}>
       <Table style={{ maxWidth: "1000px", margin: "auto" }}>
@@ -153,14 +148,37 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
               <WorkHourRow
                 key={wh.id}
                 workHour={wh}
-                onDelete={handleDeleteWorkHour}
-                onUpdate={updateWorkHour}
+                onDelete={onDelete}
+                onUpdate={onUpdate}
               />
             );
           })}
         </TableBody>
       </Table>
     </TableContainer>
+  );
+}
+
+type WorkHoursPageProps = {
+  dealId: number;
+};
+function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
+  const [workHours, setWorkHours] = useState<WorkHour[]>([]);
+  useEffect(() => {
+    loadWorkHours(dealId).then(setWorkHours);
+  }, []);
+
+  const handleDeleteWorkHour = async (wh: WorkHour): Promise<void> => {
+    const ret = await markAsDeleted(wh.id);
+    setWorkHours((whs) => updateArray(whs, ret));
+  };
+  const updateWorkHour = async (wh: WorkHour): Promise<void> => {};
+  return (
+    <ActiveWorkHourTable
+      workHours={workHours.filter((wh) => !wh.isDeleted)}
+      onDelete={handleDeleteWorkHour}
+      onUpdate={updateWorkHour}
+    />
   );
 }
 
