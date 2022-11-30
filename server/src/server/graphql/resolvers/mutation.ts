@@ -27,11 +27,11 @@ export const mutationType = new GraphQLObjectType<{}, ContextType>({
         const db = getPool();
         const setStatemets = [] as string[];
         const setValues = [] as any[];
-        if (args.startTime) {
+        if (args.startTime !== undefined) {
           setStatemets.push(`startTime=?`);
           setValues.push(args.startTime);
         }
-        if (args.endTime) {
+        if (args.endTime !== undefined) {
           if (args.endTime.toUpperCase() === "NULL") {
             setStatemets.push(`endTime=NULL`);
           } else {
@@ -43,11 +43,11 @@ export const mutationType = new GraphQLObjectType<{}, ContextType>({
           setStatemets.push(`isDeleted=?`);
           setValues.push(args.isDeleted);
         }
-        if (args.dealId) {
+        if (args.dealId !== undefined) {
           setStatemets.push(`dealId=?`);
           setValues.push(args.dealId);
         }
-        if (args.note) {
+        if (args.note !== undefined) {
           setStatemets.push(`note = ?`);
           setValues.push(args.note);
         }
