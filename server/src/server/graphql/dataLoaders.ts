@@ -60,7 +60,7 @@ function createDealLoader(): DataLoader<number, DealRecord> {
     `,
       [ids]
     );
-
+    console.log("deal id ids", ids);
     return ids.map((id) => {
       const ret = rows.find((row) => row.id === id);
       return ret || new Error(`No Deal of id ${id}`);
@@ -119,6 +119,8 @@ function createDealWorkHoursLoader(): DataLoader<number, number[]> {
       [ids]
     );
 
+    console.log("deal work hour ids", ids);
+
     const map = new Map<number, number[]>();
     for (const row of rows) {
       const ar = map.get(row.dealId);
@@ -152,6 +154,8 @@ function createWorkHourLoader(): DataLoader<number, WorkHourRecord> {
     `,
       [ids]
     );
+
+    console.log("work hour ids", ids);
 
     return ids.map((id) => {
       const ret = rows.find((row) => row.id === id);

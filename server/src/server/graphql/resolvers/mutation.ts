@@ -25,19 +25,32 @@ export const mutationType = new GraphQLObjectType<{}, ContextType>({
       },
       resolve: async (_, args, { loaders }) => {
         const db = getPool();
-        const setStatemets = [];
-        if (args.startTime) setStatemets.push(`startTime="${args.startTime}"`);
+        const setStatemets = [] as string[];
+        const setValues = [] as any[];
+        if (args.startTime) {
+          setStatemets.push(`startTime=?`);
+          setValues.push(args.startTime);
+        }
         if (args.endTime) {
           if (args.endTime.toUpperCase() === "NULL") {
             setStatemets.push(`endTime=NULL`);
           } else {
-            setStatemets.push(`endTime="${args.endTime}"`);
+            setStatemets.push(`endTime=?`);
+            setValues.push(args.endTime);
           }
-        } else setStatemets.push(`endTime=NULL`);
-        if (args.isDeleted !== undefined)
-          setStatemets.push(`isDeleted=${args.isDeleted}`);
-        if (args.dealId) setStatemets.push(`dealId=${args.dealId}`);
-        if (args.note) setStatemets.push(`note = "${args.note}"`);
+        }
+        if (args.isDeleted !== undefined) {
+          setStatemets.push(`isDeleted=?`);
+          setValues.push(args.isDeleted);
+        }
+        if (args.dealId) {
+          setStatemets.push(`dealId=?`);
+          setValues.push(args.dealId);
+        }
+        if (args.note) {
+          setStatemets.push(`note = ?`);
+          setValues.push(args.note);
+        }
         const sql = `
           update WorkHours
           set
@@ -46,7 +59,7 @@ export const mutationType = new GraphQLObjectType<{}, ContextType>({
             id = ${args.id}
         `;
         try {
-          await db.query(sql);
+          await db.query(sql, setValues);
           return loaders.workHourLoader.load(args.id);
         } catch (e) {
           return new Error(JSON.stringify(e));
