@@ -96,6 +96,29 @@ async function markAsActive(id: number): Promise<WorkHour> {
   return rec2obj(obj);
 }
 
+async function updateWorkHour(wh: WorkHour): Promise<WorkHour> {
+  const query = `
+    mutation {
+      object: updateWorkHour(
+        id: ${wh.id},
+        startTime: "${wh.startTime}",
+        endTime: "${wh.endTime ? wh.endTime : "NULL"}",
+        isDeleted: ${wh.isDeleted},
+        note: "${wh.note}"
+      ) {
+        id
+        startTime
+        endTime
+        dealId
+        isDeleted
+        note
+      }
+    }
+  `;
+  const obj = await throwQuery<WorkHourRecord>(query);
+  return rec2obj(obj);
+}
+
 type WorkHourRowProps =
   | {
       workHour: WorkHour;
@@ -249,14 +272,17 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
   }, []);
 
   const handleDeleteWorkHour = async (wh: WorkHour): Promise<void> => {
-    const ret = await markAsDeleted(wh.id);
+    const ret = await updateWorkHour({ ...wh, isDeleted: true });
     setWorkHours((whs) => updateArray(whs, ret));
   };
   const handleRecoverWorkHour = async (wh: WorkHour): Promise<void> => {
-    const ret = await markAsActive(wh.id);
+    const ret = await updateWorkHour({ ...wh, isDeleted: false });
     setWorkHours((whs) => updateArray(whs, ret));
   };
-  const updateWorkHour = async (wh: WorkHour): Promise<void> => {};
+  const handleUpdateWorkHour = async (wh: WorkHour): Promise<void> => {
+    const ret = await updateWorkHour(wh);
+    setWorkHours((whs) => updateArray(whs, ret));
+  };
   return (
     <>
       <FormGroup>
@@ -281,7 +307,7 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
         <ActiveWorkHourTable
           workHours={workHours.filter((wh) => !wh.isDeleted)}
           onDelete={handleDeleteWorkHour}
-          onUpdate={updateWorkHour}
+          onUpdate={handleUpdateWorkHour}
         />
       )}
     </>
