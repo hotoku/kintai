@@ -1,6 +1,8 @@
 import { Delete, Edit } from "@mui/icons-material";
 import {
   Button,
+  Dialog,
+  DialogTitle,
   FormControlLabel,
   FormGroup,
   Paper,
@@ -261,12 +263,25 @@ function DeletedWorkHourTable({
   );
 }
 
+type WorkHourEditorDialogProps = {
+  open: boolean;
+  onClose: () => void;
+};
+function WorkHourEditorDialog({ open, onClose }: WorkHourEditorDialogProps) {
+  return (
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>ダイアログ</DialogTitle>
+    </Dialog>
+  );
+}
+
 type WorkHoursPageProps = {
   dealId: number;
 };
 function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
   const [workHours, setWorkHours] = useState<WorkHour[]>([]);
   const [showDeleted, setShowDeleted] = useState<boolean>(false);
+  const [editorOpen, setEditorOpen] = useState<boolean>(false);
   useEffect(() => {
     loadWorkHours(dealId).then(setWorkHours);
   }, []);
@@ -280,6 +295,7 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
     setWorkHours((whs) => updateArray(whs, ret));
   };
   const handleUpdateWorkHour = async (wh: WorkHour): Promise<void> => {
+    setEditorOpen(true);
     const ret = await updateWorkHour(wh);
     setWorkHours((whs) => updateArray(whs, ret));
   };
@@ -310,6 +326,13 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
           onUpdate={handleUpdateWorkHour}
         />
       )}
+      <WorkHourEditorDialog
+        open={editorOpen}
+        onClose={() => {
+          console.log("close");
+          setEditorOpen(false);
+        }}
+      ></WorkHourEditorDialog>
     </>
   );
 }
