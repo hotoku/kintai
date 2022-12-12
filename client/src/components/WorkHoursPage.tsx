@@ -360,6 +360,7 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
           setEditorOpen(false);
         }}
         halfwayWorkHour={halfwayWorkHour}
+        key={editedWorkHourId}
       ></WorkHourEditorDialog>
     </>
   );
