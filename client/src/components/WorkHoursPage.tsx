@@ -1,11 +1,13 @@
 import { Delete, Edit } from "@mui/icons-material";
 import {
+  Box,
   Button,
   Dialog,
   DialogTitle,
   FormControlLabel,
   FormGroup,
   Paper,
+  Stack,
   Switch,
   Table,
   TableBody,
@@ -13,12 +15,17 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
   Tooltip,
 } from "@mui/material";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { useEffect, useState } from "react";
-import { WorkHour } from "../api/types";
+import { HalfwayDeal, HalfwayWorkHour, WorkHour } from "../api/types";
 import { updateArray } from "../share/utils";
 import { formatDate, formatTime, secToStr } from "./utils";
+import dayjs, { Dayjs } from "dayjs";
 
 async function throwQuery<T>(query: string, name?: string): Promise<T> {
   name = name || "object";
@@ -62,40 +69,6 @@ async function loadWorkHours(dealId: number): Promise<WorkHour[]> {
       `;
   const objs = await throwQuery<WorkHourRecord[]>(query);
   return objs.map(rec2obj);
-}
-
-async function markAsDeleted(id: number): Promise<WorkHour> {
-  const query = `
-    mutation {
-      object: updateWorkHour(id: ${id}, isDeleted: true) {
-        id
-        startTime
-        endTime
-        dealId
-        isDeleted
-        note
-      }
-    }    
-  `;
-  const obj = await throwQuery<WorkHourRecord>(query);
-  return rec2obj(obj);
-}
-
-async function markAsActive(id: number): Promise<WorkHour> {
-  const query = `
-    mutation {
-      object: updateWorkHour(id: ${id}, isDeleted: false) {
-        id
-        startTime
-        endTime
-        dealId
-        isDeleted
-        note
-      }
-    }    
-  `;
-  const obj = await throwQuery<WorkHourRecord>(query);
-  return rec2obj(obj);
 }
 
 async function updateWorkHour(wh: WorkHour): Promise<WorkHour> {
@@ -266,11 +239,57 @@ function DeletedWorkHourTable({
 type WorkHourEditorDialogProps = {
   open: boolean;
   onClose: () => void;
+  halfwayWorkHour: HalfwayWorkHour;
 };
-function WorkHourEditorDialog({ open, onClose }: WorkHourEditorDialogProps) {
+function WorkHourEditorDialog({
+  open,
+  onClose,
+  halfwayWorkHour,
+}: WorkHourEditorDialogProps) {
+  const [startTime, setStartTime] = useState<Dayjs | null>(
+    halfwayWorkHour.startTime === undefined
+      ? null
+      : dayjs(halfwayWorkHour.startTime)
+  );
+  const [endTime, setEndTime] = useState<Dayjs | null>(
+    dayjs(halfwayWorkHour.endTime) ?? null
+  );
+  const [note, setNote] = useState<string>("");
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>ダイアログ</DialogTitle>
+      <Box sx={{ padding: "10px" }} component="form">
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <Stack spacing={3}>
+            <DateTimePicker
+              onChange={(v: Dayjs | null) => {
+                console.log("v =", v);
+                setStartTime(v);
+              }}
+              value={startTime}
+              renderInput={(params) => <TextField {...params} />}
+              label="start time"
+              inputFormat="YYYY-MM-DD HH:mm:ss"
+            />
+            <DateTimePicker
+              onChange={(v: Dayjs | null) => {
+                setEndTime(v);
+              }}
+              value={endTime}
+              renderInput={(params) => {
+                return <TextField {...params} />;
+              }}
+              label="end time"
+              inputFormat="YYYY-MM-DD HH:mm:ss"
+            />
+            <TextField
+              label="note"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+            />
+          </Stack>
+        </LocalizationProvider>
+      </Box>
     </Dialog>
   );
 }
@@ -282,6 +301,14 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
   const [workHours, setWorkHours] = useState<WorkHour[]>([]);
   const [showDeleted, setShowDeleted] = useState<boolean>(false);
   const [editorOpen, setEditorOpen] = useState<boolean>(false);
+
+  const [editedWorkHourId, setEditedWorkHourId] = useState<
+    number | "adding" | undefined
+  >(undefined);
+  const [halfwayWorkHour, setHalfwayWorkHour] = useState<HalfwayWorkHour>({
+    dealId: dealId,
+  });
+
   useEffect(() => {
     loadWorkHours(dealId).then(setWorkHours);
   }, []);
@@ -295,9 +322,9 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
     setWorkHours((whs) => updateArray(whs, ret));
   };
   const handleUpdateWorkHour = async (wh: WorkHour): Promise<void> => {
+    setHalfwayWorkHour({ ...wh });
+    setEditedWorkHourId(wh.id);
     setEditorOpen(true);
-    const ret = await updateWorkHour(wh);
-    setWorkHours((whs) => updateArray(whs, ret));
   };
   return (
     <>
@@ -332,6 +359,7 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
           console.log("close");
           setEditorOpen(false);
         }}
+        halfwayWorkHour={halfwayWorkHour}
       ></WorkHourEditorDialog>
     </>
   );
