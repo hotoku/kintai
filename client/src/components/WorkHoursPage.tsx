@@ -238,54 +238,63 @@ function DeletedWorkHourTable({
 
 type WorkHourEditorDialogProps = {
   open: boolean;
-  onClose: () => void;
-  halfwayWorkHour: HalfwayWorkHour;
+  onClose: (hwh: HalfwayWorkHour) => Promise<void>;
+  initialObject: HalfwayWorkHour;
 };
 function WorkHourEditorDialog({
   open,
   onClose,
-  halfwayWorkHour,
+  initialObject,
 }: WorkHourEditorDialogProps) {
-  const [startTime, setStartTime] = useState<Dayjs | null>(
-    halfwayWorkHour.startTime === undefined
-      ? null
-      : dayjs(halfwayWorkHour.startTime)
-  );
-  const [endTime, setEndTime] = useState<Dayjs | null>(
-    dayjs(halfwayWorkHour.endTime) ?? null
-  );
-  const [note, setNote] = useState<string>("");
+  const [editedObject, setEditedObject] = useState<HalfwayWorkHour>({
+    ...initialObject,
+  });
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog
+      open={open}
+      onClose={() => {
+        onClose(editedObject);
+      }}
+    >
       <DialogTitle>ダイアログ</DialogTitle>
       <Box sx={{ padding: "10px" }} component="form">
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <Stack spacing={3}>
             <DateTimePicker
               onChange={(v: Dayjs | null) => {
-                console.log("v =", v);
-                setStartTime(v);
+                setEditedObject({
+                  ...editedObject,
+                  startTime: v ? v.toDate() : undefined,
+                });
               }}
-              value={startTime}
+              value={
+                editedObject.startTime ? dayjs(editedObject.startTime) : null
+              }
               renderInput={(params) => <TextField {...params} />}
               label="start time"
               inputFormat="YYYY-MM-DD HH:mm:ss"
             />
             <DateTimePicker
               onChange={(v: Dayjs | null) => {
-                setEndTime(v);
+                setEditedObject({
+                  ...editedObject,
+                  endTime: v ? v.toDate() : undefined,
+                });
               }}
-              value={endTime}
-              renderInput={(params) => {
-                return <TextField {...params} />;
-              }}
-              label="end time"
+              value={editedObject.endTime ? dayjs(editedObject.endTime) : null}
+              renderInput={(params) => <TextField {...params} />}
+              label="start time"
               inputFormat="YYYY-MM-DD HH:mm:ss"
             />
             <TextField
               label="note"
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
+              value={editedObject.note}
+              onChange={(e) =>
+                setEditedObject({
+                  ...editedObject,
+                  note: e.target.value,
+                })
+              }
             />
           </Stack>
         </LocalizationProvider>
@@ -321,10 +330,27 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
     const ret = await updateWorkHour({ ...wh, isDeleted: false });
     setWorkHours((whs) => updateArray(whs, ret));
   };
-  const handleUpdateWorkHour = async (wh: WorkHour): Promise<void> => {
+  const handleUpdateClick = async (wh: WorkHour): Promise<void> => {
     setHalfwayWorkHour({ ...wh });
     setEditedWorkHourId(wh.id);
     setEditorOpen(true);
+  };
+  const hanldeEditorClose = async (hwh: HalfwayWorkHour): Promise<void> => {
+    setEditorOpen(false);
+    setHalfwayWorkHour({ ...hwh });
+    if (!hwh.startTime) {
+      console.log("start time must not be null");
+      return;
+    }
+    if (!hwh.id) {
+      throw new Error("updateing object of no id");
+    }
+    const ret = await updateWorkHour({
+      ...hwh,
+      id: hwh.id,
+      startTime: hwh.startTime,
+    });
+    setWorkHours((whs) => updateArray(whs, ret));
   };
   return (
     <>
@@ -350,16 +376,13 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
         <ActiveWorkHourTable
           workHours={workHours.filter((wh) => !wh.isDeleted)}
           onDelete={handleDeleteWorkHour}
-          onUpdate={handleUpdateWorkHour}
+          onUpdate={handleUpdateClick}
         />
       )}
       <WorkHourEditorDialog
         open={editorOpen}
-        onClose={() => {
-          console.log("close");
-          setEditorOpen(false);
-        }}
-        halfwayWorkHour={halfwayWorkHour}
+        onClose={hanldeEditorClose}
+        initialObject={halfwayWorkHour}
         key={editedWorkHourId}
       ></WorkHourEditorDialog>
     </>
