@@ -336,9 +336,6 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
   const [editedWorkHourId, setEditedWorkHourId] = useState<
     number | "adding" | undefined
   >(undefined);
-  const [halfwayWorkHour, setHalfwayWorkHour] = useState<HalfwayWorkHour>({
-    dealId: dealId,
-  });
 
   useEffect(() => {
     loadWorkHours(dealId).then(setWorkHours);
@@ -353,13 +350,11 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
     setWorkHours((whs) => updateArray(whs, ret));
   };
   const handleUpdateClick = async (wh: WorkHour): Promise<void> => {
-    setHalfwayWorkHour({ ...wh });
     setEditedWorkHourId(wh.id);
     setEditorOpen(true);
   };
   const hanldeEditorClose = async (hwh: HalfwayWorkHour): Promise<void> => {
     setEditorOpen(false);
-    setHalfwayWorkHour({ ...hwh });
     if (!hwh.startTime) {
       console.log("start time must not be null");
       return;
@@ -383,12 +378,16 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
     }
   };
   const handleAddClick = () => {
-    setHalfwayWorkHour({
-      dealId: dealId,
-    });
     setEditedWorkHourId("adding");
     setEditorOpen(true);
   };
+  const objForEditor =
+    typeof editedWorkHourId === "number"
+      ? workHours.find((x) => x.id === editedWorkHourId)
+      : { dealId: dealId };
+  if (objForEditor === undefined) {
+    throw new Error("invalid edit number is set");
+  }
   return (
     <>
       <FormGroup>
@@ -423,7 +422,7 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
       <WorkHourEditorDialog
         open={editorOpen}
         onClose={hanldeEditorClose}
-        initialObject={halfwayWorkHour}
+        initialObject={objForEditor}
         key={editedWorkHourId}
       ></WorkHourEditorDialog>
     </>
