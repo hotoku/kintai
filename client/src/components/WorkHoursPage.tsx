@@ -26,6 +26,7 @@ import { HalfwayDeal, HalfwayWorkHour, WorkHour } from "../api/types";
 import { updateArray } from "../share/utils";
 import { formatDate, formatTime, secToStr } from "./utils";
 import dayjs, { Dayjs } from "dayjs";
+import assert from "assert";
 
 async function throwQuery<T>(query: string, name?: string): Promise<T> {
   name = name || "object";
@@ -76,6 +77,28 @@ async function updateWorkHour(wh: WorkHour): Promise<WorkHour> {
     mutation {
       object: updateWorkHour(
         id: ${wh.id},
+        startTime: "${wh.startTime}",
+        endTime: "${wh.endTime ? wh.endTime : "NULL"}",
+        isDeleted: ${wh.isDeleted},
+        note: "${wh.note}"
+      ) {
+        id
+        startTime
+        endTime
+        dealId
+        isDeleted
+        note
+      }
+    }
+  `;
+  const obj = await throwQuery<WorkHourRecord>(query);
+  return rec2obj(obj);
+}
+
+async function addWorkHour(wh: Omit<WorkHour, "id">): Promise<WorkHour> {
+  const query = `
+    mutation {
+      object: createWorkHour(
         startTime: "${wh.startTime}",
         endTime: "${wh.endTime ? wh.endTime : "NULL"}",
         isDeleted: ${wh.isDeleted},
@@ -342,15 +365,32 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
       console.log("start time must not be null");
       return;
     }
-    if (!hwh.id) {
-      throw new Error("updateing object of no id");
+    assert(
+      hwh.dealId,
+      new Error("work hour of no deal id was passed to editor")
+    );
+    if (typeof editedWorkHourId === "number") {
+      assert(hwh.id, new Error("editing instance of no id"));
+      const ret = await updateWorkHour({
+        ...hwh,
+        id: hwh.id,
+        startTime: hwh.startTime,
+      });
+      setWorkHours((whs) => updateArray(whs, ret));
+    } else if (editedWorkHourId === "adding") {
+      const ret = await addWorkHour({
+        ...hwh,
+        startTime: hwh.startTime,
+      });
+      setWorkHours((whs) => [...whs, ret]);
     }
-    const ret = await updateWorkHour({
-      ...hwh,
-      id: hwh.id,
-      startTime: hwh.startTime,
+  };
+  const handleAddClick = () => {
+    setHalfwayWorkHour({
+      dealId: dealId,
     });
-    setWorkHours((whs) => updateArray(whs, ret));
+    setEditedWorkHourId("adding");
+    setEditorOpen(true);
   };
   return (
     <>
@@ -365,6 +405,10 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
               }}
             />
           }
+        />
+        <FormControlLabel
+          label="add"
+          control={<Button onClick={handleAddClick}>add</Button>}
         />
       </FormGroup>
       {showDeleted ? (
