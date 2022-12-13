@@ -99,9 +99,9 @@ async function addWorkHour(wh: Omit<WorkHour, "id">): Promise<WorkHour> {
     mutation {
       object: addWorkHour(
         startTime: "${wh.startTime}",
-        endTime: ${wh.endTime ? wh.endTime : null},
+        endTime: ${wh.endTime ? "${wh.endTime}" : null},
         dealId: ${wh.dealId},
-        note: "${wh.note}"
+        note: "${wh.note ? wh.note : ""}"
       ) {
         id
         startTime
