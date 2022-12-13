@@ -22,11 +22,10 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { useEffect, useState } from "react";
-import { HalfwayDeal, HalfwayWorkHour, WorkHour } from "../api/types";
+import { HalfwayWorkHour, WorkHour } from "../api/types";
 import { updateArray } from "../share/utils";
 import { formatDate, formatTime, secToStr } from "./utils";
 import dayjs, { Dayjs } from "dayjs";
-import assert from "assert";
 
 async function throwQuery<T>(query: string, name?: string): Promise<T> {
   name = name || "object";
@@ -67,7 +66,7 @@ async function loadWorkHours(dealId: number): Promise<WorkHour[]> {
             note
           }
         }
-      `;
+  `;
   const objs = await throwQuery<WorkHourRecord[]>(query);
   return objs.map(rec2obj);
 }
@@ -98,10 +97,10 @@ async function updateWorkHour(wh: WorkHour): Promise<WorkHour> {
 async function addWorkHour(wh: Omit<WorkHour, "id">): Promise<WorkHour> {
   const query = `
     mutation {
-      object: createWorkHour(
+      object: addWorkHour(
         startTime: "${wh.startTime}",
-        endTime: "${wh.endTime ? wh.endTime : "NULL"}",
-        isDeleted: ${wh.isDeleted},
+        endTime: ${wh.endTime ? wh.endTime : null},
+        dealId: ${wh.dealId},
         note: "${wh.note}"
       ) {
         id
@@ -306,12 +305,12 @@ function WorkHourEditorDialog({
               }}
               value={editedObject.endTime ? dayjs(editedObject.endTime) : null}
               renderInput={(params) => <TextField {...params} />}
-              label="start time"
+              label="end time"
               inputFormat="YYYY-MM-DD HH:mm:ss"
             />
             <TextField
               label="note"
-              value={editedObject.note}
+              value={editedObject.note ?? ""}
               onChange={(e) =>
                 setEditedObject({
                   ...editedObject,
@@ -365,12 +364,10 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
       console.log("start time must not be null");
       return;
     }
-    assert(
-      hwh.dealId,
-      new Error("work hour of no deal id was passed to editor")
-    );
+    if (!hwh.dealId)
+      throw new Error("work hour of no deal id was passed to editor");
     if (typeof editedWorkHourId === "number") {
-      assert(hwh.id, new Error("editing instance of no id"));
+      if (!hwh.id) throw new Error("editing instance of no id");
       const ret = await updateWorkHour({
         ...hwh,
         id: hwh.id,

@@ -6,7 +6,6 @@ import {
   GraphQLObjectType,
   GraphQLBoolean,
 } from "graphql";
-import { ResultSetHeader } from "mysql2/promise";
 import { getConnection, getPool } from "../../../db/db";
 import { WorkHourType } from "../objectTypes";
 
@@ -112,7 +111,7 @@ export const mutationType = new GraphQLObjectType<{}, ContextType>({
         `;
         const values = [] as any[];
         values.push(args.startTime);
-        values.push(args.endTime);
+        values.push(args.endTime ?? undefined);
         values.push(args.dealId);
         values.push(args.note ?? "");
         try {
