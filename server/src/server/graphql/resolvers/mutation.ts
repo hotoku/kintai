@@ -1,3 +1,4 @@
+import assert from "assert";
 import {
   GraphQLInt,
   GraphQLNonNull,
@@ -81,6 +82,45 @@ export const mutationType = new GraphQLObjectType<{}, ContextType>({
         try {
           await db.query(sql, args.id);
           return "ok";
+        } catch (e) {
+          return new Error(JSON.stringify(e));
+        }
+      },
+    },
+    addWorkHour: {
+      type: WorkHourType,
+      args: {
+        startTime: { type: new GraphQLNonNull(GraphQLString) },
+        endTime: { type: GraphQLString },
+        dealId: { type: new GraphQLNonNull(GraphQLInt) },
+        note: { type: GraphQLString },
+      },
+      resolve: async (_, args, { loaders }) => {
+        const db = await getConnection();
+        const sql = `
+          insert into
+          WorkHours (
+            startTime,
+            endTime,
+            dealId,
+            note
+          )
+          values (
+            ?, ?, ?, ?
+          )
+        `;
+        const values = [] as any[];
+        values.push(args.startTime);
+        values.push(args.endTime ?? undefined);
+        values.push(args.dealId);
+        values.push(args.note ?? "");
+        try {
+          const [obj, _] = await db.query(sql, values);
+          assert(
+            !(obj instanceof Array),
+            new Error("type of return value is not expected")
+          );
+          return loaders.workHourLoader.load(obj.insertId);
         } catch (e) {
           return new Error(JSON.stringify(e));
         }

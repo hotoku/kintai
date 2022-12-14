@@ -66,7 +66,7 @@ async function loadWorkHours(dealId: number): Promise<WorkHour[]> {
             note
           }
         }
-      `;
+  `;
   const objs = await throwQuery<WorkHourRecord[]>(query);
   return objs.map(rec2obj);
 }
@@ -80,6 +80,28 @@ async function updateWorkHour(wh: WorkHour): Promise<WorkHour> {
         endTime: "${wh.endTime ? wh.endTime : "NULL"}",
         isDeleted: ${wh.isDeleted},
         note: "${wh.note}"
+      ) {
+        id
+        startTime
+        endTime
+        dealId
+        isDeleted
+        note
+      }
+    }
+  `;
+  const obj = await throwQuery<WorkHourRecord>(query);
+  return rec2obj(obj);
+}
+
+async function addWorkHour(wh: Omit<WorkHour, "id">): Promise<WorkHour> {
+  const query = `
+    mutation {
+      object: addWorkHour(
+        startTime: "${wh.startTime}",
+        endTime: ${wh.endTime ? "${wh.endTime}" : null},
+        dealId: ${wh.dealId},
+        note: "${wh.note ? wh.note : ""}"
       ) {
         id
         startTime
@@ -238,54 +260,63 @@ function DeletedWorkHourTable({
 
 type WorkHourEditorDialogProps = {
   open: boolean;
-  onClose: () => void;
-  halfwayWorkHour: HalfwayWorkHour;
+  onClose: (hwh: HalfwayWorkHour) => Promise<void>;
+  initialObject: HalfwayWorkHour;
 };
 function WorkHourEditorDialog({
   open,
   onClose,
-  halfwayWorkHour,
+  initialObject,
 }: WorkHourEditorDialogProps) {
-  const [startTime, setStartTime] = useState<Dayjs | null>(
-    halfwayWorkHour.startTime === undefined
-      ? null
-      : dayjs(halfwayWorkHour.startTime)
-  );
-  const [endTime, setEndTime] = useState<Dayjs | null>(
-    dayjs(halfwayWorkHour.endTime) ?? null
-  );
-  const [note, setNote] = useState<string>("");
+  const [editedObject, setEditedObject] = useState<HalfwayWorkHour>({
+    ...initialObject,
+  });
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog
+      open={open}
+      onClose={() => {
+        onClose(editedObject);
+      }}
+    >
       <DialogTitle>ダイアログ</DialogTitle>
       <Box sx={{ padding: "10px" }} component="form">
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <Stack spacing={3}>
             <DateTimePicker
               onChange={(v: Dayjs | null) => {
-                console.log("v =", v);
-                setStartTime(v);
+                setEditedObject({
+                  ...editedObject,
+                  startTime: v ? v.toDate() : undefined,
+                });
               }}
-              value={startTime}
+              value={
+                editedObject.startTime ? dayjs(editedObject.startTime) : null
+              }
               renderInput={(params) => <TextField {...params} />}
               label="start time"
               inputFormat="YYYY-MM-DD HH:mm:ss"
             />
             <DateTimePicker
               onChange={(v: Dayjs | null) => {
-                setEndTime(v);
+                setEditedObject({
+                  ...editedObject,
+                  endTime: v ? v.toDate() : undefined,
+                });
               }}
-              value={endTime}
-              renderInput={(params) => {
-                return <TextField {...params} />;
-              }}
+              value={editedObject.endTime ? dayjs(editedObject.endTime) : null}
+              renderInput={(params) => <TextField {...params} />}
               label="end time"
               inputFormat="YYYY-MM-DD HH:mm:ss"
             />
             <TextField
               label="note"
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
+              value={editedObject.note ?? ""}
+              onChange={(e) =>
+                setEditedObject({
+                  ...editedObject,
+                  note: e.target.value,
+                })
+              }
             />
           </Stack>
         </LocalizationProvider>
@@ -305,9 +336,6 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
   const [editedWorkHourId, setEditedWorkHourId] = useState<
     number | "adding" | undefined
   >(undefined);
-  const [halfwayWorkHour, setHalfwayWorkHour] = useState<HalfwayWorkHour>({
-    dealId: dealId,
-  });
 
   useEffect(() => {
     loadWorkHours(dealId).then(setWorkHours);
@@ -321,11 +349,45 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
     const ret = await updateWorkHour({ ...wh, isDeleted: false });
     setWorkHours((whs) => updateArray(whs, ret));
   };
-  const handleUpdateWorkHour = async (wh: WorkHour): Promise<void> => {
-    setHalfwayWorkHour({ ...wh });
+  const handleUpdateClick = async (wh: WorkHour): Promise<void> => {
     setEditedWorkHourId(wh.id);
     setEditorOpen(true);
   };
+  const hanldeEditorClose = async (hwh: HalfwayWorkHour): Promise<void> => {
+    setEditorOpen(false);
+    if (!hwh.startTime) {
+      console.log("start time must not be null");
+      return;
+    }
+    if (!hwh.dealId)
+      throw new Error("work hour of no deal id was passed to editor");
+    if (typeof editedWorkHourId === "number") {
+      if (!hwh.id) throw new Error("editing instance of no id");
+      const ret = await updateWorkHour({
+        ...hwh,
+        id: hwh.id,
+        startTime: hwh.startTime,
+      });
+      setWorkHours((whs) => updateArray(whs, ret));
+    } else if (editedWorkHourId === "adding") {
+      const ret = await addWorkHour({
+        ...hwh,
+        startTime: hwh.startTime,
+      });
+      setWorkHours((whs) => [...whs, ret]);
+    }
+  };
+  const handleAddClick = () => {
+    setEditedWorkHourId("adding");
+    setEditorOpen(true);
+  };
+  const objForEditor =
+    typeof editedWorkHourId === "number"
+      ? workHours.find((x) => x.id === editedWorkHourId)
+      : { dealId: dealId };
+  if (objForEditor === undefined) {
+    throw new Error("invalid edit number is set");
+  }
   return (
     <>
       <FormGroup>
@@ -340,6 +402,10 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
             />
           }
         />
+        <FormControlLabel
+          label="add"
+          control={<Button onClick={handleAddClick}>add</Button>}
+        />
       </FormGroup>
       {showDeleted ? (
         <DeletedWorkHourTable
@@ -350,16 +416,13 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
         <ActiveWorkHourTable
           workHours={workHours.filter((wh) => !wh.isDeleted)}
           onDelete={handleDeleteWorkHour}
-          onUpdate={handleUpdateWorkHour}
+          onUpdate={handleUpdateClick}
         />
       )}
       <WorkHourEditorDialog
         open={editorOpen}
-        onClose={() => {
-          console.log("close");
-          setEditorOpen(false);
-        }}
-        halfwayWorkHour={halfwayWorkHour}
+        onClose={hanldeEditorClose}
+        initialObject={objForEditor}
         key={editedWorkHourId}
       ></WorkHourEditorDialog>
     </>
