@@ -278,10 +278,9 @@ function WorkHourEditorDialog({
         onClose(editedObject);
       }}
     >
-      <DialogTitle>ダイアログ</DialogTitle>
-      <Box sx={{ padding: "10px" }} component="form">
+      <Box sx={{ padding: 1 }} component="form">
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Stack spacing={3}>
+          <Stack spacing={1}>
             <DateTimePicker
               onChange={(v: Dayjs | null) => {
                 setEditedObject({
@@ -318,6 +317,10 @@ function WorkHourEditorDialog({
                 })
               }
             />
+            <Box sx={{ "& > :not(style)": { marginRight: 1 } }}>
+              <Button variant="contained">save</Button>
+              <Button variant="outlined">cancel</Button>
+            </Box>
           </Stack>
         </LocalizationProvider>
       </Box>
@@ -390,7 +393,17 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
   }
   return (
     <>
-      <FormGroup>
+      <Box
+        component="form"
+        sx={{
+          "& > :not(style)": { m: 1, width: "25ch" },
+        }}
+        noValidate
+        autoComplete="off"
+      >
+        <Button variant="outlined" onClick={handleAddClick}>
+          add
+        </Button>
         <FormControlLabel
           label="show deleted"
           control={
@@ -402,11 +415,7 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
             />
           }
         />
-        <FormControlLabel
-          label="add"
-          control={<Button onClick={handleAddClick}>add</Button>}
-        />
-      </FormGroup>
+      </Box>
       {showDeleted ? (
         <DeletedWorkHourTable
           workHours={workHours.filter((wh) => wh.isDeleted)}
