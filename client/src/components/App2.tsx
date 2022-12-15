@@ -10,7 +10,7 @@ import DeletedWorkHours from "./DeletedWorkHours";
 import { parseQuery } from "../utils";
 import { AppBar, Box, IconButton, Toolbar, Typography } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import WorkHoursPage from "./WorkHoursPage";
+import WorkHoursPage from "./WorkHoursPage/WorkHoursPage";
 
 function MyRoutes() {
   const query = parseQuery(useLocation().search);

@@ -3,9 +3,7 @@ import {
   Box,
   Button,
   Dialog,
-  DialogTitle,
   FormControlLabel,
-  FormGroup,
   Paper,
   Stack,
   Switch,
@@ -22,9 +20,9 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { useEffect, useState } from "react";
-import { HalfwayWorkHour, WorkHour } from "../api/types";
-import { updateArray } from "../share/utils";
-import { formatDate, formatTime, secToStr } from "./utils";
+import { HalfwayWorkHour, WorkHour } from "../../api/types";
+import { updateArray } from "../../share/utils";
+import { formatDate, formatTime, secToStr } from "../utils";
 import dayjs, { Dayjs } from "dayjs";
 
 async function throwQuery<T>(query: string, name?: string): Promise<T> {
