@@ -1,92 +1,11 @@
-import {
-  Box,
-  Button,
-  Dialog,
-  FormControlLabel,
-  Stack,
-  Switch,
-  TextField,
-} from "@mui/material";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { Box, Button, FormControlLabel, Switch } from "@mui/material";
 import { useEffect, useState } from "react";
 import { HalfwayWorkHour, WorkHour } from "../../api/types";
 import { updateArray } from "../../share/utils";
 import { addWorkHour, loadWorkHours, updateWorkHour } from "./utils";
-import dayjs, { Dayjs } from "dayjs";
 import DeletedWorkHourTable from "./DeletedWorkHourTable";
 import ActiveWorkHourTable from "./ActiveWorkHourTable";
-
-type WorkHourEditorDialogProps = {
-  open: boolean;
-  onClose: (hwh: HalfwayWorkHour) => Promise<void>;
-  initialObject: HalfwayWorkHour;
-};
-function WorkHourEditorDialog({
-  open,
-  onClose,
-  initialObject,
-}: WorkHourEditorDialogProps) {
-  const [editedObject, setEditedObject] = useState<HalfwayWorkHour>({
-    ...initialObject,
-  });
-  return (
-    <Dialog
-      open={open}
-      onClose={() => {
-        onClose(editedObject);
-      }}
-    >
-      <Box sx={{ padding: 1 }} component="form">
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Stack spacing={1}>
-            <DateTimePicker
-              onChange={(v: Dayjs | null) => {
-                setEditedObject({
-                  ...editedObject,
-                  startTime: v ? v.toDate() : undefined,
-                });
-              }}
-              value={
-                editedObject.startTime ? dayjs(editedObject.startTime) : null
-              }
-              renderInput={(params) => <TextField {...params} />}
-              label="start time"
-              inputFormat="YYYY-MM-DD HH:mm:ss"
-            />
-            <DateTimePicker
-              onChange={(v: Dayjs | null) => {
-                setEditedObject({
-                  ...editedObject,
-                  endTime: v ? v.toDate() : undefined,
-                });
-              }}
-              value={editedObject.endTime ? dayjs(editedObject.endTime) : null}
-              renderInput={(params) => <TextField {...params} />}
-              label="end time"
-              inputFormat="YYYY-MM-DD HH:mm:ss"
-            />
-            <TextField
-              label="note"
-              value={editedObject.note ?? ""}
-              onChange={(e) =>
-                setEditedObject({
-                  ...editedObject,
-                  note: e.target.value,
-                })
-              }
-            />
-            <Box sx={{ "& > :not(style)": { marginRight: 1 } }}>
-              <Button variant="contained">save</Button>
-              <Button variant="outlined">cancel</Button>
-            </Box>
-          </Stack>
-        </LocalizationProvider>
-      </Box>
-    </Dialog>
-  );
-}
+import WorkHourEditorDialog from "./WorkHourEditorDialog";
 
 type WorkHoursPageProps = {
   dealId: number;
