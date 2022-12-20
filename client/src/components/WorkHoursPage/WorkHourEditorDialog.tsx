@@ -9,17 +9,22 @@ import dayjs, { Dayjs } from "dayjs";
 type WorkHourEditorDialogProps = {
   open: boolean;
   onClose: (hwh: HalfwayWorkHour) => Promise<void>;
+  onSave: (hwh: HalfwayWorkHour) => Promise<void>;
+  onCancel: (hwh: HalfwayWorkHour) => Promise<void>;
   initialObject: HalfwayWorkHour;
 };
 
 function WorkHourEditorDialog({
   open,
   onClose,
+  onSave,
+  onCancel,
   initialObject,
 }: WorkHourEditorDialogProps) {
   const [editedObject, setEditedObject] = useState<HalfwayWorkHour>({
     ...initialObject,
   });
+  const canSave = editedObject.startTime;
   return (
     <Dialog
       open={open}
@@ -67,8 +72,23 @@ function WorkHourEditorDialog({
               }
             />
             <Box sx={{ "& > :not(style)": { marginRight: 1 } }}>
-              <Button variant="contained">save</Button>
-              <Button variant="outlined">cancel</Button>
+              <Button
+                variant="contained"
+                disabled={!canSave}
+                onClick={() => {
+                  onSave(editedObject);
+                }}
+              >
+                save
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  onCancel(editedObject);
+                }}
+              >
+                cancel
+              </Button>
             </Box>
           </Stack>
         </LocalizationProvider>

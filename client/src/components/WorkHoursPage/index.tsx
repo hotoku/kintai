@@ -23,6 +23,9 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
     loadWorkHours(dealId).then(setWorkHours);
   }, []);
 
+  const handleCancel = async (wh: HalfwayWorkHour): Promise<void> => {};
+  const handleSave = async (wh: HalfwayWorkHour): Promise<void> => {};
+
   const handleDeleteWorkHour = async (wh: WorkHour): Promise<void> => {
     const ret = await updateWorkHour({ ...wh, isDeleted: true });
     setWorkHours((whs) => updateArray(whs, ret));
@@ -110,6 +113,8 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
       <WorkHourEditorDialog
         open={editorOpen}
         onClose={hanldeEditorClose}
+        onCancel={handleCancel}
+        onSave={handleSave}
         initialObject={objForEditor}
         key={editedWorkHourId}
       ></WorkHourEditorDialog>
