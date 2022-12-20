@@ -3,7 +3,7 @@ import { Button, TableCell, TableRow, Tooltip } from "@mui/material";
 import { WorkHour } from "../../api/types";
 import { formatDate, formatTime, secToStr } from "../utils";
 
-export type WorkHourRowProps =
+type WorkHourRowProps =
   | {
       workHour: WorkHour;
       deleted: false;
@@ -16,7 +16,7 @@ export type WorkHourRowProps =
       onRecover: (wh: WorkHour) => Promise<void>;
     };
 
-export function WorkHourRow({ workHour, ...props }: WorkHourRowProps) {
+function WorkHourRow({ workHour, ...props }: WorkHourRowProps) {
   const duration = workHour.endTime
     ? (workHour.endTime.getTime() - workHour.startTime.getTime()) / 1000
     : 0;
@@ -65,3 +65,5 @@ export function WorkHourRow({ workHour, ...props }: WorkHourRowProps) {
     </TableRow>
   );
 }
+
+export default WorkHourRow;

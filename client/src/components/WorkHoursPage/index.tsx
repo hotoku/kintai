@@ -15,8 +15,8 @@ import { HalfwayWorkHour, WorkHour } from "../../api/types";
 import { updateArray } from "../../share/utils";
 import { addWorkHour, loadWorkHours, updateWorkHour } from "./utils";
 import dayjs, { Dayjs } from "dayjs";
-import { DeletedWorkHourTable } from "./DeletedWorkHourTable";
-import { ActiveWorkHourTable } from "./ActiveWorkHourTable";
+import DeletedWorkHourTable from "./DeletedWorkHourTable";
+import ActiveWorkHourTable from "./ActiveWorkHourTable";
 
 type WorkHourEditorDialogProps = {
   open: boolean;

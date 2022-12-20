@@ -8,13 +8,13 @@ import {
   TableRow,
 } from "@mui/material";
 import { WorkHour } from "../../api/types";
-import { WorkHourRow } from "./WorkHourRow";
+import WorkHourRow from "./WorkHourRow";
 
-export type DeletedWorkHourTableProps = {
+type DeletedWorkHourTableProps = {
   workHours: WorkHour[];
   onRecover: (wh: WorkHour) => Promise<void>;
 };
-export function DeletedWorkHourTable({
+function DeletedWorkHourTable({
   workHours,
   onRecover,
 }: DeletedWorkHourTableProps): JSX.Element {
@@ -47,3 +47,5 @@ export function DeletedWorkHourTable({
     </TableContainer>
   );
 }
+
+export default DeletedWorkHourTable;

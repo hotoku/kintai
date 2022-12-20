@@ -8,14 +8,14 @@ import {
   TableRow,
 } from "@mui/material";
 import { WorkHour } from "../../api/types";
-import { WorkHourRow } from "./WorkHourRow";
+import WorkHourRow from "./WorkHourRow";
 
-export type ActiveWorkHourTableProps = {
+type ActiveWorkHourTableProps = {
   workHours: WorkHour[];
   onDelete: (wh: WorkHour) => Promise<void>;
   onUpdate: (wh: WorkHour) => Promise<void>;
 };
-export function ActiveWorkHourTable({
+function ActiveWorkHourTable({
   workHours,
   onDelete,
   onUpdate,
@@ -50,3 +50,5 @@ export function ActiveWorkHourTable({
     </TableContainer>
   );
 }
+
+export default ActiveWorkHourTable;

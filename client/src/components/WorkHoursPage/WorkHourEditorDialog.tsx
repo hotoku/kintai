@@ -3,16 +3,16 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { useState } from "react";
-import { HalfwayWorkHour, WorkHour } from "../../api/types";
+import { HalfwayWorkHour } from "../../api/types";
 import dayjs, { Dayjs } from "dayjs";
 
-export type WorkHourEditorDialogProps = {
+type WorkHourEditorDialogProps = {
   open: boolean;
   onClose: (hwh: HalfwayWorkHour) => Promise<void>;
   initialObject: HalfwayWorkHour;
 };
 
-export function WorkHourEditorDialog({
+function WorkHourEditorDialog({
   open,
   onClose,
   initialObject,
@@ -76,3 +76,5 @@ export function WorkHourEditorDialog({
     </Dialog>
   );
 }
+
+export default WorkHourEditorDialog;
