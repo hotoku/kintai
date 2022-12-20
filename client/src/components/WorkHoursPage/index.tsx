@@ -13,7 +13,6 @@ type WorkHoursPageProps = {
 function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
   const [workHours, setWorkHours] = useState<WorkHour[]>([]);
   const [showDeleted, setShowDeleted] = useState<boolean>(false);
-  const [editorOpen, setEditorOpen] = useState<boolean>(false);
 
   const [editedWorkHourId, setEditedWorkHourId] = useState<
     number | "adding" | undefined
@@ -23,8 +22,9 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
     loadWorkHours(dealId).then(setWorkHours);
   }, []);
 
-  const handleCancel = async (wh: HalfwayWorkHour): Promise<void> => {};
-  const handleSave = async (wh: HalfwayWorkHour): Promise<void> => {};
+  const handleCancel = async (_: HalfwayWorkHour): Promise<void> => {
+    setEditedWorkHourId(undefined);
+  };
 
   const handleDeleteWorkHour = async (wh: WorkHour): Promise<void> => {
     const ret = await updateWorkHour({ ...wh, isDeleted: true });
@@ -36,35 +36,35 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
   };
   const handleUpdateClick = async (wh: WorkHour): Promise<void> => {
     setEditedWorkHourId(wh.id);
-    setEditorOpen(true);
   };
-  const hanldeEditorClose = async (hwh: HalfwayWorkHour): Promise<void> => {
-    setEditorOpen(false);
-    if (!hwh.startTime) {
+  const handleSave = async (
+    wh: Omit<WorkHour, "id"> & { id: number | undefined }
+  ): Promise<void> => {
+    setEditedWorkHourId(undefined);
+    if (!wh.startTime) {
       console.log("start time must not be null");
       return;
     }
-    if (!hwh.dealId)
+    if (!wh.dealId)
       throw new Error("work hour of no deal id was passed to editor");
     if (typeof editedWorkHourId === "number") {
-      if (!hwh.id) throw new Error("editing instance of no id");
+      if (!wh.id) throw new Error("editing instance of no id");
       const ret = await updateWorkHour({
-        ...hwh,
-        id: hwh.id,
-        startTime: hwh.startTime,
+        ...wh,
+        id: wh.id,
+        startTime: wh.startTime,
       });
       setWorkHours((whs) => updateArray(whs, ret));
     } else if (editedWorkHourId === "adding") {
       const ret = await addWorkHour({
-        ...hwh,
-        startTime: hwh.startTime,
+        ...wh,
+        startTime: wh.startTime,
       });
       setWorkHours((whs) => [...whs, ret]);
     }
   };
   const handleAddClick = () => {
     setEditedWorkHourId("adding");
-    setEditorOpen(true);
   };
   const objForEditor =
     typeof editedWorkHourId === "number"
@@ -111,13 +111,12 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
         />
       )}
       <WorkHourEditorDialog
-        open={editorOpen}
-        onClose={hanldeEditorClose}
+        open={editedWorkHourId !== undefined}
         onCancel={handleCancel}
         onSave={handleSave}
         initialObject={objForEditor}
         key={editedWorkHourId}
-      ></WorkHourEditorDialog>
+      />
     </>
   );
 }

@@ -3,20 +3,20 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { useState } from "react";
-import { HalfwayWorkHour } from "../../api/types";
+import { HalfwayWorkHour, WorkHour } from "../../api/types";
 import dayjs, { Dayjs } from "dayjs";
 
 type WorkHourEditorDialogProps = {
   open: boolean;
-  onClose: (hwh: HalfwayWorkHour) => Promise<void>;
-  onSave: (hwh: HalfwayWorkHour) => Promise<void>;
+  onSave: (
+    wh: Omit<WorkHour, "id"> & { id: number | undefined }
+  ) => Promise<void>;
   onCancel: (hwh: HalfwayWorkHour) => Promise<void>;
   initialObject: HalfwayWorkHour;
 };
 
 function WorkHourEditorDialog({
   open,
-  onClose,
   onSave,
   onCancel,
   initialObject,
@@ -29,7 +29,7 @@ function WorkHourEditorDialog({
     <Dialog
       open={open}
       onClose={() => {
-        onClose(editedObject);
+        onCancel(editedObject);
       }}
     >
       <Box sx={{ padding: 1 }} component="form">
@@ -76,7 +76,12 @@ function WorkHourEditorDialog({
                 variant="contained"
                 disabled={!canSave}
                 onClick={() => {
-                  onSave(editedObject);
+                  if (editedObject.startTime) {
+                    onSave({
+                      ...editedObject,
+                      startTime: editedObject.startTime,
+                    });
+                  }
                 }}
               >
                 save
