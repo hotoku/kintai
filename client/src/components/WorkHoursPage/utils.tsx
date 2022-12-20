@@ -1,20 +1,3 @@
-import {
-  Box,
-  Button,
-  Dialog,
-  FormControlLabel,
-  Paper,
-  Stack,
-  Switch,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TextField,
-  Tooltip,
-} from "@mui/material";
 import { WorkHour } from "../../api/types";
 
 export async function throwQuery<T>(query: string, name?: string): Promise<T> {
