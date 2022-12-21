@@ -25,7 +25,6 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
   const handleCancel = async (_: HalfwayWorkHour): Promise<void> => {
     setEditedWorkHourId(undefined);
   };
-
   const handleDeleteWorkHour = async (wh: WorkHour): Promise<void> => {
     const ret = await updateWorkHour({ ...wh, isDeleted: true });
     setWorkHours((whs) => updateArray(whs, ret));
