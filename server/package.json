@@ -6,7 +6,7 @@
   "scripts": {
     "migrate": "db-migrate up",
     "migrate-prd": "db-migrate up -e prd",
-    "seeds": "ts-node src/db/load-seeds.ts",
+    "seeds": "ts-node src/db/loadSeeds.ts",
     "test": "mocha -r ts-node/register 'tests/**/*.ts'",
     "start": "nodemon",
     "build": "npx tsc -p ."

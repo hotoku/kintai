@@ -1,4 +1,4 @@
-export const formatInt = (n: number, digits?: number): string => {
+export function formatInt(n: number, digits: number | undefined): string {
   if (digits === undefined) {
     return "" + n;
   } else {
@@ -7,7 +7,7 @@ export const formatInt = (n: number, digits?: number): string => {
       useGrouping: false,
     });
   }
-};
+}
 
 const tzOffset = new Date().getTimezoneOffset();
 const offsetSign = tzOffset <= 0 ? "+" : "-";
@@ -52,3 +52,15 @@ export const formatTime = (d: Date, isUtc: boolean = false): string => {
     formatInt(d2.getSeconds(), 2)
   );
 };
+
+export function updateArray<T extends { id: number }>(array: T[], obj: T): T[] {
+  const ret = [] as T[];
+  for (const x of array) {
+    if (x.id === obj.id) {
+      ret.push(obj);
+    } else {
+      ret.push(x);
+    }
+  }
+  return ret;
+}

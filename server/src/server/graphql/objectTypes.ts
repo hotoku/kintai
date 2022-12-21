@@ -79,7 +79,7 @@ export const WorkHourType: GraphQLObjectType<WorkHourRecord, ContextType> =
       deal: {
         type: DealType,
         resolve: (obj, _, { loaders }) => {
-          return loaders.workHourLoader.load(obj.dealId);
+          return loaders.dealLoader.load(obj.dealId);
         },
       },
     }),

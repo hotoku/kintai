@@ -1,11 +1,12 @@
-import { GraphQLInt, GraphQLNonNull, GraphQLObjectType } from "graphql";
+import {
+  GraphQLList,
+  GraphQLInt,
+  GraphQLNonNull,
+  GraphQLObjectType,
+} from "graphql";
 
-import { MyDataLoader } from "./dataLoaders";
-import { ClientType, DealType, WorkHourType } from "./objectTypes";
-
-export type ContextType = {
-  loaders: MyDataLoader;
-};
+import { ClientType, DealType, WorkHourType } from "../objectTypes";
+import { ContextType } from "./index";
 
 export const queryType = new GraphQLObjectType<{}, ContextType>({
   name: "Query",
@@ -41,6 +42,25 @@ export const queryType = new GraphQLObjectType<{}, ContextType>({
       },
       resolve: (_, args, { loaders }) => {
         return loaders.workHourLoader.load(args.id);
+      },
+    },
+    getAllClients: {
+      type: new GraphQLList(ClientType),
+      args: {},
+      resolve: (_, _2, { loaders }) => {
+        return loaders.clientLoader.all();
+      },
+    },
+    getWorkHoursOfDeal: {
+      type: new GraphQLList(WorkHourType),
+      args: {
+        dealId: {
+          type: new GraphQLNonNull(GraphQLInt),
+        },
+      },
+      resolve: async (_, args, { loaders }) => {
+        const whIds = await loaders.dealWorkHoursLoader.load(args.dealId);
+        return whIds.map((whId) => loaders.workHourLoader.load(whId));
       },
     },
   },

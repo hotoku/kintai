@@ -13,3 +13,12 @@ database:
 clean:
 	@echo "drop database if exists $(DATABASE_NAME)" | mysql -u root -p"$(MYSQL_ROOT_PASSWORD)"
 	@echo "drop user if exists $(MYSQL_USER_NAME)@localhost" | mysql -u root -p"$(MYSQL_ROOT_PASSWORD)"
+
+
+.PHONY: restore
+restore:
+	@echo $()
+	$(eval DUMP_FILE := $(shell read -p "back up file ?: " name && echo $$name))
+	@make clean
+	@make user
+	@mysql -u root -p"$(MYSQL_ROOT_PASSWORD)" $(DATABASE_NAME) < ../../release/backup/$(DUMP_FILE)
