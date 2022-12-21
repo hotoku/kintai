@@ -5,7 +5,11 @@ echo launching at $(date)
 
 
 # enable anyenv
-export PATH=/opt/homebrew/bin:${PATH}
+if [[ "$(hostname)" = hotoku-macbookair-2019.local ]]; then
+    export PATH=/usr/local/bin:${PATH}
+else
+    export PATH=/opt/homebrew/bin:${PATH}
+fi
 eval "$(anyenv init -)"
 
 
