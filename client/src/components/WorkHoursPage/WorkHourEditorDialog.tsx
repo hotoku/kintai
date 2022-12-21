@@ -8,9 +8,7 @@ import dayjs, { Dayjs } from "dayjs";
 
 type WorkHourEditorDialogProps = {
   open: boolean;
-  onSave: (
-    wh: Omit<WorkHour, "id"> & { id: number | undefined }
-  ) => Promise<void>;
+  onSave: (wh: Omit<WorkHour, "id"> & { id?: number }) => Promise<void>;
   onCancel: (hwh: HalfwayWorkHour) => Promise<void>;
   initialObject: HalfwayWorkHour;
 };

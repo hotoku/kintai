@@ -38,7 +38,7 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
     setEditedWorkHourId(wh.id);
   };
   const handleSave = async (
-    wh: Omit<WorkHour, "id"> & { id: number | undefined }
+    wh: Omit<WorkHour, "id"> & { id?: number }
   ): Promise<void> => {
     setEditedWorkHourId(undefined);
     if (!wh.startTime) {
