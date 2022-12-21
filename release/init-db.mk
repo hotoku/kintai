@@ -1,7 +1,7 @@
 .PHONY: all
 all:
 	make -C ../server/db
-	cd ../server && npm run migrate-prd && npm run move
+	cd ../server && npm run migrate-prd
 
 
 .PHONY: clean
