@@ -1,15 +1,12 @@
 #!/bin/bash
 
+
 echo launching at $(date)
 
 
 # enable anyenv
 export PATH=/opt/homebrew/bin:${PATH}
 eval "$(anyenv init -)"
-
-
-
-
 
 
 echo HOME=${HOME}
@@ -19,5 +16,6 @@ echo sqlite is $(which sqlite3)
 echo node version follows
 node --version
 echo i am $(whoami)
+
 
 node dist/index.js
