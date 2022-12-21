@@ -66,4 +66,4 @@ export const queryType = new GraphQLObjectType<{}, ContextType>({
   },
 });
 
-console.log("queryType", JSON.stringify(queryType));
+console.log(`query.ts:queryType=${queryType}`);

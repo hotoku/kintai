@@ -6,7 +6,7 @@ import { mutationType, queryType } from "./resolvers";
 import createDataLoader from "./dataLoaders";
 
 function graphql(app: Application) {
-  console.log(`queryType=${JSON.stringify(queryType)}`);
+  console.log(`grqphql:queryType=${JSON.stringify(queryType)}`);
   app.use("/graphql", (req, res) => {
     const loaders = createDataLoader();
     return graphqlHTTP({
