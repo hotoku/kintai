@@ -21,7 +21,7 @@ $(PLIST_FILE): $(PLIST_FILE).jinja
 
 .PHONY: clean
 clean: unload clear-log
-	rm -f $(PLIST_FILE) $(DEST) ../server/dist ../client/build
+	rm -rf $(PLIST_FILE) $(DEST) ../server/dist ../client/build
 
 
 .PHONY: clear-log
