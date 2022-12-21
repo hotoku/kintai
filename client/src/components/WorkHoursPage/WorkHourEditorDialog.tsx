@@ -33,32 +33,62 @@ function WorkHourEditorDialog({
       <Box sx={{ padding: 1 }} component="form">
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <Stack spacing={1}>
-            <DateTimePicker
-              onChange={(v: Dayjs | null) => {
-                setEditedObject({
-                  ...editedObject,
-                  startTime: v ? v.toDate() : undefined,
-                });
-              }}
-              value={
-                editedObject.startTime ? dayjs(editedObject.startTime) : null
-              }
-              renderInput={(params) => <TextField {...params} />}
-              label="start time"
-              inputFormat="YYYY-MM-DD HH:mm:ss"
-            />
-            <DateTimePicker
-              onChange={(v: Dayjs | null) => {
-                setEditedObject({
-                  ...editedObject,
-                  endTime: v ? v.toDate() : undefined,
-                });
-              }}
-              value={editedObject.endTime ? dayjs(editedObject.endTime) : null}
-              renderInput={(params) => <TextField {...params} />}
-              label="end time"
-              inputFormat="YYYY-MM-DD HH:mm:ss"
-            />
+            <Box>
+              <DateTimePicker
+                onChange={(v: Dayjs | null) => {
+                  setEditedObject({
+                    ...editedObject,
+                    startTime: v ? v.toDate() : undefined,
+                  });
+                }}
+                value={
+                  editedObject.startTime ? dayjs(editedObject.startTime) : null
+                }
+                renderInput={(params) => <TextField {...params} />}
+                label="start time"
+                inputFormat="YYYY-MM-DD HH:mm:ss"
+              />
+              <Button
+                sx={{ height: "100%" }}
+                onClick={() => {
+                  const now = dayjs().toDate();
+                  setEditedObject({
+                    ...editedObject,
+                    startTime: now,
+                  });
+                }}
+              >
+                now
+              </Button>
+            </Box>
+            <Box>
+              <DateTimePicker
+                onChange={(v: Dayjs | null) => {
+                  setEditedObject({
+                    ...editedObject,
+                    endTime: v ? v.toDate() : undefined,
+                  });
+                }}
+                value={
+                  editedObject.endTime ? dayjs(editedObject.endTime) : null
+                }
+                renderInput={(params) => <TextField {...params} />}
+                label="end time"
+                inputFormat="YYYY-MM-DD HH:mm:ss"
+              />
+              <Button
+                sx={{ height: "100%" }}
+                onClick={() => {
+                  const now = dayjs().toDate();
+                  setEditedObject({
+                    ...editedObject,
+                    endTime: now,
+                  });
+                }}
+              >
+                now
+              </Button>
+            </Box>
             <TextField
               label="note"
               value={editedObject.note ?? ""}
