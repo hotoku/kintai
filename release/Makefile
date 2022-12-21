@@ -40,12 +40,12 @@ build: tree-clean build-server build-client
 
 .PHONY: build-server
 build-server:
-	cd ../server && npm run build
+	cd ../server && npm i && npm run build
 
 
 .PHONY: build-client
 build-client:
-	cd ../client && npm run build
+	cd ../client && npm i && npm run build
 
 
 .PHONY: start
