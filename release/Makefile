@@ -15,14 +15,13 @@ $(PLIST_FILE): $(PLIST_FILE).jinja
 		-D DATABASE_NAME=$(DATABASE_NAME) \
 		-D MYSQL_ROOT_PASSWORD="$(MYSQL_ROOT_PASSWORD)" \
 		-D MYSQL_USER_NAME=$(MYSQL_USER_NAME) \
-		-D MYSQL_USER_PASSWORD=$(MYSQL_USER_PASSWORD) \
+		-D MYSQL_USER_PASSWORD='$(MYSQL_USER_PASSWORD)' \
 		-o $@
 
 
 .PHONY: clean
 clean: unload clear-log
-	rm -f $(PLIST_FILE)
-	rm -f $(DEST)
+	rm -rf $(PLIST_FILE) $(DEST) ../server/dist ../client/build
 
 
 .PHONY: clear-log
