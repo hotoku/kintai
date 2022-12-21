@@ -40,7 +40,7 @@ build: tree-clean build-server build-client
 
 .PHONY: build-server
 build-server:
-	cd server && npm run build
+	cd ../server && npm run build
 
 
 .PHONY: build-client
@@ -50,12 +50,12 @@ build-client:
 
 .PHONY: start
 start:
-	cd server && node dist/index.js
+	cd ../server && node dist/index.js
 
 
 .PHONY: migrate
 migrate: tree-clean
-	cd server && npm run migrate-prd
+	cd ../server && npm run migrate-prd
 
 
 .PHONY: tree-clean
