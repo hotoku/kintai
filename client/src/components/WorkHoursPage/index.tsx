@@ -41,13 +41,16 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
   ): Promise<void> => {
     setEditedWorkHourId(undefined);
     if (!wh.startTime) {
-      console.log("start time must not be null");
-      return;
+      throw new Error("Start time must be set.");
     }
-    if (!wh.dealId)
-      throw new Error("work hour of no deal id was passed to editor");
+    if (!wh.dealId) {
+      throw new Error("Work hour of no deal id was passed to editor");
+    }
+
     if (typeof editedWorkHourId === "number") {
-      if (!wh.id) throw new Error("editing instance of no id");
+      if (!wh.id) {
+        throw new Error("editing instance of no id");
+      }
       const ret = await updateWorkHour({
         ...wh,
         id: wh.id,
