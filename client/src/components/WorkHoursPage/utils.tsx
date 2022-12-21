@@ -11,7 +11,6 @@ export async function throwQuery<T>(query: string, name?: string): Promise<T> {
       query: query,
     }),
   });
-  console.log(`query=${query}`);
   return (await ret.json()).data[name] as T;
 }
 
