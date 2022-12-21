@@ -9,7 +9,7 @@ load: unload build clear-log $(PLIST_FILE)
 
 
 $(PLIST_FILE): $(PLIST_FILE).jinja
-	echo jinja2 $< \
+	jinja2 $< \
 		-D pwd=$(shell pwd) \
 		-D KINTAI_PORT=$(KINTAI_PORT) \
 		-D DATABASE_NAME=$(DATABASE_NAME) \
