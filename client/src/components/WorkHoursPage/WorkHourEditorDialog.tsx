@@ -49,7 +49,7 @@ function WorkHourEditorDialog({
                 inputFormat="YYYY-MM-DD HH:mm:ss"
               />
               <Button
-                sx={{ height: "100%" }}
+                sx={{ height: "100%", marginLeft: 0.2 }}
                 onClick={() => {
                   const now = dayjs().toDate();
                   setEditedObject({
@@ -57,6 +57,7 @@ function WorkHourEditorDialog({
                     startTime: now,
                   });
                 }}
+                variant="outlined"
               >
                 now
               </Button>
@@ -77,7 +78,7 @@ function WorkHourEditorDialog({
                 inputFormat="YYYY-MM-DD HH:mm:ss"
               />
               <Button
-                sx={{ height: "100%" }}
+                sx={{ height: "100%", marginLeft: 0.2 }}
                 onClick={() => {
                   const now = dayjs().toDate();
                   setEditedObject({
@@ -85,6 +86,7 @@ function WorkHourEditorDialog({
                     endTime: now,
                   });
                 }}
+                variant="outlined"
               >
                 now
               </Button>
