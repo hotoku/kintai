@@ -11,6 +11,7 @@ export async function throwQuery<T>(query: string, name?: string): Promise<T> {
       query: query,
     }),
   });
+  console.log(`query=${query}`);
   return (await ret.json()).data[name] as T;
 }
 
@@ -50,7 +51,7 @@ export async function updateWorkHour(wh: WorkHour): Promise<WorkHour> {
       object: updateWorkHour(
         id: ${wh.id},
         startTime: "${wh.startTime}",
-        endTime: "${wh.endTime ? wh.endTime : "NULL"}",
+         endTime:"${wh.endTime ? wh.endTime : "NULL"}",
         isDeleted: ${wh.isDeleted},
         note: "${wh.note}"
       ) {
@@ -72,7 +73,7 @@ export async function addWorkHour(wh: Omit<WorkHour, "id">): Promise<WorkHour> {
     mutation {
       object: addWorkHour(
         startTime: "${wh.startTime}",
-        endTime: ${wh.endTime ? "${wh.endTime}" : null},
+        endTime:"${wh.endTime ? wh.endTime : "NULL"}",
         dealId: ${wh.dealId},
         note: "${wh.note ? wh.note : ""}"
       ) {
