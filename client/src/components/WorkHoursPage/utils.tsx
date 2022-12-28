@@ -1,4 +1,4 @@
-import { WorkHour } from "../../api/types";
+import { Deal, WorkHour } from "../../api/types";
 
 export async function throwQuery<T>(query: string, name?: string): Promise<T> {
   name = name || "object";
@@ -87,4 +87,18 @@ export async function addWorkHour(wh: Omit<WorkHour, "id">): Promise<WorkHour> {
   `;
   const obj = await throwQuery<WorkHourRecord>(query);
   return rec2obj(obj);
+}
+
+export type PartialDeal = Pick<Deal, "id" | "name">;
+export async function loadDeal(dealId: number): Promise<PartialDeal> {
+  const query = `
+        query {
+          object: getDeal(id: ${dealId}) {
+            id
+            name
+          }
+        }
+  `;
+  const obj = await throwQuery<PartialDeal>(query);
+  return obj;
 }
