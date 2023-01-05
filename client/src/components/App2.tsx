@@ -7,7 +7,7 @@ import DeletedWorkHours from "./DeletedWorkHours";
 import { parseQuery } from "../utils";
 import { Box } from "@mui/material";
 import WorkHoursPage from "./WorkHoursPage";
-import KintaiAppBar from "./AppBar";
+import KintaiAppBar from "./KintaiAppBar";
 
 function MyRoutes() {
   const query = parseQuery(useLocation().search);

@@ -1,5 +1,14 @@
-import { AppBar, Button, IconButton, Toolbar, Typography } from "@mui/material";
+import {
+  AppBar,
+  Button,
+  IconButton,
+  Link,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+
+import { blue } from "@mui/material/colors";
 
 function KintaiAppBar(): JSX.Element {
   return (
@@ -8,9 +17,11 @@ function KintaiAppBar(): JSX.Element {
         <IconButton size="large">
           <MenuIcon />
         </IconButton>
-        <Button variant="text">
-          <Typography variant="h5">Kintai</Typography>
-        </Button>
+        <Link href="/">
+          <Typography variant="h5" color={blue[50]}>
+            Kintai
+          </Typography>
+        </Link>
       </Toolbar>
     </AppBar>
   );
