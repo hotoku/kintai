@@ -1,4 +1,10 @@
-import { Box, Button, FormControlLabel, Switch } from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControlLabel,
+  Switch,
+  Typography,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { HalfwayWorkHour, WorkHour } from "../../api/types";
 import { updateArray } from "../../share/utils";
@@ -85,7 +91,9 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
   }
   return (
     <>
-      <div>{deal ? deal.name : ""}</div>
+      <Typography variant="h5" component="h2" style={{ padding: "1rem" }}>
+        {deal ? deal.name : ""}
+      </Typography>
       <Box
         component="form"
         sx={{
