@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import ClientsPage from "./ClientsPage";
-import Deals from "./Deals";
+import Deals from "./DealsPage";
 
 import ErrorBoundary from "./ErrorBoundary";
 import DeletedWorkHours from "./DeletedWorkHours";
