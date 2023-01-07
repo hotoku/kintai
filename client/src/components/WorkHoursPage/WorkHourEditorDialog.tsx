@@ -47,6 +47,8 @@ function WorkHourEditorDialog({
                 renderInput={(params) => <TextField {...params} />}
                 label="start time"
                 inputFormat="YYYY-MM-DD HH:mm:ss"
+                ampm={false}
+                ampmInClock={false}
               />
               <Button
                 sx={{ height: "100%", marginLeft: 0.2 }}
@@ -76,6 +78,8 @@ function WorkHourEditorDialog({
                 renderInput={(params) => <TextField {...params} />}
                 label="end time"
                 inputFormat="YYYY-MM-DD HH:mm:ss"
+                ampm={false}
+                ampmInClock={false}
               />
               <Button
                 sx={{ height: "100%", marginLeft: 0.2 }}
