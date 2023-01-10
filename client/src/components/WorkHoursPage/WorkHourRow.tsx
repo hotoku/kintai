@@ -59,8 +59,14 @@ function WorkHourRow({ workHour, ...props }: WorkHourRowProps) {
       </TableCell>
       <TableCell align="center">{secToStr(duration)}</TableCell>
       <Tooltip title={workHour.note} placement="left">
-        <TableCell align="center">
-          {workHour.note ? workHour.note.slice(0, 10) : ""}
+        <TableCell
+          style={{
+            maxWidth: "8rem",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+          }}
+        >
+          {workHour.note ? workHour.note : ""}
         </TableCell>
       </Tooltip>
       <TableCell align="center">{actions}</TableCell>
