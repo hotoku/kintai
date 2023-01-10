@@ -53,7 +53,9 @@ function WorkHourRow({ workHour, ...props }: WorkHourRowProps) {
       <TableCell align="center">{formatDate(workHour.startTime)}</TableCell>
       <TableCell align="center">{formatTime(workHour.startTime)}</TableCell>
       <TableCell align="center">
-        {workHour.endTime ? formatTime(workHour.endTime) : ""}
+        {workHour.endTime !== null && workHour.endTime !== undefined
+          ? formatTime(workHour.endTime)
+          : ""}
       </TableCell>
       <TableCell align="center">{secToStr(duration)}</TableCell>
       <Tooltip title={workHour.note} placement="left">

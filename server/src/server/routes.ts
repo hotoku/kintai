@@ -2,7 +2,6 @@ import express, { Application } from "express";
 import { getPool } from "../db/db";
 import { WorkHour, Client, Deal } from "../db/types";
 
-console.log("routes");
 
 const TRUE = 1;
 const FALSE = 0;

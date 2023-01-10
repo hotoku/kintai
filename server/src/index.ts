@@ -27,7 +27,6 @@ const start = () => {
 
   const portNum = port();
   console.log(`port=${portNum}`);
-  console.log("commit=ec1028e6fef7a7e914117edfd573e0547beea262");
   app.listen(portNum);
 };
 

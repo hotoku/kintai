@@ -1,8 +1,20 @@
-import { Box, Button, FormControlLabel, Switch } from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControlLabel,
+  Switch,
+  Typography,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { HalfwayWorkHour, WorkHour } from "../../api/types";
 import { updateArray } from "../../share/utils";
-import { addWorkHour, loadWorkHours, updateWorkHour } from "./utils";
+import {
+  addWorkHour,
+  loadDeal,
+  loadWorkHours,
+  PartialDeal,
+  updateWorkHour,
+} from "./utils";
 import DeletedWorkHourTable from "./DeletedWorkHourTable";
 import ActiveWorkHourTable from "./ActiveWorkHourTable";
 import WorkHourEditorDialog from "./WorkHourEditorDialog";
@@ -13,6 +25,7 @@ type WorkHoursPageProps = {
 function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
   const [workHours, setWorkHours] = useState<WorkHour[]>([]);
   const [showDeleted, setShowDeleted] = useState<boolean>(false);
+  const [deal, setDeal] = useState<PartialDeal | undefined>();
 
   const [editedWorkHourId, setEditedWorkHourId] = useState<
     number | "adding" | undefined
@@ -20,6 +33,7 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
 
   useEffect(() => {
     loadWorkHours(dealId).then(setWorkHours);
+    loadDeal(dealId).then(setDeal);
   }, []);
 
   const handleCancel = async (_: HalfwayWorkHour): Promise<void> => {
@@ -77,6 +91,9 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
   }
   return (
     <>
+      <Typography variant="h5" component="h2" style={{ padding: "1rem" }}>
+        {deal ? deal.name : ""}
+      </Typography>
       <Box
         component="form"
         sx={{

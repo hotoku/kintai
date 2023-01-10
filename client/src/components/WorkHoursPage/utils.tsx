@@ -1,4 +1,5 @@
-import { WorkHour } from "../../api/types";
+import { Deal, WorkHour } from "../../api/types";
+import { invalidDate } from "../../share/utils";
 
 export async function throwQuery<T>(query: string, name?: string): Promise<T> {
   name = name || "object";
@@ -11,7 +12,6 @@ export async function throwQuery<T>(query: string, name?: string): Promise<T> {
       query: query,
     }),
   });
-  console.log(`query=${query}`);
   return (await ret.json()).data[name] as T;
 }
 
@@ -21,10 +21,12 @@ export type WorkHourRecord = Omit<WorkHour, "startTime" | "endTime"> & {
 };
 
 export function rec2obj(obj: WorkHourRecord): WorkHour {
+  const endTime = obj.endTime ? new Date(obj.endTime) : undefined;
+  const endTime2 = endTime && !invalidDate(endTime) ? endTime : undefined;
   return {
     ...obj,
     startTime: new Date(obj.startTime),
-    endTime: obj.endTime ? new Date(obj.endTime) : undefined,
+    endTime: endTime2,
   };
 }
 
@@ -88,4 +90,18 @@ export async function addWorkHour(wh: Omit<WorkHour, "id">): Promise<WorkHour> {
   `;
   const obj = await throwQuery<WorkHourRecord>(query);
   return rec2obj(obj);
+}
+
+export type PartialDeal = Pick<Deal, "id" | "name">;
+export async function loadDeal(dealId: number): Promise<PartialDeal> {
+  const query = `
+        query {
+          object: getDeal(id: ${dealId}) {
+            id
+            name
+          }
+        }
+  `;
+  const obj = await throwQuery<PartialDeal>(query);
+  return obj;
 }

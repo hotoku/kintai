@@ -64,3 +64,7 @@ export function updateArray<T extends { id: number }>(array: T[], obj: T): T[] {
   }
   return ret;
 }
+
+export function invalidDate(d: Date): boolean {
+  return Number.isNaN(d.getTime());
+}
