@@ -1,4 +1,5 @@
 import { Deal, WorkHour } from "../../api/types";
+import { invalidDate } from "../../utils";
 
 export async function throwQuery<T>(query: string, name?: string): Promise<T> {
   name = name || "object";
@@ -20,10 +21,12 @@ export type WorkHourRecord = Omit<WorkHour, "startTime" | "endTime"> & {
 };
 
 export function rec2obj(obj: WorkHourRecord): WorkHour {
+  const endTime = obj.endTime ? new Date(obj.endTime) : undefined;
+  const endTime2 = endTime && !invalidDate(endTime) ? endTime : undefined;
   return {
     ...obj,
     startTime: new Date(obj.startTime),
-    endTime: obj.endTime ? new Date(obj.endTime) : undefined,
+    endTime: endTime2,
   };
 }
 

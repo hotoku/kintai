@@ -26,3 +26,7 @@ export const maybeInt = (s: string | undefined): number | undefined => {
   if (isNaN(ret)) return undefined;
   return ret;
 };
+
+export const invalidDate = (d: Date): boolean => {
+  return Number.isNaN(d.getTime());
+};
