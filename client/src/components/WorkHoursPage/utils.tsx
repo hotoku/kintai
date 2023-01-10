@@ -1,5 +1,5 @@
 import { Deal, WorkHour } from "../../api/types";
-import { invalidDate } from "../../utils";
+import { invalidDate } from "../../share/utils";
 
 export async function throwQuery<T>(query: string, name?: string): Promise<T> {
   name = name || "object";
