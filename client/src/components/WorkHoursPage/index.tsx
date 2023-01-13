@@ -18,6 +18,7 @@ import {
 import DeletedWorkHourTable from "./DeletedWorkHourTable";
 import ActiveWorkHourTable from "./ActiveWorkHourTable";
 import WorkHourEditorDialog from "./WorkHourEditorDialog";
+import { secToStr } from "../utils";
 
 type WorkHoursPageProps = {
   dealId: number;
@@ -89,6 +90,12 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
   if (objForEditor === undefined) {
     throw new Error("invalid edit number is set");
   }
+  let sumDuration = 0;
+  for (const wh of workHours) {
+    sumDuration += wh.endTime
+      ? (wh.endTime.getTime() - wh.startTime.getTime()) / 1000
+      : 0;
+  }
   return (
     <>
       <Typography variant="h5" component="h2" style={{ padding: "1rem" }}>
@@ -116,6 +123,9 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
             />
           }
         />
+        <Typography component="span">
+          合計時間 {secToStr(sumDuration)}
+        </Typography>
       </Box>
       {showDeleted ? (
         <DeletedWorkHourTable
