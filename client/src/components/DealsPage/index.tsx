@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { fetchClients, fetchDeals, postDeal, putDeal } from "../api/fetches";
+import { fetchClients, fetchDeals, postDeal, putDeal } from "../../api/fetches";
 
-import { Client, Deal, HalfwayDeal } from "../api/types";
-import { maybeInt } from "../utils";
-import { Table } from "./Table";
+import { Client, Deal, HalfwayDeal } from "../../api/types";
+import { maybeInt } from "../../utils";
+import { Table } from "../Table";
 
 type FilterProps = {
   selectedClientId: number | undefined;
