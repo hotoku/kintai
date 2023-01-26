@@ -8,6 +8,7 @@ import { parseQuery } from "../utils";
 import { Box } from "@mui/material";
 import WorkHoursPage from "./WorkHoursPage";
 import KintaiAppBar from "./KintaiAppBar";
+import WeekPage from "./WeekPage";
 
 function MyRoutes() {
   const query = parseQuery(useLocation().search);
@@ -22,6 +23,7 @@ function MyRoutes() {
       ,
       <Route path="/deals" element={<Deals clientId={query.clientId} />} />,
       <Route path="/deletedWorkHours" element={<DeletedWorkHours />} />,
+      <Route path="/week" element={<WeekPage />} />,
     </Routes>
   );
 }
