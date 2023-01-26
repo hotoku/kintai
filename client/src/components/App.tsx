@@ -25,7 +25,6 @@ function MyRoutes() {
       <Route path="/deals" element={<Deals clientId={query.clientId} />} />,
       <Route path="/deletedWorkHours" element={<DeletedWorkHours />} />,
       <Route path="/week" element={<WeekPage week={parseDate(query.week)} />} />
-      ,
     </Routes>
   );
 }

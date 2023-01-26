@@ -3,9 +3,17 @@ import {
   GraphQLInt,
   GraphQLNonNull,
   GraphQLObjectType,
+  GraphQLString,
 } from "graphql";
+import { daysOfWeek } from "../../../share/utils";
 
-import { ClientType, DealType, WorkHourType } from "../objectTypes";
+import {
+  ClientType,
+  DaySummaryType,
+  DealType,
+  WeekSummaryType,
+  WorkHourType,
+} from "../objectTypes";
 import { ContextType } from "./index";
 
 export const queryType = new GraphQLObjectType<{}, ContextType>({
@@ -59,11 +67,23 @@ export const queryType = new GraphQLObjectType<{}, ContextType>({
         },
       },
       resolve: async (_, args, { loaders }) => {
+        // ここの第一引数はundefined
+        // argsには、上記で定義しているオブジェクト
         const whIds = await loaders.dealWorkHoursLoader.load(args.dealId);
         return whIds.map((whId) => loaders.workHourLoader.load(whId));
       },
     },
+    getWeekSumary: {
+      type: new GraphQLList(DaySummaryType),
+      args: {
+        date: {
+          type: GraphQLString,
+        },
+      },
+      resolve: async (_, args, { loaders }) => {
+        const dates = daysOfWeek(args.date);
+        return dates.map((d) => loaders.DaySummaryLoader.load(d));
+      },
+    },
   },
 });
-
-
