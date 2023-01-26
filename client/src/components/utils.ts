@@ -1,3 +1,5 @@
+import dayjs, { Dayjs } from "dayjs";
+
 export const formatInt = (n: number, digits?: number): string => {
   if (digits === undefined) {
     return "" + n;
@@ -40,6 +42,10 @@ export const formatDate = (d: Date, isUtc: boolean = false): string => {
     "-" +
     formatInt(d2.getDate(), 2)
   );
+};
+
+export const parseDate = (s: string): Dayjs => {
+  return dayjs(s, "YYYY-MM-DD");
 };
 
 export const formatTime = (d: Date, isUtc: boolean = false): string => {
