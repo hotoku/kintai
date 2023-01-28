@@ -5,7 +5,6 @@ import {
   GraphQLString,
   GraphQLBoolean,
 } from "graphql";
-import { workHours } from "../routes";
 
 import {
   ClientRecord,
