@@ -6,7 +6,12 @@ import {
   GraphQLBoolean,
 } from "graphql";
 
-import { ClientRecord, DealRecord, WorkHourRecord } from "./recordTypes";
+import {
+  ClientRecord,
+  DaySummaryRecord,
+  DealRecord,
+  WorkHourRecord,
+} from "./recordTypes";
 import { ContextType } from "./resolvers";
 
 export const ClientType: GraphQLObjectType<ClientRecord, ContextType> =
@@ -79,7 +84,24 @@ export const WorkHourType: GraphQLObjectType<WorkHourRecord, ContextType> =
       deal: {
         type: DealType,
         resolve: (obj, _, { loaders }) => {
+          // ここの第一引数はWorkHourRecordオブジェクト
+          // ここの第二引数(args)はundefined
+          // data loaderから呼ばれる時には、第一引数に、オブジェクトが入る
           return loaders.dealLoader.load(obj.dealId);
+        },
+      },
+    }),
+  });
+
+export const DaySummaryType: GraphQLObjectType<DaySummaryRecord, ContextType> =
+  new GraphQLObjectType<DaySummaryRecord, ContextType>({
+    name: "DaySummary",
+    fields: () => ({
+      date: { type: GraphQLString },
+      workHours: {
+        type: new GraphQLList(WorkHourType),
+        resolve: (obj) => {
+          return obj.workHours;
         },
       },
     }),

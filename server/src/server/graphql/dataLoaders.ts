@@ -1,6 +1,11 @@
 import DataLoader from "dataloader";
 import { getConnection } from "../../db/db";
-import { ClientRecord, DealRecord, WorkHourRecord } from "./recordTypes";
+import {
+  ClientRecord,
+  DaySummaryRecord,
+  DealRecord,
+  WorkHourRecord,
+} from "./recordTypes";
 
 async function query<T>(sql: string, params?: readonly any[]): Promise<T[]> {
   // sqlのselect結果の列名/型とTが整合してないと実行時エラーになる
@@ -60,7 +65,6 @@ function createDealLoader(): DataLoader<number, DealRecord> {
     `,
       [ids]
     );
-    console.log("deal id ids", ids);
     return ids.map((id) => {
       const ret = rows.find((row) => row.id === id);
       return ret || new Error(`No Deal of id ${id}`);
@@ -119,8 +123,6 @@ function createDealWorkHoursLoader(): DataLoader<number, number[]> {
       [ids]
     );
 
-    console.log("deal work hour ids", ids);
-
     const map = new Map<number, number[]>();
     for (const row of rows) {
       const ar = map.get(row.dealId);
@@ -138,6 +140,7 @@ function createDealWorkHoursLoader(): DataLoader<number, number[]> {
 
 function createWorkHourLoader(): DataLoader<number, WorkHourRecord> {
   return new DataLoader<number, WorkHourRecord>(async (ids) => {
+    console.log("ids:", ids);
     const rows = await query<WorkHourRecord>(
       `
       select
@@ -164,12 +167,43 @@ function createWorkHourLoader(): DataLoader<number, WorkHourRecord> {
   });
 }
 
+function createDaySummaryLoader(): DataLoader<string, DaySummaryRecord> {
+  return new DataLoader<string, DaySummaryRecord>(async (dates) => {
+    const rows = await query<WorkHourRecord & { date: string }>(
+      `
+      select
+        substr(startTime, 1, 10) as date,
+        id,
+        startTime,
+        endTime,
+        isDeleted,
+        note,
+        dealId
+      from
+        WorkHours
+      where
+        substr(startTime, 1, 10) in (?)
+    `,
+      [dates]
+    );
+
+    const ret = dates.map((date) => {
+      return {
+        date: date,
+        workHours: rows.filter((row) => row.date === date),
+      };
+    });
+    return ret;
+  });
+}
+
 export type MyDataLoader = {
   clientLoader: ClientLoader;
   clientDealsLoader: DataLoader<number, number[]>;
   dealLoader: DataLoader<number, DealRecord>;
   dealWorkHoursLoader: DataLoader<number, number[]>;
   workHourLoader: DataLoader<number, WorkHourRecord>;
+  daySummaryLoader: DataLoader<string, DaySummaryRecord>;
 };
 
 export default function createDataLoaders(): MyDataLoader {
@@ -179,5 +213,6 @@ export default function createDataLoaders(): MyDataLoader {
     dealLoader: createDealLoader(),
     dealWorkHoursLoader: createDealWorkHoursLoader(),
     workHourLoader: createWorkHourLoader(),
+    daySummaryLoader: createDaySummaryLoader(),
   };
 }

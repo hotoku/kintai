@@ -1,3 +1,5 @@
+import dayjs, { Dayjs } from "dayjs";
+
 export function formatInt(n: number, digits: number | undefined): string {
   if (digits === undefined) {
     return "" + n;
@@ -42,15 +44,23 @@ export const formatDate = (d: Date, isUtc: boolean = false): string => {
   );
 };
 
-export const formatTime = (d: Date, isUtc: boolean = false): string => {
+export const formatTime = (
+  d: Date,
+  isUtc: boolean = false,
+  showSecond: boolean = false
+): string => {
   const d2 = isUtc ? toUtc(d) : d;
-  return (
-    formatInt(d2.getHours(), 2) +
-    ":" +
-    formatInt(d2.getMinutes(), 2) +
-    ":" +
-    formatInt(d2.getSeconds(), 2)
-  );
+  if (showSecond) {
+    return (
+      formatInt(d2.getHours(), 2) +
+      ":" +
+      formatInt(d2.getMinutes(), 2) +
+      ":" +
+      formatInt(d2.getSeconds(), 2)
+    );
+  } else {
+    return formatInt(d2.getHours(), 2) + ":" + formatInt(d2.getMinutes(), 2);
+  }
 };
 
 export function updateArray<T extends { id: number }>(array: T[], obj: T): T[] {
@@ -67,4 +77,13 @@ export function updateArray<T extends { id: number }>(array: T[], obj: T): T[] {
 
 export function invalidDate(d: Date): boolean {
   return Number.isNaN(d.getTime());
+}
+
+export function daysOfWeek(d: string): string[] {
+  const d2 = dayjs(d, "YYYY-MM-DD");
+  const ret = [];
+  for (let i = 0; i < 7; i++) {
+    ret.push(d2.day(i));
+  }
+  return ret.map((r) => r.format("YYYY-MM-DD"));
 }

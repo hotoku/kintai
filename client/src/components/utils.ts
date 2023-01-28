@@ -1,3 +1,6 @@
+import dayjs, { Dayjs } from "dayjs";
+import { formatTime } from "../share/utils";
+
 export const formatInt = (n: number, digits?: number): string => {
   if (digits === undefined) {
     return "" + n;
@@ -17,7 +20,7 @@ const offsetString =
   offsetSign + formatInt(offsetHour, 2) + formatInt(offsetMinute, 2);
 
 export const formatDateTime = (d: Date, isUtc: boolean = false): string => {
-  let ret = `${formatDate(d, isUtc)}T${formatTime(d, isUtc)}`;
+  let ret = `${formatDate(d, isUtc)}T${formatTime(d, isUtc, true)}`;
   if (isUtc) {
     return ret + "Z";
   } else {
@@ -42,15 +45,13 @@ export const formatDate = (d: Date, isUtc: boolean = false): string => {
   );
 };
 
-export const formatTime = (d: Date, isUtc: boolean = false): string => {
-  const d2 = isUtc ? toUtc(d) : d;
-  return (
-    formatInt(d2.getHours(), 2) +
-    ":" +
-    formatInt(d2.getMinutes(), 2) +
-    ":" +
-    formatInt(d2.getSeconds(), 2)
-  );
+// todo: ところによりdayjsだったりDateだったりするので統一する
+export const parseDate = (s: string): Dayjs => {
+  return dayjs(s, "YYYY-MM-DD");
+};
+
+export const parseDate2 = (isoDateStr: string): Date => {
+  return new Date(isoDateStr);
 };
 
 export const secToStr = (seconds: number): string => {
@@ -59,3 +60,23 @@ export const secToStr = (seconds: number): string => {
   const hours = Math.floor(minutes / 60);
   return `${hours}:${m}`;
 };
+
+export async function throwQuery<T>(
+  query: string,
+  name?: string
+): Promise<[T, { message: string }[]?]> {
+  name = name || "object";
+  const ret = await fetch("/graphql", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      query: query,
+    }),
+  });
+  const js = await ret.json();
+  const data = js.data[name];
+  const errors = js.errors;
+  return [data, errors];
+}

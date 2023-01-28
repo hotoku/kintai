@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 
 import "./index.css";
 // import App from "./components/App";
-import App from "./components/App2";
+import App from "./components/App";
 import reportWebVitals from "./reportWebVitals";
 
 import "@fontsource/roboto/300.css";

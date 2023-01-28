@@ -17,3 +17,8 @@ export type WorkHourRecord = {
   isDeleted: boolean;
   note: string;
 };
+
+export type DaySummaryRecord = {
+  date: string;
+  workHours: WorkHourRecord[];
+};

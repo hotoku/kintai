@@ -6,7 +6,7 @@
   "scripts": {
     "migrate": "db-migrate up",
     "migrate-prd": "db-migrate up -e prd",
-    "seeds": "ts-node src/db/loadSeeds.ts",
+    "seeds": "ts-node src/db/makeSeeds.ts; ts-node src/db/loadSeeds.ts ",
     "test": "mocha -r ts-node/register 'tests/**/*.ts'",
     "start": "nodemon",
     "build": "npx tsc -p ."
@@ -29,6 +29,7 @@
   "dependencies": {
     "@types/morgan": "^1.9.3",
     "dataloader": "^2.1.0",
+    "dayjs": "^1.11.7",
     "express": "^4.18.1",
     "express-graphql": "^0.12.0",
     "morgan": "^1.10.0"

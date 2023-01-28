@@ -19,7 +19,6 @@ import DeletedWorkHourTable from "./DeletedWorkHourTable";
 import ActiveWorkHourTable from "./ActiveWorkHourTable";
 import WorkHourEditorDialog from "./WorkHourEditorDialog";
 import { secToStr } from "../utils";
-import { formatDateTime } from "../../share/utils";
 type WorkHoursPageProps = {
   dealId: number;
 };
@@ -91,7 +90,7 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
     throw new Error("invalid edit number is set");
   }
   let sumDuration = 0;
-  for (const wh of workHours) {
+  for (const wh of workHours.filter((wh) => !wh.isDeleted)) {
     sumDuration += wh.endTime
       ? (wh.endTime.getTime() - wh.startTime.getTime()) / 1000
       : 0;
