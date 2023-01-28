@@ -82,8 +82,6 @@ export const WorkHourType: GraphQLObjectType<WorkHourRecord, ContextType> =
           // ここの第一引数はWorkHourRecordオブジェクト
           // ここの第二引数(args)はundefined
           // data loaderから呼ばれる時には、第一引数に、オブジェクトが入る
-          console.log("obj =", obj);
-          console.log("args =", args);
           return loaders.dealLoader.load(obj.dealId);
         },
       },
@@ -100,10 +98,4 @@ export const DaySummaryType: GraphQLObjectType<any, ContextType> =
         resolve: (obj, _, { loaders }) => {},
       },
     }),
-  });
-
-export const WeekSummaryType: GraphQLObjectType<any, ContextType> =
-  new GraphQLObjectType<any, ContextType>({
-    name: "WeekSummary",
-    fields: () => ({}),
   });

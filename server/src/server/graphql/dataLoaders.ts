@@ -1,6 +1,11 @@
 import DataLoader from "dataloader";
 import { getConnection } from "../../db/db";
-import { ClientRecord, DealRecord, WorkHourRecord } from "./recordTypes";
+import {
+  ClientRecord,
+  DaySummaryRecord,
+  DealRecord,
+  WorkHourRecord,
+} from "./recordTypes";
 
 async function query<T>(sql: string, params?: readonly any[]): Promise<T[]> {
   // sqlのselect結果の列名/型とTが整合してないと実行時エラーになる
@@ -60,7 +65,6 @@ function createDealLoader(): DataLoader<number, DealRecord> {
     `,
       [ids]
     );
-    console.log("deal id ids", ids);
     return ids.map((id) => {
       const ret = rows.find((row) => row.id === id);
       return ret || new Error(`No Deal of id ${id}`);
@@ -119,8 +123,6 @@ function createDealWorkHoursLoader(): DataLoader<number, number[]> {
       [ids]
     );
 
-    console.log("deal work hour ids", ids);
-
     const map = new Map<number, number[]>();
     for (const row of rows) {
       const ar = map.get(row.dealId);
@@ -164,12 +166,39 @@ function createWorkHourLoader(): DataLoader<number, WorkHourRecord> {
   });
 }
 
+function createDaySummaryLoader(): DataLoader<string, DaySummaryRecord> {
+  return new DataLoader<string, DaySummaryRecord>(async (dates) => {
+    const rows = await query<WorkHourRecord>(
+      `
+      select
+        id,
+        startTime,
+        endTime,
+        dealId,
+        isDeleted,
+        note
+      from
+        Workhours
+      where
+        id in (?)
+    `,
+      [dates]
+    );
+
+    return dates.map((id) => {
+      const ret = rows.find((row) => row.id === id);
+      return ret || new Error(`No WorkHour of id ${id}`);
+    });
+  });
+}
+
 export type MyDataLoader = {
   clientLoader: ClientLoader;
   clientDealsLoader: DataLoader<number, number[]>;
   dealLoader: DataLoader<number, DealRecord>;
   dealWorkHoursLoader: DataLoader<number, number[]>;
   workHourLoader: DataLoader<number, WorkHourRecord>;
+  daySummaryLoader: DataLoader<string, DaySummaryRecord>;
 };
 
 export default function createDataLoaders(): MyDataLoader {
@@ -179,5 +208,6 @@ export default function createDataLoaders(): MyDataLoader {
     dealLoader: createDealLoader(),
     dealWorkHoursLoader: createDealWorkHoursLoader(),
     workHourLoader: createWorkHourLoader(),
+    daySummaryLoader: createDaySummaryLoader(),
   };
 }
