@@ -168,26 +168,26 @@ function createWorkHourLoader(): DataLoader<number, WorkHourRecord> {
 
 function createDaySummaryLoader(): DataLoader<string, DaySummaryRecord> {
   return new DataLoader<string, DaySummaryRecord>(async (dates) => {
-    const rows = await query<WorkHourRecord>(
+    const rows = await query<{ id: number; date: string }>(
       `
       select
-        id,
-        startTime,
-        endTime,
-        dealId,
-        isDeleted,
-        note
+        substr(startTime, 1, 10) as date,
+        id
       from
-        Workhours
+        WorkHours
       where
-        id in (?)
+        substr(startTime, 1, 10) in (?)
     `,
       [dates]
     );
 
-    return dates.map((id) => {
-      const ret = rows.find((row) => row.id === id);
-      return ret || new Error(`No WorkHour of id ${id}`);
+    return dates.map((date) => {
+      return {
+        date: date,
+        workHourIds: rows
+          .filter((row) => row.date === date)
+          .map((row) => row.id),
+      };
     });
   });
 }

@@ -11,7 +11,6 @@ import {
   ClientType,
   DaySummaryType,
   DealType,
-  WeekSummaryType,
   WorkHourType,
 } from "../objectTypes";
 import { ContextType } from "./index";
@@ -82,7 +81,7 @@ export const queryType = new GraphQLObjectType<{}, ContextType>({
       },
       resolve: async (_, args, { loaders }) => {
         const dates = daysOfWeek(args.date);
-        return dates.map((d) => loaders.DaySummaryLoader.load(d));
+        const ret = dates.map((date) => loaders.daySummaryLoader.load(date));
       },
     },
   },
