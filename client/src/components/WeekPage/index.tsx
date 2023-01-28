@@ -12,6 +12,9 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import { ArrowForward, ArrowBack } from "@mui/icons-material";
+import { useLocation, useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
 
 function duration(wh: WorkHour): number {
   if (!wh.endTime) return 0;
@@ -64,13 +67,53 @@ function RenderDaySummary({ ds }: { ds: DaySummary }): JSX.Element {
   );
 }
 
-function WeekPage({ date }: WeekPageProps): JSX.Element {
+type NavigationProps = {
+  onBackClick: () => Promise<void>;
+  onForwardClick: () => Promise<void>;
+};
+
+function Navigation({
+  onBackClick,
+  onForwardClick,
+}: NavigationProps): JSX.Element {
+  return (
+    <div>
+      <ArrowBack onClick={onBackClick} />
+      <ArrowForward onClick={onForwardClick} />
+    </div>
+  );
+}
+
+function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
+  const [date, setDate] = useState(date_);
   const [summaries, setSummaries] = useState<DaySummary[]>([]);
+  const navigate = useNavigate();
+  const location = useLocation();
+
   useEffect(() => {
     loadWeekSummary(date).then(setSummaries);
-  }, []);
+  }, [date]);
+  const navigateToAnotherWeek = async (n: number) => {
+    const d1 = dayjs(date);
+    const d2 = d1.add(n * 7, "day");
+    const date2 = d2.format("YYYY-MM-DD");
+    const url = location.pathname + `?week=${date2}`;
+    setDate(date2);
+    navigate(url);
+  };
+  const handleForwardClick = async () => {
+    navigateToAnotherWeek(1);
+  };
+  const handleBackClick = async () => {
+    navigateToAnotherWeek(-1);
+  };
+
   return (
     <Paper style={{ margin: "10px auto", display: "table" }}>
+      <Navigation
+        onForwardClick={handleForwardClick}
+        onBackClick={handleBackClick}
+      />
       {summaries.map((s) => (
         <RenderDaySummary key={s.date.toISOString()} ds={s} />
       ))}
