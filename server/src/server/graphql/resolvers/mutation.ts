@@ -120,12 +120,25 @@ export const mutationType = new GraphQLObjectType<{}, ContextType>({
           )
         `;
         const values = [] as any[];
-        if (!validateTime(args.startTime))
-          return new Error(`invalid date time string: ${args.startTime}`);
-        if (args.endTime && !validateTime(args.endTime))
-          return new Error(`invalid date time string: ${args.endTime}`);
+        if (!validateTime(args.startTime)) {
+          return new Error(
+            `invalid date time string for start time: ${args.startTime}`
+          );
+        }
+        if (
+          args.endTime &&
+          !(validateTime(args.endTime) || args.endTime === "NULL")
+        ) {
+          return new Error(
+            `invalid date time string for end time: ${args.endTime}`
+          );
+        }
         values.push(args.startTime);
-        values.push(args.endTime ?? undefined);
+        if (args.endTime && args.endTime !== "NULL") {
+          values.push(args.endTime);
+        } else {
+          values.push(undefined);
+        }
         values.push(args.dealId);
         values.push(args.note ?? "");
         try {

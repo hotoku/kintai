@@ -1,7 +1,10 @@
 import { Deal, WorkHour } from "../../api/types";
-import { invalidDate } from "../../share/utils";
+import { formatDateTime, invalidDate } from "../../share/utils";
 
-export async function throwQuery<T>(query: string, name?: string): Promise<T> {
+export async function throwQuery<T>(
+  query: string,
+  name?: string
+): Promise<[T, { message: string }[]?]> {
   name = name || "object";
   const ret = await fetch("/graphql", {
     method: "POST",
@@ -12,7 +15,10 @@ export async function throwQuery<T>(query: string, name?: string): Promise<T> {
       query: query,
     }),
   });
-  return (await ret.json()).data[name] as T;
+  const js = await ret.json();
+  const data = js.data[name];
+  const errors = js.errors;
+  return [data, errors];
 }
 
 export type WorkHourRecord = Omit<WorkHour, "startTime" | "endTime"> & {
@@ -43,17 +49,22 @@ export async function loadWorkHours(dealId: number): Promise<WorkHour[]> {
           }
         }
   `;
-  const objs = await throwQuery<WorkHourRecord[]>(query);
+  const [objs, errors] = await throwQuery<WorkHourRecord[]>(query);
+  if (errors) {
+    throw new Error(JSON.stringify(errors));
+  }
   return objs.map(rec2obj);
 }
 
 export async function updateWorkHour(wh: WorkHour): Promise<WorkHour> {
+  const startTime = formatDateTime(wh.startTime);
+  const endTime = wh.endTime ? formatDateTime(wh.endTime) : "NULL";
   const query = `
     mutation {
       object: updateWorkHour(
         id: ${wh.id},
-        startTime: "${wh.startTime}",
-         endTime:"${wh.endTime ? wh.endTime : "NULL"}",
+        startTime: "${startTime}",
+        endTime: "${endTime}",
         isDeleted: ${wh.isDeleted},
         note: "${wh.note}"
       ) {
@@ -66,16 +77,22 @@ export async function updateWorkHour(wh: WorkHour): Promise<WorkHour> {
       }
     }
   `;
-  const obj = await throwQuery<WorkHourRecord>(query);
+  const [obj, errors] = await throwQuery<WorkHourRecord>(query);
+  if (errors) {
+    throw new Error(JSON.stringify(errors));
+  }
   return rec2obj(obj);
 }
 
 export async function addWorkHour(wh: Omit<WorkHour, "id">): Promise<WorkHour> {
+  const startTime = formatDateTime(wh.startTime);
+  const endTime = wh.endTime ? formatDateTime(wh.endTime) : "NULL";
+
   const query = `
     mutation {
       object: addWorkHour(
-        startTime: "${wh.startTime}",
-        endTime:"${wh.endTime ? wh.endTime : "NULL"}",
+        startTime: "${startTime}",
+        endTime:"${endTime}",
         dealId: ${wh.dealId},
         note: "${wh.note ? wh.note : ""}"
       ) {
@@ -88,7 +105,10 @@ export async function addWorkHour(wh: Omit<WorkHour, "id">): Promise<WorkHour> {
       }
     }
   `;
-  const obj = await throwQuery<WorkHourRecord>(query);
+  const [obj, errors] = await throwQuery<WorkHourRecord>(query);
+  if (errors) {
+    throw new Error(JSON.stringify(errors));
+  }
   return rec2obj(obj);
 }
 
@@ -102,6 +122,9 @@ export async function loadDeal(dealId: number): Promise<PartialDeal> {
           }
         }
   `;
-  const obj = await throwQuery<PartialDeal>(query);
+  const [obj, errors] = await throwQuery<PartialDeal>(query);
+  if (errors) {
+    throw new Error(JSON.stringify(errors));
+  }
   return obj;
 }
