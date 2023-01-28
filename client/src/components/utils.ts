@@ -49,8 +49,8 @@ export const parseDate = (s: string): Dayjs => {
   return dayjs(s, "YYYY-MM-DD");
 };
 
-export const parseDate2 = (s: string): Date => {
-  return parseDate(s).toDate();
+export const parseDate2 = (isoDateStr: string): Date => {
+  return new Date(isoDateStr);
 };
 
 export const formatTime = (d: Date, isUtc: boolean = false): string => {

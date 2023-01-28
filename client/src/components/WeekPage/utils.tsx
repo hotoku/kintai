@@ -1,4 +1,4 @@
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import { parseDate2, throwQuery } from "../utils";
 
 // todo: 型の定義が散らばっており、同名で内容が異なるものが共存していたりするので、整理する
