@@ -1,4 +1,4 @@
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 
 export function formatInt(n: number, digits: number | undefined): string {
   if (digits === undefined) {
