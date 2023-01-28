@@ -8,7 +8,6 @@ import { Box } from "@mui/material";
 import WorkHoursPage from "./WorkHoursPage";
 import KintaiAppBar from "./KintaiAppBar";
 import WeekPage from "./WeekPage";
-import { parseDate } from "./utils";
 import dayjs from "dayjs";
 
 function MyRoutes() {

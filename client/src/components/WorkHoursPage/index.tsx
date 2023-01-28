@@ -34,7 +34,7 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
   useEffect(() => {
     loadWorkHours(dealId).then(setWorkHours);
     loadDeal(dealId).then(setDeal);
-  }, []);
+  }, [dealId]);
 
   const handleCancel = async (_: HalfwayWorkHour): Promise<void> => {
     setEditedWorkHourId(undefined);
