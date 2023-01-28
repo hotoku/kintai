@@ -5,7 +5,13 @@ import { useEffect, useState } from "react";
 import { formatTime, formatDate } from "../../share/utils";
 import { secToStr } from "../utils";
 import { DaySummary, loadWeekSummary, WorkHour } from "./utils";
-import { TableBody, TableContainer, TableRow } from "@mui/material";
+import {
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Typography,
+} from "@mui/material";
 
 function duration(wh: WorkHour): number {
   if (!wh.endTime) return 0;
@@ -19,10 +25,17 @@ type WeekPageProps = {
 function RenderWorkHour({ wh }: { wh: WorkHour }): JSX.Element {
   return (
     <TableRow>
-      {formatTime(wh.startTime)} - {wh.endTime ? formatTime(wh.endTime) : ""}
-      {wh.endTime ? `(${secToStr(duration(wh))})` : ""}
-      {wh.note}■{wh.deal.name.substring(0, 20)}
-      <br />
+      <TableCell style={{ width: "6rem" }}>
+        {formatTime(wh.startTime)} - {wh.endTime ? formatTime(wh.endTime) : ""}
+      </TableCell>
+      <TableCell style={{ width: "3rem" }}>
+        {wh.endTime ? `${secToStr(duration(wh))}` : "-"}
+      </TableCell>
+      <TableCell style={{ width: "15rem" }}>{wh.deal.client.name}</TableCell>
+      <TableCell style={{ width: "15rem" }}>
+        {wh.deal.name.substring(0, 20)}
+      </TableCell>
+      <TableCell style={{ width: "15rem" }}>{wh.note}</TableCell>
     </TableRow>
   );
 }
@@ -33,7 +46,9 @@ function RenderDaySummary({ ds }: { ds: DaySummary }): JSX.Element {
   );
   return (
     <Card style={{ margin: "10px", background: "#f7f7f7" }}>
-      {formatDate(ds.date)}: 合計 {totalDuration}
+      <Typography component="div" variant="h6">
+        {formatDate(ds.date)}: 合計 {totalDuration}
+      </Typography>
       <TableContainer>
         <Table>
           <TableBody>

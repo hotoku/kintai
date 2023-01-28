@@ -12,6 +12,10 @@ export type WorkHour = {
   deal: {
     id: number;
     name: string;
+    client: {
+      id: number;
+      name: string;
+    };
   };
 };
 export type DaySummary = {
@@ -33,6 +37,10 @@ export async function loadWeekSummary(date: string): Promise<DaySummary[]> {
               deal {
                 id
                 name
+                client {
+                  id
+                  name
+                }
               }
             }
           }
