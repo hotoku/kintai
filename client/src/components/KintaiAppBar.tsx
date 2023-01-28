@@ -50,6 +50,9 @@ function KintaiAppBar(): JSX.Element {
         <Link href="/">
           <Typography variant="h5" color={blue[50]}>
             Kintai
+            {process.env.REACT_APP_IS_DEVELOPMENT ? (
+              <span>開発環境！！！</span>
+            ) : null}
           </Typography>
         </Link>
       </Toolbar>
