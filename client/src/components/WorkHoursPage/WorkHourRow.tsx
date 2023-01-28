@@ -1,7 +1,7 @@
 import { Delete, Edit } from "@mui/icons-material";
 import { Button, TableCell, TableRow, Tooltip } from "@mui/material";
 import { WorkHour } from "../../api/types";
-import { formatDate, formatTime, secToStr } from "../utils";
+import { formatDate, formatTime as formatTime, secToStr } from "../utils";
 
 type WorkHourRowProps =
   | {

@@ -19,7 +19,7 @@ const offsetString =
   offsetSign + formatInt(offsetHour, 2) + formatInt(offsetMinute, 2);
 
 export const formatDateTime = (d: Date, isUtc: boolean = false): string => {
-  let ret = `${formatDate(d, isUtc)}T${formatTime(d, isUtc)}`;
+  let ret = `${formatDate(d, isUtc)}T${formatTime(d, isUtc, true)}`;
   if (isUtc) {
     return ret + "Z";
   } else {
@@ -51,17 +51,6 @@ export const parseDate = (s: string): Dayjs => {
 
 export const parseDate2 = (isoDateStr: string): Date => {
   return new Date(isoDateStr);
-};
-
-export const formatTime = (d: Date, isUtc: boolean = false): string => {
-  const d2 = isUtc ? toUtc(d) : d;
-  return (
-    formatInt(d2.getHours(), 2) +
-    ":" +
-    formatInt(d2.getMinutes(), 2) +
-    ":" +
-    formatInt(d2.getSeconds(), 2)
-  );
 };
 
 export const secToStr = (seconds: number): string => {

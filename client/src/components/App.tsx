@@ -3,7 +3,6 @@ import ClientsPage from "./ClientsPage";
 import Deals from "./DealsPage";
 
 import ErrorBoundary from "./ErrorBoundary";
-import DeletedWorkHours from "./DeletedWorkHours";
 import { parseQuery } from "../utils";
 import { Box } from "@mui/material";
 import WorkHoursPage from "./WorkHoursPage";
@@ -24,7 +23,6 @@ function MyRoutes() {
       />
       ,
       <Route path="/deals" element={<Deals clientId={query.clientId} />} />,
-      <Route path="/deletedWorkHours" element={<DeletedWorkHours />} />,
       <Route
         path="/week"
         element={<WeekPage date={query.week ?? dayjs().format("YYYY-MM-DD")} />}

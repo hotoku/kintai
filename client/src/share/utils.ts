@@ -44,15 +44,23 @@ export const formatDate = (d: Date, isUtc: boolean = false): string => {
   );
 };
 
-export const formatTime = (d: Date, isUtc: boolean = false): string => {
+export const formatTime = (
+  d: Date,
+  isUtc: boolean = false,
+  showSecond: boolean = false
+): string => {
   const d2 = isUtc ? toUtc(d) : d;
-  return (
-    formatInt(d2.getHours(), 2) +
-    ":" +
-    formatInt(d2.getMinutes(), 2) +
-    ":" +
-    formatInt(d2.getSeconds(), 2)
-  );
+  if (showSecond) {
+    return (
+      formatInt(d2.getHours(), 2) +
+      ":" +
+      formatInt(d2.getMinutes(), 2) +
+      ":" +
+      formatInt(d2.getSeconds(), 2)
+    );
+  } else {
+    return formatInt(d2.getHours(), 2) + ":" + formatInt(d2.getMinutes(), 2);
+  }
 };
 
 export function updateArray<T extends { id: number }>(array: T[], obj: T): T[] {
