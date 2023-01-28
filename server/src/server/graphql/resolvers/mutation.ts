@@ -11,6 +11,11 @@ import { WorkHourType } from "../objectTypes";
 
 import { ContextType } from "./index";
 
+function validateTime(s: string): boolean {
+  const re = /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\+[0-9]{4}/;
+  return re.test(s);
+}
+
 export const mutationType = new GraphQLObjectType<{}, ContextType>({
   name: "Mutation",
   fields: {
@@ -29,6 +34,8 @@ export const mutationType = new GraphQLObjectType<{}, ContextType>({
         const setStatemets = [] as string[];
         const setValues = [] as any[];
         if (args.startTime !== undefined) {
+          if (!validateTime(args.startTime))
+            return new Error(`invalid date time string: ${args.startTime}`);
           setStatemets.push(`startTime=?`);
           setValues.push(args.startTime);
         }
@@ -36,6 +43,9 @@ export const mutationType = new GraphQLObjectType<{}, ContextType>({
           if (args.endTime.toUpperCase() === "NULL") {
             setStatemets.push(`endTime=NULL`);
           } else {
+            if (!validateTime(args.endTime))
+              return new Error(`invalid date time string: ${args.endTime}`);
+
             setStatemets.push(`endTime=?`);
             setValues.push(args.endTime);
           }
@@ -110,8 +120,25 @@ export const mutationType = new GraphQLObjectType<{}, ContextType>({
           )
         `;
         const values = [] as any[];
+        if (!validateTime(args.startTime)) {
+          return new Error(
+            `invalid date time string for start time: ${args.startTime}`
+          );
+        }
+        if (
+          args.endTime &&
+          !(validateTime(args.endTime) || args.endTime === "NULL")
+        ) {
+          return new Error(
+            `invalid date time string for end time: ${args.endTime}`
+          );
+        }
         values.push(args.startTime);
-        values.push(args.endTime ?? undefined);
+        if (args.endTime && args.endTime !== "NULL") {
+          values.push(args.endTime);
+        } else {
+          values.push(undefined);
+        }
         values.push(args.dealId);
         values.push(args.note ?? "");
         try {

@@ -1,3 +1,6 @@
+BACKUP_DIR := $(HOME)/projects/hotoku/kintai-release/release/backup
+
+
 .PHONY: user
 user: database
 	@echo "create user if not exists $(MYSQL_USER_NAME)@localhost identified by '$(MYSQL_USER_PASSWORD)'" | mysql -u root -p"$(MYSQL_ROOT_PASSWORD)"
@@ -17,8 +20,8 @@ clean:
 
 .PHONY: restore
 restore:
-	@echo $()
-	$(eval DUMP_FILE := $(shell read -p "back up file ?: " name && echo $$name))
+	$(eval DUMP_FILE := $(shell ls $(BACKUP_DIR) | tail -n1))
+	echo $(DUMP_FILE)
 	@make clean
 	@make user
-	@mysql -u root -p"$(MYSQL_ROOT_PASSWORD)" $(DATABASE_NAME) < ../../release/backup/$(DUMP_FILE)
+	@mysql -u root -p"$(MYSQL_ROOT_PASSWORD)" $(DATABASE_NAME) < $(BACKUP_DIR)/$(DUMP_FILE)
