@@ -169,11 +169,16 @@ function createWorkHourLoader(): DataLoader<number, WorkHourRecord> {
 
 function createDaySummaryLoader(): DataLoader<string, DaySummaryRecord> {
   return new DataLoader<string, DaySummaryRecord>(async (dates) => {
-    const rows = await query<{ id: number; date: string }>(
+    const rows = await query<WorkHourRecord & { date: string }>(
       `
       select
         substr(startTime, 1, 10) as date,
-        id
+        id,
+        startTime,
+        endTime,
+        isDeleted,
+        note,
+        dealId
       from
         WorkHours
       where
@@ -185,9 +190,7 @@ function createDaySummaryLoader(): DataLoader<string, DaySummaryRecord> {
     const ret = dates.map((date) => {
       return {
         date: date,
-        workHourIds: rows
-          .filter((row) => row.date === date)
-          .map((row) => row.id),
+        workHours: rows.filter((row) => row.date === date),
       };
     });
     return ret;

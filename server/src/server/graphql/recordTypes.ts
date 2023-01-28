@@ -20,5 +20,5 @@ export type WorkHourRecord = {
 
 export type DaySummaryRecord = {
   date: string;
-  workHourIds: number[];
+  workHours: WorkHourRecord[];
 };

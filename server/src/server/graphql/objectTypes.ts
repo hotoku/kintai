@@ -84,7 +84,7 @@ export const WorkHourType: GraphQLObjectType<WorkHourRecord, ContextType> =
       note: { type: GraphQLString },
       deal: {
         type: DealType,
-        resolve: (obj, args, { loaders }) => {
+        resolve: (obj, _, { loaders }) => {
           // ここの第一引数はWorkHourRecordオブジェクト
           // ここの第二引数(args)はundefined
           // data loaderから呼ばれる時には、第一引数に、オブジェクトが入る
@@ -101,11 +101,8 @@ export const DaySummaryType: GraphQLObjectType<DaySummaryRecord, ContextType> =
       date: { type: GraphQLString },
       workHours: {
         type: new GraphQLList(WorkHourType),
-        resolve: (obj, _, { loaders }) => {
-          const ret = obj.workHourIds.map((id) =>
-            loaders.workHourLoader.load(id)
-          );
-          return ret;
+        resolve: (obj) => {
+          return obj.workHours;
         },
       },
     }),
