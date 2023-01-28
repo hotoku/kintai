@@ -1,3 +1,4 @@
+import { formatDateTime } from "../share/utils";
 import {
   Deal,
   HalfwayWorkHour,
@@ -5,7 +6,6 @@ import {
   Client,
   HalfwayClient,
 } from "./types";
-import { formatDateTime } from "../share/utils";
 
 export const fetchDeals = async (): Promise<Deal[]> => {
   const res = await fetch("/api/deals");
