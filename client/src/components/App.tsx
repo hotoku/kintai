@@ -10,6 +10,7 @@ import WorkHoursPage from "./WorkHoursPage";
 import KintaiAppBar from "./KintaiAppBar";
 import WeekPage from "./WeekPage";
 import { parseDate } from "./utils";
+import dayjs from "dayjs";
 
 function MyRoutes() {
   const query = parseQuery(useLocation().search);
@@ -24,7 +25,10 @@ function MyRoutes() {
       ,
       <Route path="/deals" element={<Deals clientId={query.clientId} />} />,
       <Route path="/deletedWorkHours" element={<DeletedWorkHours />} />,
-      <Route path="/week" element={<WeekPage week={parseDate(query.week)} />} />
+      <Route
+        path="/week"
+        element={<WeekPage date={query.week ?? dayjs().format("YYYY-MM-DD")} />}
+      />
     </Routes>
   );
 }

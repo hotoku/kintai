@@ -44,8 +44,13 @@ export const formatDate = (d: Date, isUtc: boolean = false): string => {
   );
 };
 
+// todo: ところによりdayjsだったりDateだったりするので統一する
 export const parseDate = (s: string): Dayjs => {
   return dayjs(s, "YYYY-MM-DD");
+};
+
+export const parseDate2 = (s: string): Date => {
+  return parseDate(s).toDate();
 };
 
 export const formatTime = (d: Date, isUtc: boolean = false): string => {
@@ -65,3 +70,23 @@ export const secToStr = (seconds: number): string => {
   const hours = Math.floor(minutes / 60);
   return `${hours}:${m}`;
 };
+
+export async function throwQuery<T>(
+  query: string,
+  name?: string
+): Promise<[T, { message: string }[]?]> {
+  name = name || "object";
+  const ret = await fetch("/graphql", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      query: query,
+    }),
+  });
+  const js = await ret.json();
+  const data = js.data[name];
+  const errors = js.errors;
+  return [data, errors];
+}

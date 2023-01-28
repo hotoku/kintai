@@ -1,40 +1,7 @@
 import { Deal, WorkHour } from "../../api/types";
-import { formatDateTime, invalidDate } from "../../share/utils";
-
-export async function throwQuery<T>(
-  query: string,
-  name?: string
-): Promise<[T, { message: string }[]?]> {
-  name = name || "object";
-  const ret = await fetch("/graphql", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      query: query,
-    }),
-  });
-  const js = await ret.json();
-  const data = js.data[name];
-  const errors = js.errors;
-  return [data, errors];
-}
-
-export type WorkHourRecord = Omit<WorkHour, "startTime" | "endTime"> & {
-  startTime: string;
-  endTime?: string;
-};
-
-export function rec2obj(obj: WorkHourRecord): WorkHour {
-  const endTime = obj.endTime ? new Date(obj.endTime) : undefined;
-  const endTime2 = endTime && !invalidDate(endTime) ? endTime : undefined;
-  return {
-    ...obj,
-    startTime: new Date(obj.startTime),
-    endTime: endTime2,
-  };
-}
+import { formatDateTime } from "../../share/utils";
+import { rec2obj, WorkHourRecord } from "../test-utils";
+import { throwQuery } from "../utils";
 
 export async function loadWorkHours(dealId: number): Promise<WorkHour[]> {
   const query = `

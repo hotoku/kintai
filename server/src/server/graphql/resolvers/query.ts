@@ -72,7 +72,7 @@ export const queryType = new GraphQLObjectType<{}, ContextType>({
         return whIds.map((whId) => loaders.workHourLoader.load(whId));
       },
     },
-    getWeekSumary: {
+    getWeekSummary: {
       type: new GraphQLList(DaySummaryType),
       args: {
         date: {
