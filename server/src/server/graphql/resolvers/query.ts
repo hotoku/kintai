@@ -81,7 +81,7 @@ export const queryType = new GraphQLObjectType<{}, ContextType>({
       },
       resolve: async (_, args, { loaders }) => {
         const dates = daysOfWeek(args.date);
-        const ret = dates.map((date) => loaders.daySummaryLoader.load(date));
+        return dates.map((date) => loaders.daySummaryLoader.load(date));
       },
     },
   },

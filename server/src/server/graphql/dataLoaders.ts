@@ -140,6 +140,7 @@ function createDealWorkHoursLoader(): DataLoader<number, number[]> {
 
 function createWorkHourLoader(): DataLoader<number, WorkHourRecord> {
   return new DataLoader<number, WorkHourRecord>(async (ids) => {
+    console.log("ids:", ids);
     const rows = await query<WorkHourRecord>(
       `
       select
@@ -181,7 +182,7 @@ function createDaySummaryLoader(): DataLoader<string, DaySummaryRecord> {
       [dates]
     );
 
-    return dates.map((date) => {
+    const ret = dates.map((date) => {
       return {
         date: date,
         workHourIds: rows
@@ -189,6 +190,7 @@ function createDaySummaryLoader(): DataLoader<string, DaySummaryRecord> {
           .map((row) => row.id),
       };
     });
+    return ret;
   });
 }
 

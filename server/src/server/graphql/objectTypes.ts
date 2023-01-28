@@ -5,6 +5,7 @@ import {
   GraphQLString,
   GraphQLBoolean,
 } from "graphql";
+import { workHours } from "../routes";
 
 import {
   ClientRecord,
@@ -100,8 +101,12 @@ export const DaySummaryType: GraphQLObjectType<DaySummaryRecord, ContextType> =
       date: { type: GraphQLString },
       workHours: {
         type: new GraphQLList(WorkHourType),
-        resolve: (obj, _, { loaders }) =>
-          obj.workHourIds.map(loaders.workHourLoader.load),
+        resolve: (obj, _, { loaders }) => {
+          const ret = obj.workHourIds.map((id) =>
+            loaders.workHourLoader.load(id)
+          );
+          return ret;
+        },
       },
     }),
   });
