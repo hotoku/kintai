@@ -19,7 +19,7 @@ import DeletedWorkHourTable from "./DeletedWorkHourTable";
 import ActiveWorkHourTable from "./ActiveWorkHourTable";
 import WorkHourEditorDialog from "./WorkHourEditorDialog";
 import { secToStr } from "../utils";
-
+import { formatDateTime } from "../../share/utils";
 type WorkHoursPageProps = {
   dealId: number;
 };
