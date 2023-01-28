@@ -18,15 +18,6 @@ const offsetMinute = Math.abs(tzOffset) % 60;
 const offsetString =
   offsetSign + formatInt(offsetHour, 2) + formatInt(offsetMinute, 2);
 
-export const formatDateTime = (d: Date, isUtc: boolean = false): string => {
-  let ret = `${formatDate(d, isUtc)}T${formatTime(d, isUtc)}`;
-  if (isUtc) {
-    return ret + "Z";
-  } else {
-    return ret + offsetString;
-  }
-};
-
 export const toUtc = (d: Date): Date => {
   const sign = offsetSign === "+" ? -1 : 1;
   const durationInMinutes = offsetHour * 60 + offsetMinute;
@@ -60,6 +51,16 @@ export const formatTime = (
     );
   } else {
     return formatInt(d2.getHours(), 2) + ":" + formatInt(d2.getMinutes(), 2);
+  }
+};
+
+export const formatDateTime = (d: Date, isUtc: boolean = false): string => {
+  const date = formatDate(d, isUtc);
+  const time = formatTime(d, isUtc, true);
+  if (isUtc) {
+    return `${date}T${time}Z`;
+  } else {
+    return `${date}T${time}${offsetString}`;
   }
 };
 
