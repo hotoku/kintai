@@ -6,6 +6,7 @@ import { formatTime, formatDate } from "../../share/utils";
 import { secToStr } from "../utils";
 import { DaySummary, loadWeekSummary, WorkHour } from "./utils";
 import {
+  Button,
   TableBody,
   TableCell,
   TableContainer,
@@ -48,7 +49,13 @@ function RenderDaySummary({ ds }: { ds: DaySummary }): JSX.Element {
     ds.workHours.map((wh) => duration(wh)).reduce((x, y) => x + y, 0)
   );
   return (
-    <Card style={{ margin: "10px", background: "#f7f7f7" }}>
+    <Card
+      style={{
+        margin: "10px",
+        background: "#f7f7f7",
+        padding: "5px 5px 0",
+      }}
+    >
       <Typography component="div" variant="h6">
         {formatDate(ds.date)}: 合計 {totalDuration}
       </Typography>
@@ -77,9 +84,13 @@ function Navigation({
   onForwardClick,
 }: NavigationProps): JSX.Element {
   return (
-    <div>
-      <ArrowBack onClick={onBackClick} />
-      <ArrowForward onClick={onForwardClick} />
+    <div style={{ margin: "0 auto", display: "table" }}>
+      <Button onClick={onBackClick}>
+        <ArrowBack />
+      </Button>
+      <Button onClick={onForwardClick}>
+        <ArrowForward />
+      </Button>
     </div>
   );
 }
@@ -109,7 +120,7 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
   };
 
   return (
-    <Paper style={{ margin: "10px auto", display: "table" }}>
+    <Paper style={{ margin: "0 auto", display: "table" }}>
       <Navigation
         onForwardClick={handleForwardClick}
         onBackClick={handleBackClick}
