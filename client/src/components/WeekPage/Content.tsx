@@ -10,6 +10,7 @@ import {
 import { formatTime } from "../../share/utils";
 import { formatDate, secToStr } from "../utils";
 import { DaySummary, WorkHour } from "./utils";
+import { Filter } from ".";
 
 function duration(wh: WorkHour): number {
   if (!wh.endTime) return 0;
@@ -66,6 +67,7 @@ function RenderDaySummary({ ds }: { ds: DaySummary }): JSX.Element {
 
 type ContentProps = {
   summaries: DaySummary[];
+  filter: Filter;
 };
 function Content({ summaries }: ContentProps): JSX.Element {
   return (
