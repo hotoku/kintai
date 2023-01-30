@@ -25,7 +25,7 @@ function KintaiAppBar(): JSX.Element {
   const [isOpenDrawer, setIsOpenDrawer] = useState<boolean>(false);
 
   return (
-    <AppBar position="static">
+    <AppBar position="sticky">
       <Toolbar>
         <IconButton size="large" onClick={() => setIsOpenDrawer((x) => !x)}>
           <MenuIcon />
