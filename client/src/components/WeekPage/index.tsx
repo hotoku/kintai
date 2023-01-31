@@ -52,12 +52,10 @@ function id2name<K, V>(objs: { id: K; name: V }[]): Map<K, V> {
 
 type ClientMap = Map<number, string>;
 type DealMap = Map<number, string>;
-type DealClientMap = Map<number, number>;
 
 type FilterSelectProps = {
   clients: ClientMap;
   deals: DealMap;
-  deal2client: DealClientMap;
   onClientChange: (id: number | "") => void;
   onDealChange: (id: number | "") => void;
 };
@@ -87,7 +85,6 @@ function maybeInt(s: string): number | "" {
 function FilterSelect({
   clients,
   deals,
-  deal2client,
   onClientChange,
   onDealChange,
 }: FilterSelectProps): JSX.Element {
@@ -106,13 +103,6 @@ function FilterSelect({
     };
   };
 
-  const deals2 = new Map<number, string>();
-  for (const [i, n] of deals.entries()) {
-    if (clientId === "" || deal2client.get(i) === clientId) {
-      deals2.set(i, n);
-    }
-  }
-
   return (
     <>
       <Select
@@ -125,7 +115,7 @@ function FilterSelect({
         onChange={handleStateChange([onDealChange, setDealId])}
         value={dealId}
       >
-        {menuItem(deals2)}
+        {menuItem(deals)}
       </Select>
     </>
   );
@@ -153,16 +143,6 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
       );
     return id2name(deals);
   }, [allSummaries, filter.clientId]);
-  const deal2client = useMemo(() => {
-    const pairs = allSummaries
-      .map((s) =>
-        s.workHours.map((wh) => {
-          return { id: wh.deal.id, name: wh.deal.client.id };
-        })
-      )
-      .reduce((x, y) => x.concat(y), []);
-    return id2name(pairs);
-  }, [allSummaries]);
 
   useEffect(() => {
     loadWeekSummary(date).then(setAllSummaries);
@@ -202,7 +182,6 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
       <FilterSelect
         clients={clients}
         deals={deals}
-        deal2client={deal2client}
         onClientChange={handleClientSelect}
         onDealChange={handleDealSelect}
       ></FilterSelect>
