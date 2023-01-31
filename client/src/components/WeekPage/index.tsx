@@ -103,10 +103,15 @@ function FilterSelect({
     };
   };
 
+  const clearDealId = () => {
+    setDealId("");
+    onDealChange("");
+  };
+
   return (
     <>
       <Select
-        onChange={handleStateChange([onClientChange, setClientId])}
+        onChange={handleStateChange([onClientChange, setClientId, clearDealId])}
         value={clientId}
       >
         {menuItem(clients)}
@@ -138,9 +143,7 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
     const deals = allSummaries
       .map((s) => s.workHours.map((wh) => wh.deal))
       .reduce((x, y) => x.concat(y), [])
-      .filter(
-        (d) => filter.clientId === undefined || filter.clientId === d.client.id
-      );
+      .filter((d) => filter.clientId === "" || filter.clientId === d.client.id);
     return id2name(deals);
   }, [allSummaries, filter.clientId]);
 
