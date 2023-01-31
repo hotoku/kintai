@@ -1,7 +1,7 @@
 import Paper from "@mui/material/Paper";
 import { useEffect, useMemo, useState } from "react";
 import { DaySummary, loadWeekSummary } from "./utils";
-import { Button } from "@mui/material";
+import { Button, MenuItem, Select } from "@mui/material";
 import { ArrowForward, ArrowBack } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
@@ -39,14 +39,55 @@ export type Filter = {
 
 function id2name<K, V>(objs: { id: K; name: V }[]): Map<K, V> {
   const ret = new Map<K, V>();
-  for (const obj of objs) {
-    if (ret.get(obj.id) && ret.get(obj.id) !== obj.name) {
+  for (const { id, name } of objs) {
+    if (ret.get(id) && ret.get(id) !== name) {
       throw new Error(
-        `bad data ${obj.id} has multiple name. ${ret.get(obj.id)}, ${obj.name}`
+        `bad data ${id} has multiple name. ${ret.get(id)}, ${name}`
       );
     }
+    ret.set(id, name);
   }
   return ret;
+}
+
+type ClientMap = Map<number, string>;
+type DealMap = Map<number, string>;
+type DealClientMap = Map<number, number>;
+
+type FilterSelectProps = {
+  clients: ClientMap;
+  deals: DealMap;
+  deal2client: DealClientMap;
+  onClientChange: (id?: number) => void;
+  onDealChange: (id?: number) => void;
+};
+
+function menuItem(map: Map<number, string>): JSX.Element[] {
+  const ret = [] as JSX.Element[];
+  map.forEach((name, id) => {
+    console.log("name:", name);
+    ret.push(
+      <MenuItem key={id} value={id}>
+        {name}
+      </MenuItem>
+    );
+  });
+  return ret;
+}
+
+function FilterSelect({
+  clients,
+  deals,
+  deal2client,
+  onClientChange,
+  onDealChange,
+}: FilterSelectProps): JSX.Element {
+  return (
+    <>
+      <Select>{menuItem(clients)}</Select>
+      <Select>{menuItem(deals)}</Select>
+    </>
+  );
 }
 
 function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
@@ -59,13 +100,14 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
   const clients = useMemo(() => {
     const clients = allSummaries
       .map((s) => s.workHours.map((wh) => wh.deal.client))
-      .reduce((x, y) => x.concat(y));
+      .reduce((x, y) => x.concat(y), []);
     return id2name(clients);
   }, [allSummaries]);
   const deals = useMemo(() => {
+    console.log("new deals");
     const deals = allSummaries
       .map((s) => s.workHours.map((wh) => wh.deal))
-      .reduce((x, y) => x.concat(y))
+      .reduce((x, y) => x.concat(y), [])
       .filter(
         (d) => filter.clientId === undefined || filter.clientId === d.client.id
       );
@@ -78,7 +120,7 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
           return { id: wh.deal.id, name: wh.deal.client.id };
         })
       )
-      .reduce((x, y) => x.concat(y));
+      .reduce((x, y) => x.concat(y), []);
     return id2name(pairs);
   }, [allSummaries]);
 
@@ -100,12 +142,30 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
     navigateToAnotherWeek(-1);
   };
 
+  const handleClientSelect = (id?: number) => {
+    setFilter((f) => {
+      return { ...f, client: id };
+    });
+  };
+  const handleDealSelect = (id?: number) => {
+    setFilter((f) => {
+      return { ...f, deal: id };
+    });
+  };
+
   return (
     <Paper style={{ margin: "0 auto", display: "table" }}>
       <Navigation
         onForwardClick={handleForwardClick}
         onBackClick={handleBackClick}
       />
+      <FilterSelect
+        clients={clients}
+        deals={deals}
+        deal2client={deal2client}
+        onClientChange={handleClientSelect}
+        onDealChange={handleDealSelect}
+      ></FilterSelect>
       <Content summaries={allSummaries} filter={filter} />
     </Paper>
   );
