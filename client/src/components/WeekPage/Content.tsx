@@ -35,7 +35,13 @@ function RenderWorkHour({ wh }: { wh: WorkHour }): JSX.Element {
   );
 }
 
-function RenderDaySummary({ ds }: { ds: DaySummary }): JSX.Element {
+function RenderDaySummary({
+  ds,
+  filter,
+}: {
+  ds: DaySummary;
+  filter: Filter;
+}): JSX.Element {
   const totalDuration = secToStr(
     ds.workHours.map((wh) => duration(wh)).reduce((x, y) => x + y, 0)
   );
@@ -55,6 +61,14 @@ function RenderDaySummary({ ds }: { ds: DaySummary }): JSX.Element {
           <TableBody>
             {ds.workHours
               .filter((wh) => !wh.isDeleted)
+              .filter((wh) => {
+                return (
+                  (filter.dealId === undefined ||
+                    wh.deal.id === filter.dealId) &&
+                  (filter.clientId === undefined ||
+                    wh.deal.client.id === filter.clientId)
+                );
+              })
               .map((wh) => (
                 <RenderWorkHour key={wh.id} wh={wh} />
               ))}
@@ -69,11 +83,11 @@ type ContentProps = {
   summaries: DaySummary[];
   filter: Filter;
 };
-function Content({ summaries }: ContentProps): JSX.Element {
+function Content({ summaries, filter }: ContentProps): JSX.Element {
   return (
     <>
       {summaries.map((s) => (
-        <RenderDaySummary key={s.date.toISOString()} ds={s} />
+        <RenderDaySummary key={s.date.toISOString()} ds={s} filter={filter} />
       ))}
     </>
   );

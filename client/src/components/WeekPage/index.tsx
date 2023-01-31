@@ -37,6 +37,18 @@ export type Filter = {
   dealId?: number;
 };
 
+function id2name<K, V>(objs: { id: K; name: V }[]): Map<K, V> {
+  const ret = new Map<K, V>();
+  for (const obj of objs) {
+    if (ret.get(obj.id) && ret.get(obj.id) !== obj.name) {
+      throw new Error(
+        `bad data ${obj.id} has multiple name. ${ret.get(obj.id)}, ${obj.name}`
+      );
+    }
+  }
+  return ret;
+}
+
 function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
   const [date, setDate] = useState(date_);
   const [allSummaries, setAllSummaries] = useState<DaySummary[]>([]);
@@ -45,62 +57,29 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
   const [filter, setFilter] = useState<Filter>({});
 
   const clients = useMemo(() => {
-    const ret = new Map<number, string>();
-    for (const s of allSummaries) {
-      const whs = s.workHours;
-      for (const wh of whs) {
-        const client = wh.deal.client;
-        if (ret.get(client.id) !== client.name) {
-          throw new Error(
-            `bad data: client ${client.id} has multiple name. ${ret.get(
-              client.id
-            )}, ${client.name}`
-          );
-        }
-        ret.set(client.id, client.name);
-      }
-    }
+    const clients = allSummaries
+      .map((s) => s.workHours.map((wh) => wh.deal.client))
+      .reduce((x, y) => x.concat(y));
+    return id2name(clients);
   }, [allSummaries]);
   const deals = useMemo(() => {
-    const ret = new Map<number, string>();
-    for (const s of allSummaries) {
-      const whs = s.workHours;
-      for (const wh of whs) {
-        if (
-          filter.clientId === undefined ||
-          filter.clientId === wh.deal.client.id
-        ) {
-          const deal = wh.deal;
-          if (ret.get(deal.id) !== deal.name) {
-            throw new Error(
-              `bad data: client ${deal.id} has multiple name. ${ret.get(
-                deal.id
-              )}, ${deal.name}`
-            );
-          }
-          ret.set(deal.id, deal.name);
-        }
-      }
-    }
-    return ret;
+    const deals = allSummaries
+      .map((s) => s.workHours.map((wh) => wh.deal))
+      .reduce((x, y) => x.concat(y))
+      .filter(
+        (d) => filter.clientId === undefined || filter.clientId === d.client.id
+      );
+    return id2name(deals);
   }, [allSummaries, filter.clientId]);
   const deal2client = useMemo(() => {
-    const ret = new Map<number, number>();
-    for (const s of allSummaries) {
-      const whs = s.workHours;
-      for (const wh of whs) {
-        const deal = wh.deal;
-        const client = deal.client;
-        if (ret.get(deal.id) !== client.id) {
-          throw new Error(
-            `bad data: deal ${deal.id}:${deal.name} has multiple client. ${
-              client.id
-            }:${client.name}, ${ret.get(deal.id)}`
-          );
-        }
-        ret.set(deal.id, client.id);
-      }
-    }
+    const pairs = allSummaries
+      .map((s) =>
+        s.workHours.map((wh) => {
+          return { id: wh.deal.id, name: wh.deal.client.id };
+        })
+      )
+      .reduce((x, y) => x.concat(y));
+    return id2name(pairs);
   }, [allSummaries]);
 
   useEffect(() => {
