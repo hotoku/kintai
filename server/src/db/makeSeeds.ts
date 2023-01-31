@@ -2,8 +2,8 @@ import * as fs from "fs";
 import dayjs from "dayjs";
 
 const numClients = 10;
-const numDealsPerClient = 10;
-const numWorkHoursPerDeal = 20;
+const numDealsPerClient = 3;
+const numWorkHoursPerDeal = 3;
 
 const clients = ["id,name"];
 const deals = ["id,name,clientId"];
@@ -32,7 +32,7 @@ function main() {
   let clientId = 1;
   let dealId = 1;
   let workHourId = 1;
-  let start = dayjs("2022-01-01T09:00:00");
+  let start0 = dayjs("2023-01-01T09:00:00");
 
   while (clientId <= numClients) {
     insertClient(clientId);
@@ -41,6 +41,7 @@ function main() {
       insertDeal(clientId, dealId);
       let numWorkHour = 0;
       while (numWorkHour < numWorkHoursPerDeal) {
+        let start = start0;
         insertWorkHour(dealId, workHourId, start);
         numWorkHour++;
         workHourId++;
