@@ -66,7 +66,7 @@ function menuItem(map: Map<number, string>): JSX.Element[] {
   const ret = [] as JSX.Element[];
   ret.push(
     <MenuItem key={"none"} value="">
-      <em>None</em>
+      <em>All</em>
     </MenuItem>
   );
   map.forEach((name, id) => {
@@ -107,7 +107,7 @@ function FilterSelect({
   };
 
   const deals2 = new Map<number, string>();
-  for (const [i, n] of deals2.entries()) {
+  for (const [i, n] of deals.entries()) {
     deals2.set(i, n);
   }
 
