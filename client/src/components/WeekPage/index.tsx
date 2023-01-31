@@ -64,6 +64,11 @@ type FilterSelectProps = {
 
 function menuItem(map: Map<number, string>): JSX.Element[] {
   const ret = [] as JSX.Element[];
+  ret.push(
+    <MenuItem key={"none"} value="">
+      <em>None</em>
+    </MenuItem>
+  );
   map.forEach((name, id) => {
     console.log("name:", name);
     ret.push(
@@ -84,11 +89,13 @@ function FilterSelect({
 }: FilterSelectProps): JSX.Element {
   return (
     <>
-      <Select>{menuItem(clients)}</Select>
-      <Select>{menuItem(deals)}</Select>
+      <Select value={""}>{menuItem(clients)}</Select>
+      <Select value={""}>{menuItem(deals)}</Select>
     </>
   );
 }
+
+let hoge = 1;
 
 function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
   const [date, setDate] = useState(date_);
@@ -104,7 +111,8 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
     return id2name(clients);
   }, [allSummaries]);
   const deals = useMemo(() => {
-    console.log("new deals");
+    hoge += 1;
+    console.log("new deals:", hoge);
     const deals = allSummaries
       .map((s) => s.workHours.map((wh) => wh.deal))
       .reduce((x, y) => x.concat(y), [])
@@ -143,6 +151,7 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
   };
 
   const handleClientSelect = (id?: number) => {
+    console.log("id", id);
     setFilter((f) => {
       return { ...f, client: id };
     });
