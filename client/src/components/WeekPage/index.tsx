@@ -108,7 +108,9 @@ function FilterSelect({
 
   const deals2 = new Map<number, string>();
   for (const [i, n] of deals.entries()) {
-    deals2.set(i, n);
+    if (clientId === "" || deal2client.get(i) === clientId) {
+      deals2.set(i, n);
+    }
   }
 
   return (
