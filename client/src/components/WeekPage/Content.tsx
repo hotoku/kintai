@@ -63,9 +63,8 @@ function RenderDaySummary({
               .filter((wh) => !wh.isDeleted)
               .filter((wh) => {
                 return (
-                  (filter.dealId === undefined ||
-                    wh.deal.id === filter.dealId) &&
-                  (filter.clientId === undefined ||
+                  (filter.dealId === "" || wh.deal.id === filter.dealId) &&
+                  (filter.clientId === "" ||
                     wh.deal.client.id === filter.clientId)
                 );
               })

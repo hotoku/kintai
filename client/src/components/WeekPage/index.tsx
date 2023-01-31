@@ -1,7 +1,7 @@
 import Paper from "@mui/material/Paper";
 import { useEffect, useMemo, useState } from "react";
 import { DaySummary, loadWeekSummary } from "./utils";
-import { Button, MenuItem, Select } from "@mui/material";
+import { Button, MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import { ArrowForward, ArrowBack } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
@@ -33,8 +33,8 @@ function Navigation({
 }
 
 export type Filter = {
-  clientId?: number;
-  dealId?: number;
+  clientId: number | "";
+  dealId: number | "";
 };
 
 function id2name<K, V>(objs: { id: K; name: V }[]): Map<K, V> {
@@ -58,8 +58,8 @@ type FilterSelectProps = {
   clients: ClientMap;
   deals: DealMap;
   deal2client: DealClientMap;
-  onClientChange: (id?: number) => void;
-  onDealChange: (id?: number) => void;
+  onClientChange: (id: number | "") => void;
+  onDealChange: (id: number | "") => void;
 };
 
 function menuItem(map: Map<number, string>): JSX.Element[] {
@@ -70,7 +70,6 @@ function menuItem(map: Map<number, string>): JSX.Element[] {
     </MenuItem>
   );
   map.forEach((name, id) => {
-    console.log("name:", name);
     ret.push(
       <MenuItem key={id} value={id}>
         {name}
@@ -80,6 +79,11 @@ function menuItem(map: Map<number, string>): JSX.Element[] {
   return ret;
 }
 
+function maybeInt(s: string): number | "" {
+  const ret = parseInt(s);
+  return Number.isNaN(ret) ? "" : ret;
+}
+
 function FilterSelect({
   clients,
   deals,
@@ -87,22 +91,50 @@ function FilterSelect({
   onClientChange,
   onDealChange,
 }: FilterSelectProps): JSX.Element {
+  const [clientId, setClientId] = useState<number | "">("");
+  const [dealId, setDealId] = useState<number | "">("");
+
+  const handleStateChange = (
+    handlers: ((id: number | "") => void)[]
+  ): ((e: SelectChangeEvent<number>) => void) => {
+    return (e: SelectChangeEvent<number>) => {
+      for (const h of handlers) {
+        const v = e.target.value;
+        const id = typeof v === "string" ? maybeInt(v) : v;
+        h(id);
+      }
+    };
+  };
+
+  const deals2 = new Map<number, string>();
+  for (const [i, n] of deals2.entries()) {
+    deals2.set(i, n);
+  }
+
   return (
     <>
-      <Select value={""}>{menuItem(clients)}</Select>
-      <Select value={""}>{menuItem(deals)}</Select>
+      <Select
+        onChange={handleStateChange([onClientChange, setClientId])}
+        value={clientId}
+      >
+        {menuItem(clients)}
+      </Select>
+      <Select
+        onChange={handleStateChange([onDealChange, setDealId])}
+        value={dealId}
+      >
+        {menuItem(deals2)}
+      </Select>
     </>
   );
 }
-
-let hoge = 1;
 
 function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
   const [date, setDate] = useState(date_);
   const [allSummaries, setAllSummaries] = useState<DaySummary[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
-  const [filter, setFilter] = useState<Filter>({});
+  const [filter, setFilter] = useState<Filter>({ clientId: "", dealId: "" });
 
   const clients = useMemo(() => {
     const clients = allSummaries
@@ -111,8 +143,6 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
     return id2name(clients);
   }, [allSummaries]);
   const deals = useMemo(() => {
-    hoge += 1;
-    console.log("new deals:", hoge);
     const deals = allSummaries
       .map((s) => s.workHours.map((wh) => wh.deal))
       .reduce((x, y) => x.concat(y), [])
@@ -150,15 +180,14 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
     navigateToAnotherWeek(-1);
   };
 
-  const handleClientSelect = (id?: number) => {
-    console.log("id", id);
+  const handleClientSelect = (id: number | "") => {
     setFilter((f) => {
-      return { ...f, client: id };
+      return { ...f, clientId: id };
     });
   };
-  const handleDealSelect = (id?: number) => {
+  const handleDealSelect = (id: number | "") => {
     setFilter((f) => {
-      return { ...f, deal: id };
+      return { ...f, dealId: id };
     });
   };
 
