@@ -54,6 +54,9 @@ function main() {
     }
     clientId++;
   }
+  if (!fs.existsSync("seeds")) {
+    fs.mkdirSync("seeds");
+  }
 
   fs.writeFileSync("seeds/clients.csv", clients.join("\n") + "\n");
   fs.writeFileSync("seeds/deals.csv", deals.join("\n") + "\n");
