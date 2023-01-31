@@ -150,6 +150,7 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
   useEffect(() => {
     loadWeekSummary(date).then(setAllSummaries);
   }, [date]);
+
   const navigateToAnotherWeek = async (n: number) => {
     const d1 = dayjs(date);
     const d2 = d1.add(n * 7, "day");

@@ -12,6 +12,7 @@ import dayjs from "dayjs";
 
 function MyRoutes() {
   const query = parseQuery(useLocation().search);
+  const date = query.week ?? dayjs().format("YYYY-MM-DD");
 
   return (
     <Routes>
@@ -22,10 +23,7 @@ function MyRoutes() {
       />
       ,
       <Route path="/deals" element={<Deals clientId={query.clientId} />} />,
-      <Route
-        path="/week"
-        element={<WeekPage date={query.week ?? dayjs().format("YYYY-MM-DD")} />}
-      />
+      <Route path="/week" element={<WeekPage date={date} key={date} />} />
     </Routes>
   );
 }
