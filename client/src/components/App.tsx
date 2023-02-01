@@ -23,7 +23,7 @@ function MyRoutes() {
       />
       ,
       <Route path="/deals" element={<Deals clientId={query.clientId} />} />,
-      <Route path="/week" element={<WeekPage date={date} key={date} />} />
+      <Route path="/week" element={<WeekPage date={date} />} />
     </Routes>
   );
 }
