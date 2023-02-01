@@ -1,9 +1,10 @@
 import * as fs from "fs";
 import dayjs from "dayjs";
 
-const numClients = 10;
+const numClients = 3;
 const numDealsPerClient = 3;
-const numWorkHoursPerDeal = 3;
+const numWeeks = 3;
+const numWorkHoursPerDay = 3;
 
 const clients = ["id,name"];
 const deals = ["id,name,clientId"];
@@ -39,16 +40,21 @@ function main() {
     let numDeal = 0;
     while (numDeal < numDealsPerClient) {
       insertDeal(clientId, dealId);
-      let numWorkHour = 0;
-      while (numWorkHour < numWorkHoursPerDeal) {
-        let start = start0;
-        insertWorkHour(dealId, workHourId, start);
-        numWorkHour++;
-        workHourId++;
-        start = start.add(1, "hour");
-        if (start.hour() > 18) {
-          start = start.add(1, "day").hour(9);
+      let week = 0;
+      while (week < numWeeks) {
+        let numDay = 0;
+        while (numDay < 5) {
+          let start = start0.add(week, "w").add(numDay, "d");
+          let numWorkHours = 0;
+          while (numWorkHours < numWorkHoursPerDay) {
+            insertWorkHour(dealId, workHourId, start);
+            numWorkHours++;
+            workHourId++;
+            start = start.add(1, "hour");
+          }
+          numDay++;
         }
+        week++;
       }
       numDeal++;
       dealId++;
