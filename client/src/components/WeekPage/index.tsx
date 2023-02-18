@@ -8,10 +8,13 @@ import {
   Select,
   SelectChangeEvent,
 } from "@mui/material";
-import { ArrowForward, ArrowBack } from "@mui/icons-material";
+import { ArrowForward, ArrowBack, EditRounded } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import Content from "./Content";
+import { HalfwayWorkHour, WorkHour } from "../../api/types";
+import { addWorkHour, updateWorkHour } from "../WorkHoursPage/utils";
+import WorkHourEditorDialog from "../common/WorkHourEditorDialog";
 
 type WeekPageProps = {
   date: string;
@@ -138,6 +141,10 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
   const navigate = useNavigate();
   const location = useLocation();
   const [filter, setFilter] = useState<Filter>({ clientId: "", dealId: "" });
+  const [editedWorkHourId, setEditedWorkHourId] = useState<
+    number | "adding" | undefined
+  >();
+  const [editorDate, setEditorDate] = useState<Date | undefined>();
 
   const clients = useMemo(() => {
     const clients = allSummaries
@@ -171,7 +178,49 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
   const handleBackClick = async () => {
     navigateToAnotherWeek(-1);
   };
-  const handleAddWorkHour = async (date: Date) => {};
+  const objForEditor: HalfwayWorkHour | undefined =
+    typeof editedWorkHourId === "number"
+      ? undefined
+      : { dealId: 33, startTime: editorDate, endTime: editorDate };
+  if (objForEditor === undefined) {
+    throw new Error("WeekPage: panic");
+  }
+  const handleAddWorkHour = async (date: Date) => {
+    setEditedWorkHourId("adding");
+    setEditorDate(date);
+  };
+  const handleCancel = async (_: HalfwayWorkHour): Promise<void> => {
+    setEditedWorkHourId(undefined);
+  };
+  const handleSave = async (
+    wh: Omit<WorkHour, "id"> & { id?: number }
+  ): Promise<void> => {
+    setEditedWorkHourId(undefined);
+    if (!wh.startTime) {
+      throw new Error("Start time must be set.");
+    }
+    if (!wh.dealId) {
+      throw new Error("Work hour of no deal id was passed to editor");
+    }
+
+    if (typeof editedWorkHourId === "number") {
+      if (!wh.id) {
+        throw new Error("editing instance of no id");
+      }
+      await updateWorkHour({
+        ...wh,
+        id: wh.id,
+        startTime: wh.startTime,
+      });
+    } else if (editedWorkHourId === "adding") {
+      await addWorkHour({
+        ...wh,
+        startTime: wh.startTime,
+      });
+    }
+    const summaries = await loadWeekSummary(date);
+    setAllSummaries(summaries);
+  };
 
   const handleClientSelect = (id: number | "") => {
     setFilter((f) => {
@@ -185,23 +234,32 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
   };
 
   return (
-    <Paper style={{ margin: "0 auto", display: "table" }}>
-      <Navigation
-        onForwardClick={handleForwardClick}
-        onBackClick={handleBackClick}
+    <>
+      <Paper style={{ margin: "0 auto", display: "table" }}>
+        <Navigation
+          onForwardClick={handleForwardClick}
+          onBackClick={handleBackClick}
+        />
+        <FilterSelect
+          clients={clients}
+          deals={deals}
+          onClientChange={handleClientSelect}
+          onDealChange={handleDealSelect}
+        ></FilterSelect>
+        <Content
+          summaries={allSummaries}
+          filter={filter}
+          handleAddWorkHour={handleAddWorkHour}
+        />
+      </Paper>
+      <WorkHourEditorDialog
+        open={editedWorkHourId !== undefined}
+        onCancel={handleCancel}
+        onSave={handleSave}
+        initialObject={objForEditor}
+        key={editedWorkHourId}
       />
-      <FilterSelect
-        clients={clients}
-        deals={deals}
-        onClientChange={handleClientSelect}
-        onDealChange={handleDealSelect}
-      ></FilterSelect>
-      <Content
-        summaries={allSummaries}
-        filter={filter}
-        handleAddWorkHour={handleAddWorkHour}
-      />
-    </Paper>
+    </>
   );
 }
 
