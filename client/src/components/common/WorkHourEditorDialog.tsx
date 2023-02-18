@@ -110,12 +110,13 @@ function WorkHourEditorDialog({
                 variant="contained"
                 disabled={!canSave}
                 onClick={() => {
-                  if (editedObject.startTime) {
-                    onSave({
-                      ...editedObject,
-                      startTime: editedObject.startTime,
-                    });
-                  }
+                  if (typeof editedObject.startTime === "undefined") return;
+                  if (typeof editedObject.dealId === "undefined") return;
+                  onSave({
+                    ...editedObject,
+                    startTime: editedObject.startTime,
+                    dealId: editedObject.dealId,
+                  });
                 }}
               >
                 save
