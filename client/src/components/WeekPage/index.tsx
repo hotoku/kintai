@@ -135,6 +135,20 @@ function FilterSelect({
   );
 }
 
+function searchWorkHour(id: number, ds: DaySummary[]): WorkHour {
+  for (const d of ds) {
+    for (const wh of d.workHours) {
+      if (wh.id === id) {
+        return {
+          ...wh,
+          dealId: wh.deal.id,
+        };
+      }
+    }
+  }
+  throw new Error(`cannot find work hour of id=${id}`);
+}
+
 function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
   const [date, setDate] = useState(date_);
   const [allSummaries, setAllSummaries] = useState<DaySummary[]>([]);
@@ -178,16 +192,16 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
   const handleBackClick = async () => {
     navigateToAnotherWeek(-1);
   };
-  const objForEditor: HalfwayWorkHour | undefined =
+  const objForEditor: HalfwayWorkHour =
     typeof editedWorkHourId === "number"
-      ? undefined
+      ? searchWorkHour(editedWorkHourId, allSummaries)
       : { dealId: 33, startTime: editorDate, endTime: editorDate };
-  if (objForEditor === undefined) {
-    throw new Error("WeekPage: panic");
-  }
   const handleAddWorkHour = async (date: Date) => {
     setEditedWorkHourId("adding");
     setEditorDate(date);
+  };
+  const handleUpdateWorkHour = async (wh: WorkHour) => {
+    setEditedWorkHourId(wh.id);
   };
   const handleCancel = async (_: HalfwayWorkHour): Promise<void> => {
     setEditedWorkHourId(undefined);
@@ -250,6 +264,7 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
           summaries={allSummaries}
           filter={filter}
           handleAddWorkHour={handleAddWorkHour}
+          handleUpdateWorkHour={handleUpdateWorkHour}
         />
       </Paper>
       <WorkHourEditorDialog

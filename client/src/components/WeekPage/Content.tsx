@@ -11,17 +11,36 @@ import {
 import { formatTime } from "../../share/utils";
 import { formatDate, secToStr } from "../utils";
 import { DaySummary, WorkHour } from "./utils";
+import { WorkHour as WorkHourType } from "../../api/types";
 import { Filter } from ".";
-import { Add } from "@mui/icons-material";
+import { Add, Update } from "@mui/icons-material";
 
 function duration(wh: WorkHour): number {
   if (!wh.endTime) return 0;
   return (wh.endTime.getTime() - wh.startTime.getTime()) / 1000;
 }
 
-function RenderWorkHour({ wh }: { wh: WorkHour }): JSX.Element {
+function RenderWorkHour({
+  wh,
+  onUpdate,
+}: {
+  wh: WorkHour;
+  onUpdate: (wh: WorkHourType) => void;
+}): JSX.Element {
   return (
     <TableRow>
+      <TableCell>
+        <Button
+          onClick={() =>
+            onUpdate({
+              ...wh,
+              dealId: wh.deal.id,
+            })
+          }
+        >
+          <Update />
+        </Button>
+      </TableCell>
       <TableCell style={{ width: "6rem" }}>
         {formatTime(wh.startTime)} - {wh.endTime ? formatTime(wh.endTime) : ""}
       </TableCell>
@@ -41,10 +60,12 @@ function RenderDaySummary({
   ds,
   filter,
   onAddClick,
+  onUpdateClick,
 }: {
   ds: DaySummary;
   filter: Filter;
   onAddClick: (date: Date) => void;
+  onUpdateClick: (wh: WorkHourType) => void;
 }): JSX.Element {
   const totalDuration = secToStr(
     ds.workHours.map((wh) => duration(wh)).reduce((x, y) => x + y, 0)
@@ -80,7 +101,7 @@ function RenderDaySummary({
                 );
               })
               .map((wh) => (
-                <RenderWorkHour key={wh.id} wh={wh} />
+                <RenderWorkHour key={wh.id} wh={wh} onUpdate={onUpdateClick} />
               ))}
           </TableBody>
         </Table>
@@ -92,12 +113,14 @@ function RenderDaySummary({
 type ContentProps = {
   summaries: DaySummary[];
   filter: Filter;
-  handleAddWorkHour: (date: Date) => void;
+  handleAddWorkHour: (date: Date) => Promise<void>;
+  handleUpdateWorkHour: (wh: WorkHourType) => Promise<void>;
 };
 function Content({
   summaries,
   filter,
   handleAddWorkHour,
+  handleUpdateWorkHour,
 }: ContentProps): JSX.Element {
   return (
     <>
@@ -107,6 +130,7 @@ function Content({
           ds={s}
           filter={filter}
           onAddClick={handleAddWorkHour}
+          onUpdateClick={handleUpdateWorkHour}
         />
       ))}
     </>
