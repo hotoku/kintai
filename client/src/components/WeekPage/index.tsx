@@ -195,7 +195,7 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
   const objForEditor: HalfwayWorkHour =
     typeof editedWorkHourId === "number"
       ? searchWorkHour(editedWorkHourId, allSummaries)
-      : { dealId: 33, startTime: editorDate, endTime: editorDate };
+      : { dealId: 10, startTime: editorDate, endTime: editorDate };
   const handleAddWorkHour = async (date: Date) => {
     setEditedWorkHourId("adding");
     setEditorDate(date);
