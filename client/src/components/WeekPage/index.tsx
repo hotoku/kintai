@@ -8,7 +8,7 @@ import {
   Select,
   SelectChangeEvent,
 } from "@mui/material";
-import { ArrowForward, ArrowBack, EditRounded } from "@mui/icons-material";
+import { ArrowForward, ArrowBack } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import Content from "./Content";
