@@ -14,6 +14,7 @@ import { DaySummary, WorkHour } from "./utils";
 import { WorkHour as WorkHourType } from "../../api/types";
 import { Filter } from ".";
 import { Add, Edit } from "@mui/icons-material";
+import { Link } from "react-router-dom";
 
 function duration(wh: WorkHour): number {
   if (!wh.endTime) return 0;
@@ -49,7 +50,9 @@ function RenderWorkHour({
       </TableCell>
       <TableCell style={{ width: "15rem" }}>{wh.deal.client.name}</TableCell>
       <TableCell style={{ width: "15rem" }}>
-        {wh.deal.name.substring(0, 20)}
+        <Link to={`/workHours?dealId=${wh.deal.id}`}>
+          {wh.deal.name.substring(0, 20)}
+        </Link>
       </TableCell>
       <TableCell style={{ width: "15rem" }}>{wh.note}</TableCell>
     </TableRow>
