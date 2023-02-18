@@ -17,8 +17,8 @@ import {
 } from "./utils";
 import DeletedWorkHourTable from "./DeletedWorkHourTable";
 import ActiveWorkHourTable from "./ActiveWorkHourTable";
-import WorkHourEditorDialog from "./WorkHourEditorDialog";
 import { secToStr } from "../utils";
+import WorkHourEditorDialog from "../common/WorkHourEditorDialog";
 type WorkHoursPageProps = {
   dealId: number;
 };
