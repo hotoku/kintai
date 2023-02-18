@@ -259,7 +259,7 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
           deals={deals}
           onClientChange={handleClientSelect}
           onDealChange={handleDealSelect}
-        ></FilterSelect>
+        />
         <Content
           summaries={allSummaries}
           filter={filter}
