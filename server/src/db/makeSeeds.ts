@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 const numClients = 3;
 const numDealsPerClient = 3;
@@ -22,44 +22,39 @@ function insertWorkHour(
   dealId: number,
   workHourId: number,
   start: dayjs.Dayjs
-) {
+): Dayjs {
   const end = start.add(1, "hour");
   workHours.push(
     `${workHourId},${dealId},${start.toISOString()},${end.toISOString()},0,note`
   );
+  return end;
+}
+
+function insertOneDay(whId: number, d: Dayjs, dealIds: number[]): number {
+  while (d.hour() < 19) {
+    const start = d;
+    const idx = Math.floor(Math.random() * dealIds.length);
+    const dealId = dealIds[idx];
+    d = insertWorkHour(dealId, whId, start);
+    whId++;
+  }
+  return whId;
 }
 
 function main() {
-  let clientId = 1;
-  let dealId = 1;
-  let workHourId = 1;
-  let start0 = dayjs("2023-01-01T09:00:00");
+  const numClients = 10;
+  const numDealsPerClient = 5;
+  const numDeals = numClients * numDealsPerClient;
+  const clientIds = Array.from({ length: numClients }, (_, i) => i + 1);
+  const dealIds = Array.from({ length: numDeals }, (_, i) => i + 1);
+  clientIds.map(insertClient);
+  dealIds.map((n) => insertDeal((n % numClients) + 1, n));
 
-  while (clientId <= numClients) {
-    insertClient(clientId);
-    let numDeal = 0;
-    while (numDeal < numDealsPerClient) {
-      insertDeal(clientId, dealId);
-      let week = 0;
-      while (week < numWeeks) {
-        let numDay = 0;
-        while (numDay < 5) {
-          let start = start0.add(week, "w").add(numDay, "d");
-          let numWorkHours = 0;
-          while (numWorkHours < numWorkHoursPerDay) {
-            insertWorkHour(dealId, workHourId, start);
-            numWorkHours++;
-            workHourId++;
-            start = start.add(1, "hour");
-          }
-          numDay++;
-        }
-        week++;
-      }
-      numDeal++;
-      dealId++;
-    }
-    clientId++;
+  const numDays = 20;
+  let whId = 1;
+  for (let i = 0; i < numDays; i++) {
+    const d = dayjs().add(i, "day").set("hour", 9);
+    whId = insertOneDay(whId, d, dealIds);
   }
   if (!fs.existsSync("seeds")) {
     fs.mkdirSync("seeds");
