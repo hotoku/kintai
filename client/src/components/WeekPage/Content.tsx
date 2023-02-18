@@ -1,4 +1,5 @@
 import {
+  Button,
   Card,
   Table,
   TableBody,
@@ -11,6 +12,7 @@ import { formatTime } from "../../share/utils";
 import { formatDate, secToStr } from "../utils";
 import { DaySummary, WorkHour } from "./utils";
 import { Filter } from ".";
+import { Add } from "@mui/icons-material";
 
 function duration(wh: WorkHour): number {
   if (!wh.endTime) return 0;
@@ -38,9 +40,11 @@ function RenderWorkHour({ wh }: { wh: WorkHour }): JSX.Element {
 function RenderDaySummary({
   ds,
   filter,
+  onAddClick,
 }: {
   ds: DaySummary;
   filter: Filter;
+  onAddClick: (date: Date) => void;
 }): JSX.Element {
   const totalDuration = secToStr(
     ds.workHours.map((wh) => duration(wh)).reduce((x, y) => x + y, 0)
@@ -55,6 +59,13 @@ function RenderDaySummary({
     >
       <Typography component="div" variant="h6">
         {formatDate(ds.date)}: 合計 {totalDuration}
+        <Button
+          onClick={() => {
+            onAddClick(ds.date);
+          }}
+        >
+          <Add />
+        </Button>
       </Typography>
       <TableContainer>
         <Table>
@@ -81,12 +92,22 @@ function RenderDaySummary({
 type ContentProps = {
   summaries: DaySummary[];
   filter: Filter;
+  handleAddWorkHour: (date: Date) => void;
 };
-function Content({ summaries, filter }: ContentProps): JSX.Element {
+function Content({
+  summaries,
+  filter,
+  handleAddWorkHour,
+}: ContentProps): JSX.Element {
   return (
     <>
       {summaries.map((s) => (
-        <RenderDaySummary key={s.date.toISOString()} ds={s} filter={filter} />
+        <RenderDaySummary
+          key={s.date.toISOString()}
+          ds={s}
+          filter={filter}
+          onAddClick={handleAddWorkHour}
+        />
       ))}
     </>
   );

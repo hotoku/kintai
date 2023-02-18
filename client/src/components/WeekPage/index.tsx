@@ -165,6 +165,7 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
   const handleBackClick = async () => {
     navigateToAnotherWeek(-1);
   };
+  const handleAddWorkHour = async (date: Date) => {};
 
   const handleClientSelect = (id: number | "") => {
     setFilter((f) => {
@@ -189,7 +190,11 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
         onClientChange={handleClientSelect}
         onDealChange={handleDealSelect}
       ></FilterSelect>
-      <Content summaries={allSummaries} filter={filter} />
+      <Content
+        summaries={allSummaries}
+        filter={filter}
+        handleAddWorkHour={handleAddWorkHour}
+      />
     </Paper>
   );
 }
