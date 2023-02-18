@@ -13,7 +13,7 @@ import { formatDate, secToStr } from "../utils";
 import { DaySummary, WorkHour } from "./utils";
 import { WorkHour as WorkHourType } from "../../api/types";
 import { Filter } from ".";
-import { Add, Update } from "@mui/icons-material";
+import { Add, Edit } from "@mui/icons-material";
 
 function duration(wh: WorkHour): number {
   if (!wh.endTime) return 0;
@@ -38,7 +38,7 @@ function RenderWorkHour({
             })
           }
         >
-          <Update />
+          <Edit />
         </Button>
       </TableCell>
       <TableCell style={{ width: "6rem" }}>
