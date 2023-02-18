@@ -67,8 +67,15 @@ function RenderDaySummary({
   onAddClick: (date: Date) => void;
   onUpdateClick: (wh: WorkHourType) => void;
 }): JSX.Element {
+  const workHours = ds.workHours
+    .filter((wh) => !wh.isDeleted)
+    .filter(
+      (wh) =>
+        (filter.dealId === "" || wh.deal.id === filter.dealId) &&
+        (filter.clientId === "" || wh.deal.client.id === filter.clientId)
+    );
   const totalDuration = secToStr(
-    ds.workHours.map((wh) => duration(wh)).reduce((x, y) => x + y, 0)
+    workHours.map((wh) => duration(wh)).reduce((x, y) => x + y, 0)
   );
   return (
     <Card
@@ -91,18 +98,9 @@ function RenderDaySummary({
       <TableContainer>
         <Table>
           <TableBody>
-            {ds.workHours
-              .filter((wh) => !wh.isDeleted)
-              .filter((wh) => {
-                return (
-                  (filter.dealId === "" || wh.deal.id === filter.dealId) &&
-                  (filter.clientId === "" ||
-                    wh.deal.client.id === filter.clientId)
-                );
-              })
-              .map((wh) => (
-                <RenderWorkHour key={wh.id} wh={wh} onUpdate={onUpdateClick} />
-              ))}
+            {workHours.map((wh) => (
+              <RenderWorkHour key={wh.id} wh={wh} onUpdate={onUpdateClick} />
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
