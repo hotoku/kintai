@@ -1,7 +1,13 @@
 import Paper from "@mui/material/Paper";
 import { useEffect, useMemo, useState } from "react";
 import { DaySummary, loadWeekSummary } from "./utils";
-import { Button, MenuItem, Select, SelectChangeEvent } from "@mui/material";
+import {
+  Box,
+  Button,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+} from "@mui/material";
 import { ArrowForward, ArrowBack } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
@@ -109,7 +115,7 @@ function FilterSelect({
   };
 
   return (
-    <>
+    <Box style={{ marginLeft: "10px" }}>
       <Select
         onChange={handleStateChange([onClientChange, setClientId, clearDealId])}
         value={clientId}
@@ -122,7 +128,7 @@ function FilterSelect({
       >
         {menuItem(deals)}
       </Select>
-    </>
+    </Box>
   );
 }
 
