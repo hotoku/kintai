@@ -42,8 +42,8 @@ function insertOneDay(whId: number, d: Dayjs, dealIds: number[]): number {
 }
 
 function main() {
-  const numClients = 10;
-  const numDealsPerClient = 5;
+  const numClients = 4;
+  const numDealsPerClient = 3;
   const numDeals = numClients * numDealsPerClient;
   const clientIds = Array.from({ length: numClients }, (_, i) => i + 1);
   const dealIds = Array.from({ length: numDeals }, (_, i) => i + 1);
