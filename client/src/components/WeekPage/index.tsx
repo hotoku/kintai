@@ -15,6 +15,7 @@ import Content from "./Content";
 import { HalfwayWorkHour, WorkHour } from "../../api/types";
 import { addWorkHour, updateWorkHour } from "../WorkHoursPage/utils";
 import WorkHourEditorDialog from "../common/WorkHourEditorDialog";
+import DealSelector, { ClientMap, DealMap } from "../common/DealSelector";
 
 type WeekPageProps = {
   date: string;
@@ -57,82 +58,6 @@ function id2name<K, V>(objs: { id: K; name: V }[]): Map<K, V> {
     ret.set(id, name);
   }
   return ret;
-}
-
-type ClientMap = Map<number, string>;
-type DealMap = Map<number, string>;
-
-type FilterSelectProps = {
-  clients: ClientMap;
-  deals: DealMap;
-  onClientChange: (id: number | "") => void;
-  onDealChange: (id: number | "") => void;
-};
-
-function menuItem(map: Map<number, string>): JSX.Element[] {
-  const ret = [] as JSX.Element[];
-  ret.push(
-    <MenuItem key={"none"} value="">
-      <em>All</em>
-    </MenuItem>
-  );
-  map.forEach((name, id) => {
-    ret.push(
-      <MenuItem key={id} value={id}>
-        {name}
-      </MenuItem>
-    );
-  });
-  return ret;
-}
-
-function maybeInt(s: string): number | "" {
-  const ret = parseInt(s);
-  return Number.isNaN(ret) ? "" : ret;
-}
-
-function FilterSelect({
-  clients,
-  deals,
-  onClientChange,
-  onDealChange,
-}: FilterSelectProps): JSX.Element {
-  const [clientId, setClientId] = useState<number | "">("");
-  const [dealId, setDealId] = useState<number | "">("");
-
-  const handleStateChange = (
-    handlers: ((id: number | "") => void)[]
-  ): ((e: SelectChangeEvent<number>) => void) => {
-    return (e: SelectChangeEvent<number>) => {
-      for (const h of handlers) {
-        const v = e.target.value;
-        const id = typeof v === "string" ? maybeInt(v) : v;
-        h(id);
-      }
-    };
-  };
-
-  const clearDealId = () => {
-    setDealId("");
-    onDealChange("");
-  };
-
-  return (
-    <Box style={{ marginLeft: "10px" }}>
-      <Select
-        onChange={handleStateChange([onClientChange, setClientId, clearDealId])}
-        value={clientId}
-      >
-        {menuItem(clients)}
-      </Select>
-      <Select
-        onChange={handleStateChange([onDealChange, setDealId])}
-        value={dealId}
-      >
-        {menuItem(deals)}
-      </Select>
-    </Box>
-  );
 }
 
 function searchWorkHour(id: number, ds: DaySummary[]): WorkHour {
@@ -236,12 +161,12 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
     setAllSummaries(summaries);
   };
 
-  const handleClientSelect = (id: number | "") => {
+  const handleClientSelect = async (id: number | "") => {
     setFilter((f) => {
       return { ...f, clientId: id };
     });
   };
-  const handleDealSelect = (id: number | "") => {
+  const handleDealSelect = async (id: number | "") => {
     setFilter((f) => {
       return { ...f, dealId: id };
     });
@@ -254,7 +179,7 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
           onForwardClick={handleForwardClick}
           onBackClick={handleBackClick}
         />
-        <FilterSelect
+        <DealSelector
           clients={clients}
           deals={deals}
           onClientChange={handleClientSelect}

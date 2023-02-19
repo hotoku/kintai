@@ -1,5 +1,9 @@
-import { Box, Select, SelectChangeEvent } from "@mui/material";
+import { Box, MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import { useState } from "react";
+import { maybeInt } from "../../utils";
+
+export type ClientMap = Map<number, string>;
+export type DealMap = Map<number, string>;
 
 type DealSelectorProps = {
   clients: ClientMap;
@@ -7,6 +11,23 @@ type DealSelectorProps = {
   onClientChange: (id: number | "") => Promise<void>;
   onDealChange: (id: number | "") => Promise<void>;
 };
+
+function menuItem(map: Map<number, string>): JSX.Element[] {
+  const ret = [] as JSX.Element[];
+  ret.push(
+    <MenuItem key={"none"} value="">
+      <em>All</em>
+    </MenuItem>
+  );
+  map.forEach((name, id) => {
+    ret.push(
+      <MenuItem key={id} value={id}>
+        {name}
+      </MenuItem>
+    );
+  });
+  return ret;
+}
 
 function DealSelector({
   clients,
@@ -24,7 +45,7 @@ function DealSelector({
       for (const h of handlers) {
         const v = e.target.value;
         const id = typeof v === "string" ? maybeInt(v) : v;
-        h(id);
+        h(id ?? "");
       }
     };
   };
@@ -51,3 +72,5 @@ function DealSelector({
     </Box>
   );
 }
+
+export default DealSelector;
