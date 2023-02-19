@@ -1,13 +1,7 @@
 import Paper from "@mui/material/Paper";
 import { useEffect, useMemo, useState } from "react";
 import { DaySummary, loadWeekSummary } from "./utils";
-import {
-  Box,
-  Button,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-} from "@mui/material";
+import { Button } from "@mui/material";
 import { ArrowForward, ArrowBack } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
@@ -15,7 +9,7 @@ import Content from "./Content";
 import { HalfwayWorkHour, WorkHour } from "../../api/types";
 import { addWorkHour, updateWorkHour } from "../WorkHoursPage/utils";
 import WorkHourEditorDialog from "../common/WorkHourEditorDialog";
-import DealSelector, { ClientMap, DealMap } from "../common/DealSelector";
+import DealSelector from "../common/DealSelector";
 
 type WeekPageProps = {
   date: string;
