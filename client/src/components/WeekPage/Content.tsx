@@ -30,6 +30,19 @@ function RenderWorkHour({
 }): JSX.Element {
   return (
     <TableRow>
+      <TableCell style={{ minWidth: "6rem" }}>
+        {formatTime(wh.startTime)} - {wh.endTime ? formatTime(wh.endTime) : ""}
+      </TableCell>
+      <TableCell style={{ width: "3rem" }}>
+        {wh.endTime ? `${secToStr(duration(wh))}` : "-"}
+      </TableCell>
+      <TableCell style={{ width: "6rem" }}>{wh.deal.client.name}</TableCell>
+      <TableCell style={{ width: "15rem" }}>
+        <Link to={`/workHours?dealId=${wh.deal.id}`}>
+          {wh.deal.name.substring(0, 20)}
+        </Link>
+      </TableCell>
+      <TableCell style={{ width: "15rem" }}>{wh.note}</TableCell>
       <TableCell>
         <Button
           onClick={() =>
@@ -42,19 +55,6 @@ function RenderWorkHour({
           <Edit />
         </Button>
       </TableCell>
-      <TableCell style={{ width: "6rem" }}>
-        {formatTime(wh.startTime)} - {wh.endTime ? formatTime(wh.endTime) : ""}
-      </TableCell>
-      <TableCell style={{ width: "3rem" }}>
-        {wh.endTime ? `${secToStr(duration(wh))}` : "-"}
-      </TableCell>
-      <TableCell style={{ width: "15rem" }}>{wh.deal.client.name}</TableCell>
-      <TableCell style={{ width: "15rem" }}>
-        <Link to={`/workHours?dealId=${wh.deal.id}`}>
-          {wh.deal.name.substring(0, 20)}
-        </Link>
-      </TableCell>
-      <TableCell style={{ width: "15rem" }}>{wh.note}</TableCell>
     </TableRow>
   );
 }
