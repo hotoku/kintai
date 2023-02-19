@@ -1,9 +1,16 @@
-import { Box, Button, Dialog, Stack, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  Dialog,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { useState } from "react";
-import { HalfwayWorkHour, WorkHour } from "../../api/types";
+import { Deal, HalfwayWorkHour, WorkHour } from "../../api/types";
 import dayjs, { Dayjs } from "dayjs";
 
 type WorkHourEditorDialogProps = {
@@ -11,6 +18,7 @@ type WorkHourEditorDialogProps = {
   onSave: (wh: Omit<WorkHour, "id"> & { id?: number }) => Promise<void>;
   onCancel: (hwh: HalfwayWorkHour) => Promise<void>;
   initialObject: HalfwayWorkHour;
+  deal?: Pick<Deal, "id" | "name">;
 };
 
 function WorkHourEditorDialog({
@@ -18,6 +26,7 @@ function WorkHourEditorDialog({
   onSave,
   onCancel,
   initialObject,
+  deal,
 }: WorkHourEditorDialogProps) {
   const [editedObject, setEditedObject] = useState<HalfwayWorkHour>({
     ...initialObject,
@@ -31,6 +40,7 @@ function WorkHourEditorDialog({
       }}
     >
       <Box sx={{ padding: 1 }} component="form">
+        {deal ? <Typography>{deal.name}</Typography> : undefined}
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <Stack spacing={1}>
             <Box>

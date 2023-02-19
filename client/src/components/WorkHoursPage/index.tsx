@@ -144,6 +144,7 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
         onSave={handleSave}
         initialObject={objForEditor}
         key={editedWorkHourId}
+        deal={deal}
       />
     </>
   );
