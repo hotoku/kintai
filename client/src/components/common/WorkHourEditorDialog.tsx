@@ -29,8 +29,8 @@ function DealSelector2({ onDealChange }: DealSelector2Props): JSX.Element {
 
   const filteredDeals =
     clientId === "" ? deals : deals.filter((d) => d.client.id === clientId);
-  const clients2 = new Map<number, string>();
-  const deals2 = new Map<number, string>();
+  const clients2: ClientMap = new Map<number, string>();
+  const deals2: DealMap = new Map<number, string>();
   for (const c of clients) {
     clients2.set(c.id, c.name);
   }
