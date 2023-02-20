@@ -138,14 +138,17 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
           onUpdate={handleUpdateClick}
         />
       )}
-      <WorkHourEditorDialog
-        open={editedWorkHourId !== undefined}
-        onCancel={handleCancel}
-        onSave={handleSave}
-        initialObject={objForEditor}
-        key={editedWorkHourId}
-        deal={deal}
-      />
+      {deal ? (
+        <WorkHourEditorDialog
+          open={editedWorkHourId !== undefined}
+          onCancel={handleCancel}
+          onSave={handleSave}
+          initialObject={objForEditor}
+          key={editedWorkHourId}
+          type="fixed"
+          deal={deal}
+        />
+      ) : undefined}
     </>
   );
 }

@@ -188,9 +188,12 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
       </Paper>
       <WorkHourEditorDialog
         open={editedWorkHourId !== undefined}
-        onCancel={handleCancel}
         onSave={handleSave}
+        onCancel={handleCancel}
         initialObject={objForEditor}
+        type="choice"
+        clients={clients}
+        deals={deals}
         key={editedWorkHourId}
       />
     </>

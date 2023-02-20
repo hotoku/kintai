@@ -9,38 +9,79 @@ import {
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Deal, HalfwayWorkHour, WorkHour } from "../../api/types";
 import dayjs, { Dayjs } from "dayjs";
+import DealSelector from "./DealSelector";
+import { ClientMap, DealMap } from "./DealSelector";
+
+type DealSelector2Props = { onDealChange: (id: number | "") => Promise<void> };
+
+function DealSelector2({ onDealChange }: DealSelector2Props): JSX.Element {
+  const [clients, setClients] = useState<{ id: number; name: string }[]>([]);
+  const [deals, setDeals] = useState<
+    { id: number; name: string; client: { id: number } }[]
+  >([]);
+  const [clientId, setClientId] = useState<number | "">("");
+  const [dealId, setDealId] = useState<number | "">("");
+
+  useEffect(() => {}, []);
+
+  const filteredDeals =
+    clientId === "" ? deals : deals.filter((d) => d.client.id === clientId);
+  const clients2 = new Map<number, string>();
+  const deals2 = new Map<number, string>();
+  for (const c of clients) {
+    clients2.set(c.id, c.name);
+  }
+  for (const d of deals) {
+    deals2.set(d.id, d.name);
+  }
+  return (
+    <DealSelector
+      clients={clients2}
+      deals={deals2}
+      onClientChange={async () => {}}
+      onDealChange={async () => {}}
+    />
+  );
+}
 
 type WorkHourEditorDialogProps = {
   open: boolean;
   onSave: (wh: Omit<WorkHour, "id"> & { id?: number }) => Promise<void>;
   onCancel: (hwh: HalfwayWorkHour) => Promise<void>;
   initialObject: HalfwayWorkHour;
-  deal?: Pick<Deal, "id" | "name">;
-};
+} & (
+  | {
+      type: "fixed";
+      deal: Pick<Deal, "id" | "name">;
+    }
+  | {
+      type: "choice";
+    }
+);
 
-function WorkHourEditorDialog({
-  open,
-  onSave,
-  onCancel,
-  initialObject,
-  deal,
-}: WorkHourEditorDialogProps) {
+function WorkHourEditorDialog(props: WorkHourEditorDialogProps) {
   const [editedObject, setEditedObject] = useState<HalfwayWorkHour>({
-    ...initialObject,
+    ...props.initialObject,
   });
   const canSave = editedObject.startTime;
+  const handleDealChange = async (id: number | "") => {};
+
   return (
     <Dialog
-      open={open}
+      open={props.open}
       onClose={() => {
-        onCancel(editedObject);
+        props.onCancel(editedObject);
       }}
     >
       <Box sx={{ padding: 1 }} component="form">
-        {deal ? <Typography>{deal.name}</Typography> : undefined}
+        {props.type === "fixed" ? (
+          <Typography>{props.deal.name}</Typography>
+        ) : (
+          <DealSelector2 onDealChange={handleDealChange} />
+        )}
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <Stack spacing={1}>
             <Box>
@@ -122,7 +163,7 @@ function WorkHourEditorDialog({
                 onClick={() => {
                   if (typeof editedObject.startTime === "undefined") return;
                   if (typeof editedObject.dealId === "undefined") return;
-                  onSave({
+                  props.onSave({
                     ...editedObject,
                     startTime: editedObject.startTime,
                     dealId: editedObject.dealId,
@@ -134,7 +175,7 @@ function WorkHourEditorDialog({
               <Button
                 variant="outlined"
                 onClick={() => {
-                  onCancel(editedObject);
+                  props.onCancel(editedObject);
                 }}
               >
                 cancel
