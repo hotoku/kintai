@@ -10,22 +10,57 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { useEffect, useState } from "react";
-import { Deal, HalfwayWorkHour, WorkHour } from "../../api/types";
+import { Client, Deal, HalfwayWorkHour, WorkHour } from "../../api/types";
 import dayjs, { Dayjs } from "dayjs";
 import DealSelector from "./DealSelector";
 import { ClientMap, DealMap } from "./DealSelector";
+import { throwQuery } from "../utils";
 
 type DealSelector2Props = { onDealChange: (id: number | "") => Promise<void> };
 
 function DealSelector2({ onDealChange }: DealSelector2Props): JSX.Element {
-  const [clients, setClients] = useState<{ id: number; name: string }[]>([]);
-  const [deals, setDeals] = useState<
-    { id: number; name: string; client: { id: number } }[]
+  const [allClients, setAllClients] = useState<
+    (Client & { deals: Pick<Deal, "id" | "name">[] })[]
   >([]);
+
   const [clientId, setClientId] = useState<number | "">("");
   const [dealId, setDealId] = useState<number | "">("");
 
-  useEffect(() => {}, []);
+  const clients = new Map<number, string>();
+  for (const c of allClients) {
+    if (clientId === "" || c.id === clientId) {
+      clients.set(c.id, c.name);
+    }
+  }
+  const deals = new Map<number, string>();
+  for (const c of allClients) {
+    if (typeof clientId === "number") {
+      if (typeof dealId === "number") {
+      }
+    }
+  }
+
+  useEffect(() => {
+    throwQuery<(Client & { deals: Pick<Deal, "id" | "name">[] })[]>(
+      `
+      {
+        object: getAllClients {
+          id
+          name
+          deals {
+            id
+            name
+          }
+        }
+      }
+    `
+    ).then(([data, errs]) => {
+      if (errs) {
+        throw new Error(JSON.stringify(errs));
+      }
+      setAllClients(data);
+    });
+  }, []);
 
   const filteredDeals =
     clientId === "" ? deals : deals.filter((d) => d.client.id === clientId);
