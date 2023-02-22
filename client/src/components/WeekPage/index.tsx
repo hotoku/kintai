@@ -165,6 +165,30 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
       return { ...f, dealId: id };
     });
   };
+  const dialog =
+    typeof editedWorkHourId === "number" ? (
+      <WorkHourEditorDialog
+        open={editedWorkHourId !== undefined}
+        onSave={handleSave}
+        onCancel={handleCancel}
+        initialObject={objForEditor}
+        type="fixed"
+        deal={{
+          id: objForEditor.dealId,
+          name: deals.get(objForEditor.dealId) ?? "",
+        }}
+        key={editedWorkHourId}
+      />
+    ) : (
+      <WorkHourEditorDialog
+        open={editedWorkHourId !== undefined}
+        onSave={handleSave}
+        onCancel={handleCancel}
+        initialObject={objForEditor}
+        type="choice"
+        key={editedWorkHourId}
+      />
+    );
 
   return (
     <>
@@ -186,14 +210,7 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
           handleUpdateWorkHour={handleUpdateWorkHour}
         />
       </Paper>
-      <WorkHourEditorDialog
-        open={editedWorkHourId !== undefined}
-        onSave={handleSave}
-        onCancel={handleCancel}
-        initialObject={objForEditor}
-        type="choice"
-        key={editedWorkHourId}
-      />
+      {dialog}
     </>
   );
 }
