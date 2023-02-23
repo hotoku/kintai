@@ -9,7 +9,7 @@ import {
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Client, Deal, HalfwayWorkHour, WorkHour } from "../../api/types";
 import dayjs, { Dayjs } from "dayjs";
 import DealSelector from "./DealSelector";
@@ -18,30 +18,65 @@ import { throwQuery } from "../utils";
 
 type DealSelector2Props = { onDealChange: (id: number | "") => Promise<void> };
 
+type SelectorState =
+  | {
+      type: "both";
+      clientId: number;
+      dealId: number;
+    }
+  | {
+      type: "client";
+      clientId: number;
+      dealId: "";
+    }
+  | {
+      type: "none";
+      clientId: "";
+      dealId: "";
+    };
+
 function DealSelector2({ onDealChange }: DealSelector2Props): JSX.Element {
   const [allClients, setAllClients] = useState<
     (Client & { deals: Pick<Deal, "id" | "name">[] })[]
   >([]);
 
-  const [clientId, setClientId] = useState<number | "">("");
-  const [dealId, setDealId] = useState<number | "">("");
+  const [selectorState, setSelectorState] = useState<SelectorState>({
+    type: "none",
+    clientId: "",
+    dealId: "",
+  });
 
-  const clients = new Map<number, string>();
+  const clients: ClientMap = new Map<number, string>();
   for (const c of allClients) {
-    if (clientId === "" || c.id === clientId) {
-      clients.set(c.id, c.name);
-    }
+    clients.set(c.id, c.name);
   }
-  const deals = new Map<number, string>();
-  for (const c of allClients) {
-    if (typeof clientId === "number") {
-      if (typeof dealId === "number") {
+  const deals: DealMap = new Map<number, string>();
+
+  switch (selectorState.type) {
+    case "both":
+    case "client":
+      for (const c of allClients) {
+        if (c.id !== selectorState.clientId) continue;
+        for (const d of c.deals) {
+          deals.set(d.id, d.name);
+        }
       }
-    }
+      break;
+    case "none":
+      for (const c of allClients) {
+        for (const d of c.deals) {
+          deals.set(d.id, d.name);
+        }
+      }
+      break;
   }
 
   useEffect(() => {
-    throwQuery<(Client & { deals: Pick<Deal, "id" | "name">[] })[]>(
+    throwQuery<
+      (Client & {
+        deals: (Pick<Deal, "id" | "name"> & { client: { id: number } })[];
+      })[]
+    >(
       `
       {
         object: getAllClients {
@@ -50,6 +85,9 @@ function DealSelector2({ onDealChange }: DealSelector2Props): JSX.Element {
           deals {
             id
             name
+            client {
+              id
+            }
           }
         }
       }
@@ -62,21 +100,66 @@ function DealSelector2({ onDealChange }: DealSelector2Props): JSX.Element {
     });
   }, []);
 
-  const filteredDeals =
-    clientId === "" ? deals : deals.filter((d) => d.client.id === clientId);
-  const clients2: ClientMap = new Map<number, string>();
-  const deals2: DealMap = new Map<number, string>();
-  for (const c of clients) {
-    clients2.set(c.id, c.name);
-  }
-  for (const d of deals) {
-    deals2.set(d.id, d.name);
-  }
+  const handleClientChange = useCallback(
+    async (id: number | "") => {
+      switch (selectorState.type) {
+        case "both":
+          if (typeof id === "number") {
+            setSelectorState({
+              type: "client",
+              clientId: id,
+              dealId: "",
+            });
+          } else {
+            setSelectorState({
+              type: "none",
+              clientId: "",
+              dealId: "",
+            });
+          }
+          break;
+        case "client":
+          if (typeof id === "number") {
+            setSelectorState({
+              type: "client",
+              clientId: id,
+              dealId: "",
+            });
+          } else {
+            setSelectorState({
+              type: "none",
+              clientId: "",
+              dealId: "",
+            });
+          }
+          break;
+        case "none":
+          if (typeof id === "number") {
+            setSelectorState({
+              type: "client",
+              clientId: id,
+              dealId: "",
+            });
+          } else {
+            setSelectorState({
+              type: "none",
+              clientId: "",
+              dealId: "",
+            });
+          }
+          break;
+        default:
+          throw new Error("panic");
+      }
+    },
+    [selectorState.type]
+  );
+
   return (
     <DealSelector
-      clients={clients2}
-      deals={deals2}
-      onClientChange={async () => {}}
+      clients={clients}
+      deals={deals}
+      onClientChange={handleClientChange}
       onDealChange={async () => {}}
     />
   );
