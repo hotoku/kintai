@@ -41,6 +41,7 @@ function DealSelector({
   const handleStateChange = (
     handlers: ((id: number | "") => void)[]
   ): ((e: SelectChangeEvent<number>) => void) => {
+    console.log("deal selector: handle state change");
     return (e: SelectChangeEvent<number>) => {
       for (const h of handlers) {
         const v = e.target.value;
@@ -54,6 +55,7 @@ function DealSelector({
     setDealId("");
     onDealChange("");
   };
+  console.log("deal selector");
 
   return (
     <Box style={{ marginLeft: "10px" }}>
