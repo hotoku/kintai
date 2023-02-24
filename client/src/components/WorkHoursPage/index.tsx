@@ -17,8 +17,8 @@ import {
 } from "./utils";
 import DeletedWorkHourTable from "./DeletedWorkHourTable";
 import ActiveWorkHourTable from "./ActiveWorkHourTable";
-import WorkHourEditorDialog from "./WorkHourEditorDialog";
 import { secToStr } from "../utils";
+import WorkHourEditorDialog from "../common/WorkHourEditorDialog";
 type WorkHoursPageProps = {
   dealId: number;
 };
@@ -138,13 +138,17 @@ function WorkHoursPage({ dealId }: WorkHoursPageProps): JSX.Element {
           onUpdate={handleUpdateClick}
         />
       )}
-      <WorkHourEditorDialog
-        open={editedWorkHourId !== undefined}
-        onCancel={handleCancel}
-        onSave={handleSave}
-        initialObject={objForEditor}
-        key={editedWorkHourId}
-      />
+      {deal ? (
+        <WorkHourEditorDialog
+          open={editedWorkHourId !== undefined}
+          onCancel={handleCancel}
+          onSave={handleSave}
+          initialObject={objForEditor}
+          key={editedWorkHourId}
+          type="fixed"
+          deal={deal}
+        />
+      ) : undefined}
     </>
   );
 }
