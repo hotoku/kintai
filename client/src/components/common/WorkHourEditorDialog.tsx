@@ -76,7 +76,7 @@ function WorkHourEditorDialog(props: WorkHourEditorDialogProps) {
   const [editedObject, setEditedObject] = useState<HalfwayWorkHour>({
     ...props.initialObject,
   });
-  const canSave = editedObject.startTime;
+  const canSave = editedObject.startTime && editedObject.dealId;
 
   return (
     <Dialog
@@ -89,7 +89,23 @@ function WorkHourEditorDialog(props: WorkHourEditorDialogProps) {
         {props.type === "fixed" ? (
           <Typography>{props.deal.name}</Typography>
         ) : (
-          <LocalDealSelector onSelectionChange={async (s: Selection) => {}} />
+          <LocalDealSelector
+            onSelectionChange={async (s: Selection) => {
+              if (typeof s.dealId === "number") {
+                const newObj = {
+                  ...editedObject,
+                  dealId: s.dealId,
+                };
+                setEditedObject(newObj);
+              } else {
+                const newObj = {
+                  ...editedObject,
+                  dealId: undefined,
+                };
+                setEditedObject(newObj);
+              }
+            }}
+          />
         )}
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <Stack spacing={1}>

@@ -114,7 +114,7 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
   const objForEditor: HalfwayWorkHour =
     typeof editedWorkHourId === "number"
       ? searchWorkHour(editedWorkHourId, allSummaries)
-      : { dealId: 10, startTime: editorDate, endTime: editorDate };
+      : { startTime: editorDate, endTime: editorDate };
   const handleAddWorkHour = async (date: Date) => {
     setEditedWorkHourId("adding");
     setEditorDate(date);
@@ -165,30 +165,39 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
       return { ...f, dealId: id };
     });
   };
-  const dialog =
-    typeof editedWorkHourId === "number" ? (
-      <WorkHourEditorDialog
-        open={editedWorkHourId !== undefined}
-        onSave={handleSave}
-        onCancel={handleCancel}
-        initialObject={objForEditor}
-        type="fixed"
-        deal={{
-          id: objForEditor.dealId,
-          name: deals.get(objForEditor.dealId) ?? "",
-        }}
-        key={editedWorkHourId}
-      />
-    ) : (
-      <WorkHourEditorDialog
-        open={editedWorkHourId !== undefined}
-        onSave={handleSave}
-        onCancel={handleCancel}
-        initialObject={objForEditor}
-        type="choice"
-        key={editedWorkHourId}
-      />
-    );
+  const dialog = (() => {
+    if (typeof editedWorkHourId === "number") {
+      const dealId = objForEditor.dealId;
+      if (dealId === undefined) {
+        throw new Error("panic");
+      }
+      return (
+        <WorkHourEditorDialog
+          open={editedWorkHourId !== undefined}
+          onSave={handleSave}
+          onCancel={handleCancel}
+          initialObject={objForEditor}
+          type="fixed"
+          deal={{
+            id: dealId,
+            name: deals.get(dealId) ?? "",
+          }}
+          key={editedWorkHourId}
+        />
+      );
+    } else {
+      return (
+        <WorkHourEditorDialog
+          open={editedWorkHourId !== undefined}
+          onSave={handleSave}
+          onCancel={handleCancel}
+          initialObject={objForEditor}
+          type="choice"
+          key={editedWorkHourId}
+        />
+      );
+    }
+  })();
 
   return (
     <>

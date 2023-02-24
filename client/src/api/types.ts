@@ -23,7 +23,7 @@ export type WorkHour = {
 
 export type HalfwayWorkHour = {
   id?: number;
-  dealId: number;
+  dealId?: number;
   startTime?: Date;
   endTime?: Date;
   note?: string;
