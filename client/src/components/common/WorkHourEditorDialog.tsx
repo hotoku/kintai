@@ -108,7 +108,7 @@ function WorkHourEditorDialog(props: WorkHourEditorDialogProps) {
           />
         )}
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Stack spacing={1}>
+          <Stack spacing={1} style={{ marginTop: 10 }}>
             <Box>
               <DateTimePicker
                 onChange={(v: Dayjs | null) => {
