@@ -85,6 +85,7 @@ function RenderDaySummary({
       style={{
         background: "#f7f7f7",
         padding: "5px 5px 0",
+        marginBottom: "10px",
       }}
     >
       <Typography component="div" variant="h6">
