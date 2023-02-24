@@ -9,7 +9,7 @@ import Content from "./Content";
 import { HalfwayWorkHour, WorkHour } from "../../api/types";
 import { addWorkHour, updateWorkHour } from "../WorkHoursPage/utils";
 import WorkHourEditorDialog from "../common/WorkHourEditorDialog";
-import DealSelector, { Client } from "../common/DealSelector2";
+import DealSelector, { Client, Selection } from "../common/DealSelector2";
 
 type WeekPageProps = {
   date: string;
@@ -36,24 +36,6 @@ function Navigation({
   );
 }
 
-export type Filter = {
-  clientId: number | "";
-  dealId: number | "";
-};
-
-function id2name<K, V>(objs: { id: K; name: V }[]): Map<K, V> {
-  const ret = new Map<K, V>();
-  for (const { id, name } of objs) {
-    if (ret.get(id) && ret.get(id) !== name) {
-      throw new Error(
-        `bad data ${id} has multiple name. ${ret.get(id)}, ${name}`
-      );
-    }
-    ret.set(id, name);
-  }
-  return ret;
-}
-
 function searchWorkHour(id: number, ds: DaySummary[]): WorkHour {
   for (const d of ds) {
     for (const wh of d.workHours) {
@@ -73,7 +55,10 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
   const [allSummaries, setAllSummaries] = useState<DaySummary[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
-  const [filter, setFilter] = useState<Filter>({ clientId: "", dealId: "" });
+  const [selection, setSelection] = useState<Selection>({
+    clientId: "",
+    dealId: "",
+  });
   const [editedWorkHourId, setEditedWorkHourId] = useState<
     number | "adding" | undefined
   >();
@@ -221,10 +206,13 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
           onForwardClick={handleForwardClick}
           onBackClick={handleBackClick}
         />
-        <DealSelector clients={clients} onSelectionChange={async () => {}} />
+        <DealSelector
+          clients={clients}
+          onSelectionChange={async (s) => setSelection(s)}
+        />
         <Content
           summaries={allSummaries}
-          filter={filter}
+          filter={selection}
           handleAddWorkHour={handleAddWorkHour}
           handleUpdateWorkHour={handleUpdateWorkHour}
         />

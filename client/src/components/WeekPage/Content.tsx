@@ -12,9 +12,9 @@ import { formatTime } from "../../share/utils";
 import { formatDate, secToStr } from "../utils";
 import { DaySummary, WorkHour } from "./utils";
 import { WorkHour as WorkHourType } from "../../api/types";
-import { Filter } from ".";
 import { Add, Edit } from "@mui/icons-material";
 import { Link } from "react-router-dom";
+import { Selection } from "../common/DealSelector2";
 
 function duration(wh: WorkHour): number {
   if (!wh.endTime) return 0;
@@ -66,7 +66,7 @@ function RenderDaySummary({
   onUpdateClick,
 }: {
   ds: DaySummary;
-  filter: Filter;
+  filter: Selection;
   onAddClick: (date: Date) => void;
   onUpdateClick: (wh: WorkHourType) => void;
 }): JSX.Element {
@@ -112,7 +112,7 @@ function RenderDaySummary({
 
 type ContentProps = {
   summaries: DaySummary[];
-  filter: Filter;
+  filter: Selection;
   handleAddWorkHour: (date: Date) => Promise<void>;
   handleUpdateWorkHour: (wh: WorkHourType) => Promise<void>;
 };
