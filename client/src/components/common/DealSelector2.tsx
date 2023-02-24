@@ -12,7 +12,7 @@ type Client = {
   deals: Deal[];
 };
 
-type Selection = {
+export type Selection = {
   clientId: number | "";
   dealId: number | "";
 };
@@ -58,7 +58,7 @@ function DealSelector({
     } else {
       return clients.map((c) => c.deals).flat();
     }
-  }, [selection.clientId]);
+  }, [selection.clientId, clients]);
 
   return (
     <Box style={{ marginLeft: "10px" }}>
