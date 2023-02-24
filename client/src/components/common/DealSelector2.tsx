@@ -1,12 +1,12 @@
 import { Box, MenuItem, Select } from "@mui/material";
 import { useMemo, useState } from "react";
 
-type Deal = {
+export type Deal = {
   id: number;
   name: string;
 };
 
-type Client = {
+export type Client = {
   id: number;
   name: string;
   deals: Deal[];

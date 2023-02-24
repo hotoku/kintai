@@ -9,7 +9,7 @@ import Content from "./Content";
 import { HalfwayWorkHour, WorkHour } from "../../api/types";
 import { addWorkHour, updateWorkHour } from "../WorkHoursPage/utils";
 import WorkHourEditorDialog from "../common/WorkHourEditorDialog";
-import DealSelector from "../common/DealSelector";
+import DealSelector, { Client } from "../common/DealSelector2";
 
 type WeekPageProps = {
   date: string;
@@ -79,19 +79,39 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
   >();
   const [editorDate, setEditorDate] = useState<Date | undefined>();
 
-  const clients = useMemo(() => {
-    const clients = allSummaries
-      .map((s) => s.workHours.map((wh) => wh.deal.client))
-      .reduce((x, y) => x.concat(y), []);
-    return id2name(clients);
+  const [clients, deals] = useMemo(() => {
+    const clients = new Map<number, Client>();
+    const deals = new Map<
+      number,
+      { id: number; name: string; clientId: number }
+    >();
+    for (const s of allSummaries) {
+      for (const w of s.workHours) {
+        const deal = w.deal;
+        const client = deal.client;
+        if (!deals.has(deal.id)) {
+          deals.set(deal.id, {
+            id: deal.id,
+            name: deal.name,
+            clientId: deal.client.id,
+          });
+        }
+        if (!clients.has(client.id)) {
+          clients.set(client.id, {
+            id: client.id,
+            name: client.name,
+            deals: [],
+          });
+        }
+      }
+    }
+    deals.forEach((d) => {
+      const client = clients.get(d.clientId);
+      if (!client) throw new Error("panic");
+      client.deals.push(d);
+    });
+    return [Array.from(clients.values()), deals];
   }, [allSummaries]);
-  const deals = useMemo(() => {
-    const deals = allSummaries
-      .map((s) => s.workHours.map((wh) => wh.deal))
-      .reduce((x, y) => x.concat(y), [])
-      .filter((d) => filter.clientId === "" || filter.clientId === d.client.id);
-    return id2name(deals);
-  }, [allSummaries, filter.clientId]);
 
   useEffect(() => {
     loadWeekSummary(date).then(setAllSummaries);
@@ -159,20 +179,14 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
     [date, editedWorkHourId]
   );
 
-  const handleClientSelect = async (id: number | "") => {
-    setFilter((f) => {
-      return { ...f, clientId: id };
-    });
-  };
-  const handleDealSelect = async (id: number | "") => {
-    setFilter((f) => {
-      return { ...f, dealId: id };
-    });
-  };
   const dialog = useMemo(() => {
     if (typeof editedWorkHourId === "number") {
       const dealId = objForEditor.dealId;
       if (dealId === undefined) {
+        throw new Error("panic");
+      }
+      const deal = deals.get(dealId);
+      if (deal === undefined) {
         throw new Error("panic");
       }
       return (
@@ -182,10 +196,7 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
           onCancel={handleCancel}
           initialObject={objForEditor}
           type="fixed"
-          deal={{
-            id: dealId,
-            name: deals.get(dealId) ?? "",
-          }}
+          deal={deal}
           key={editedWorkHourId}
         />
       );
@@ -205,17 +216,12 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
 
   return (
     <>
-      <Paper style={{ margin: "0 auto", display: "table" }}>
+      <Paper style={{ margin: "0 auto", display: "table", padding: "10px" }}>
         <Navigation
           onForwardClick={handleForwardClick}
           onBackClick={handleBackClick}
         />
-        <DealSelector
-          clients={clients}
-          deals={deals}
-          onClientChange={handleClientSelect}
-          onDealChange={handleDealSelect}
-        />
+        <DealSelector clients={clients} onSelectionChange={async () => {}} />
         <Content
           summaries={allSummaries}
           filter={filter}

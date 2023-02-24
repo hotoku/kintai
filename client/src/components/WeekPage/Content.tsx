@@ -83,7 +83,6 @@ function RenderDaySummary({
   return (
     <Card
       style={{
-        margin: "10px",
         background: "#f7f7f7",
         padding: "5px 5px 0",
       }}
