@@ -223,6 +223,7 @@ function DealSelector2({ onDealChange }: DealSelector2Props): JSX.Element {
             );
             break;
           case "none":
+            console.log("handleDealChange");
             setSelectorState(
               {
                 type: "none",

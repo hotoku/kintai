@@ -39,10 +39,11 @@ function DealSelector({
   const [dealId, setDealId] = useState<number | "">("");
 
   const handleStateChange = (
-    handlers: ((id: number | "") => void)[]
+    handlers: ((id: number | "") => void)[],
+    name: string
   ): ((e: SelectChangeEvent<number>) => void) => {
-    console.log("deal selector: handle state change");
     return (e: SelectChangeEvent<number>) => {
+      console.log("handleStateChange", name);
       for (const h of handlers) {
         const v = e.target.value;
         const id = typeof v === "string" ? maybeInt(v) : v;
@@ -60,13 +61,16 @@ function DealSelector({
   return (
     <Box style={{ marginLeft: "10px" }}>
       <Select
-        onChange={handleStateChange([onClientChange, setClientId, clearDealId])}
+        onChange={handleStateChange(
+          [onClientChange, setClientId, clearDealId],
+          "client change"
+        )}
         value={clientId}
       >
         {menuItem(clients)}
       </Select>
       <Select
-        onChange={handleStateChange([onDealChange, setDealId])}
+        onChange={handleStateChange([onDealChange, setDealId], "deal change")}
         value={dealId}
       >
         {menuItem(deals)}
