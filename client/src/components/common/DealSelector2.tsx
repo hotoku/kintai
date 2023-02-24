@@ -61,7 +61,7 @@ function DealSelector({
   }, [selection.clientId, clients]);
 
   return (
-    <Box style={{ marginLeft: "10px" }}>
+    <Box>
       <Select
         onChange={(e) => {
           const v = e.target.value;

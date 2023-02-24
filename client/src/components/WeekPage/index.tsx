@@ -1,5 +1,5 @@
 import Paper from "@mui/material/Paper";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { DaySummary, loadWeekSummary } from "./utils";
 import { Button } from "@mui/material";
 import { ArrowForward, ArrowBack } from "@mui/icons-material";
@@ -111,10 +111,13 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
   const handleBackClick = async () => {
     navigateToAnotherWeek(-1);
   };
-  const objForEditor: HalfwayWorkHour =
-    typeof editedWorkHourId === "number"
-      ? searchWorkHour(editedWorkHourId, allSummaries)
-      : { startTime: editorDate, endTime: editorDate };
+  const objForEditor: HalfwayWorkHour = useMemo(
+    () =>
+      typeof editedWorkHourId === "number"
+        ? searchWorkHour(editedWorkHourId, allSummaries)
+        : { startTime: editorDate, endTime: editorDate },
+    [allSummaries, editedWorkHourId, editorDate]
+  );
   const handleAddWorkHour = async (date: Date) => {
     setEditedWorkHourId("adding");
     setEditorDate(date);
@@ -125,35 +128,36 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
   const handleCancel = async (_: HalfwayWorkHour): Promise<void> => {
     setEditedWorkHourId(undefined);
   };
-  const handleSave = async (
-    wh: Omit<WorkHour, "id"> & { id?: number }
-  ): Promise<void> => {
-    setEditedWorkHourId(undefined);
-    if (!wh.startTime) {
-      throw new Error("Start time must be set.");
-    }
-    if (!wh.dealId) {
-      throw new Error("Work hour of no deal id was passed to editor");
-    }
-
-    if (typeof editedWorkHourId === "number") {
-      if (!wh.id) {
-        throw new Error("editing instance of no id");
+  const handleSave = useCallback(
+    async (wh: Omit<WorkHour, "id"> & { id?: number }): Promise<void> => {
+      setEditedWorkHourId(undefined);
+      if (!wh.startTime) {
+        throw new Error("Start time must be set.");
       }
-      await updateWorkHour({
-        ...wh,
-        id: wh.id,
-        startTime: wh.startTime,
-      });
-    } else if (editedWorkHourId === "adding") {
-      await addWorkHour({
-        ...wh,
-        startTime: wh.startTime,
-      });
-    }
-    const summaries = await loadWeekSummary(date);
-    setAllSummaries(summaries);
-  };
+      if (!wh.dealId) {
+        throw new Error("Work hour of no deal id was passed to editor");
+      }
+
+      if (typeof editedWorkHourId === "number") {
+        if (!wh.id) {
+          throw new Error("editing instance of no id");
+        }
+        await updateWorkHour({
+          ...wh,
+          id: wh.id,
+          startTime: wh.startTime,
+        });
+      } else if (editedWorkHourId === "adding") {
+        await addWorkHour({
+          ...wh,
+          startTime: wh.startTime,
+        });
+      }
+      const summaries = await loadWeekSummary(date);
+      setAllSummaries(summaries);
+    },
+    [date, editedWorkHourId]
+  );
 
   const handleClientSelect = async (id: number | "") => {
     setFilter((f) => {
@@ -165,7 +169,7 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
       return { ...f, dealId: id };
     });
   };
-  const dialog = (() => {
+  const dialog = useMemo(() => {
     if (typeof editedWorkHourId === "number") {
       const dealId = objForEditor.dealId;
       if (dealId === undefined) {
@@ -197,7 +201,7 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
         />
       );
     }
-  })();
+  }, [deals, editedWorkHourId, handleSave, objForEditor]);
 
   return (
     <>
