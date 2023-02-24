@@ -61,13 +61,15 @@ export async function loadWeekSummary(date: string): Promise<DaySummary[]> {
   return objs.map((obj) => {
     return {
       date: dayjs(obj.date, "YYYY-MM-DD").toDate(),
-      workHours: obj.workHours.map((wh) => {
-        return {
-          ...wh,
-          startTime: parseDate2(wh.startTime),
-          endTime: wh.endTime ? parseDate2(wh.endTime) : undefined,
-        };
-      }),
+      workHours: obj.workHours
+        .filter((wh) => !wh.isDeleted)
+        .map((wh) => {
+          return {
+            ...wh,
+            startTime: parseDate2(wh.startTime),
+            endTime: wh.endTime ? parseDate2(wh.endTime) : undefined,
+          };
+        }),
     };
   });
 }
