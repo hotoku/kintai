@@ -76,7 +76,8 @@ function RenderDaySummary({
       (wh) =>
         (filter.dealId === "" || wh.deal.id === filter.dealId) &&
         (filter.clientId === "" || wh.deal.client.id === filter.clientId)
-    );
+    )
+    .sort((a, b) => a.startTime.valueOf() - b.startTime.valueOf());
   const totalDuration = secToStr(
     workHours.map((wh) => duration(wh)).reduce((x, y) => x + y, 0)
   );
