@@ -12,9 +12,9 @@ import { formatTime } from "../../share/utils";
 import { formatDate, secToStr } from "../utils";
 import { DaySummary, WorkHour } from "./utils";
 import { WorkHour as WorkHourType } from "../../api/types";
-import { Filter } from ".";
 import { Add, Edit } from "@mui/icons-material";
 import { Link } from "react-router-dom";
+import { Selection } from "../common/DealSelector2";
 
 function duration(wh: WorkHour): number {
   if (!wh.endTime) return 0;
@@ -66,7 +66,7 @@ function RenderDaySummary({
   onUpdateClick,
 }: {
   ds: DaySummary;
-  filter: Filter;
+  filter: Selection;
   onAddClick: (date: Date) => void;
   onUpdateClick: (wh: WorkHourType) => void;
 }): JSX.Element {
@@ -76,16 +76,18 @@ function RenderDaySummary({
       (wh) =>
         (filter.dealId === "" || wh.deal.id === filter.dealId) &&
         (filter.clientId === "" || wh.deal.client.id === filter.clientId)
-    );
+    )
+    .sort((a, b) => a.startTime.valueOf() - b.startTime.valueOf());
   const totalDuration = secToStr(
     workHours.map((wh) => duration(wh)).reduce((x, y) => x + y, 0)
   );
   return (
     <Card
       style={{
-        margin: "10px",
         background: "#f7f7f7",
         padding: "5px 5px 0",
+        marginBottom: "10px",
+        marginTop: "7px",
       }}
     >
       <Typography component="div" variant="h6">
@@ -113,7 +115,7 @@ function RenderDaySummary({
 
 type ContentProps = {
   summaries: DaySummary[];
-  filter: Filter;
+  filter: Selection;
   handleAddWorkHour: (date: Date) => Promise<void>;
   handleUpdateWorkHour: (wh: WorkHourType) => Promise<void>;
 };

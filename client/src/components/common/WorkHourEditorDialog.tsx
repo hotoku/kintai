@@ -9,40 +9,106 @@ import {
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { useState } from "react";
-import { Deal, HalfwayWorkHour, WorkHour } from "../../api/types";
+import { useEffect, useState } from "react";
+import { Client, Deal, HalfwayWorkHour, WorkHour } from "../../api/types";
 import dayjs, { Dayjs } from "dayjs";
+import DealSelector, { Selection } from "./DealSelector2";
+import { throwQuery } from "../utils";
+
+type LocalDealSelectorProps = {
+  onSelectionChange: (s: Selection) => Promise<void>;
+};
+
+function LocalDealSelector({
+  onSelectionChange,
+}: LocalDealSelectorProps): JSX.Element {
+  const [allClients, setAllClients] = useState<
+    (Client & { deals: Pick<Deal, "id" | "name">[] })[]
+  >([]);
+
+  useEffect(() => {
+    throwQuery<
+      (Client & {
+        deals: Pick<Deal, "id" | "name">[];
+      })[]
+    >(
+      `
+      {
+        object: getAllClients {
+          id
+          name
+          deals {
+            id
+            name
+          }
+        }
+      }
+    `
+    ).then(([data, errs]) => {
+      if (errs) {
+        throw new Error(JSON.stringify(errs));
+      }
+      setAllClients(data);
+    });
+  }, []);
+
+  return (
+    <DealSelector clients={allClients} onSelectionChange={onSelectionChange} />
+  );
+}
 
 type WorkHourEditorDialogProps = {
   open: boolean;
   onSave: (wh: Omit<WorkHour, "id"> & { id?: number }) => Promise<void>;
   onCancel: (hwh: HalfwayWorkHour) => Promise<void>;
   initialObject: HalfwayWorkHour;
-  deal?: Pick<Deal, "id" | "name">;
-};
+} & (
+  | {
+      type: "fixed";
+      deal: Pick<Deal, "id" | "name">;
+    }
+  | {
+      type: "choice";
+    }
+);
 
-function WorkHourEditorDialog({
-  open,
-  onSave,
-  onCancel,
-  initialObject,
-  deal,
-}: WorkHourEditorDialogProps) {
+function WorkHourEditorDialog(props: WorkHourEditorDialogProps) {
   const [editedObject, setEditedObject] = useState<HalfwayWorkHour>({
-    ...initialObject,
+    ...props.initialObject,
   });
-  const canSave = editedObject.startTime;
+  const canSave = editedObject.startTime && editedObject.dealId;
+
   return (
     <Dialog
-      open={open}
+      open={props.open}
       onClose={() => {
-        onCancel(editedObject);
+        props.onCancel(editedObject);
       }}
     >
       <Box sx={{ padding: 1 }} component="form">
-        {deal ? <Typography>{deal.name}</Typography> : undefined}
+        {props.type === "fixed" ? (
+          <Typography>{props.deal.name}</Typography>
+        ) : (
+          <LocalDealSelector
+            onSelectionChange={async (s: Selection) => {
+              if (typeof s.dealId === "number") {
+                const newObj = {
+                  ...editedObject,
+                  dealId: s.dealId,
+                };
+                setEditedObject(newObj);
+              } else {
+                const newObj = {
+                  ...editedObject,
+                  dealId: undefined,
+                };
+                setEditedObject(newObj);
+              }
+            }}
+          />
+        )}
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Stack spacing={1}>
+          <Stack spacing={1} style={{ marginTop: 10 }}>
             <Box>
               <DateTimePicker
                 onChange={(v: Dayjs | null) => {
@@ -122,7 +188,7 @@ function WorkHourEditorDialog({
                 onClick={() => {
                   if (typeof editedObject.startTime === "undefined") return;
                   if (typeof editedObject.dealId === "undefined") return;
-                  onSave({
+                  props.onSave({
                     ...editedObject,
                     startTime: editedObject.startTime,
                     dealId: editedObject.dealId,
@@ -134,7 +200,7 @@ function WorkHourEditorDialog({
               <Button
                 variant="outlined"
                 onClick={() => {
-                  onCancel(editedObject);
+                  props.onCancel(editedObject);
                 }}
               >
                 cancel
