@@ -1,8 +1,9 @@
-import { Add, PlusOne } from "@mui/icons-material";
+import { Add } from "@mui/icons-material";
 import {
   Box,
   Button,
   Collapse,
+  Dialog,
   List,
   ListItemButton,
   ListItemText,
@@ -21,6 +22,14 @@ type Deal = {
   id: number;
   name: string;
 };
+
+type ClientEditorDialogProps = {
+  open: boolean;
+};
+
+function ClientEditorDialog({ open }: ClientEditorDialogProps): JSX.Element {
+  return <Dialog open={open}></Dialog>;
+}
 
 async function loadClients(): Promise<Client[]> {
   const ret = await fetch("/graphql", {
@@ -85,11 +94,18 @@ function ClientListItem({
   );
 }
 
+function useClientEditor() {
+  const [open, setOpen] = useState(false);
+  return [open];
+}
+
 function ClientsPage(): JSX.Element {
   const [clients, setClients] = useState<Client[]>([]);
   const [selectedClientId, setSelectedClientId] = useState<
     number | undefined
   >();
+
+  const [editorOpen] = useClientEditor();
 
   useEffect(() => {
     loadClients().then((cs) => {
@@ -110,27 +126,30 @@ function ClientsPage(): JSX.Element {
   };
 
   return (
-    <Box style={{ padding: 10 }}>
-      <Paper>
-        <List>
-          {clients.map((client) => (
-            <ClientListItem
-              key={client.id}
-              client={client}
-              selectedClientId={selectedClientId}
-              onClick={handleClientClick}
-            />
-          ))}
-        </List>
-        <Button
-          onClick={() => {
-            handleAddClick();
-          }}
-        >
-          <Add />
-        </Button>
-      </Paper>
-    </Box>
+    <>
+      <Box style={{ padding: 10 }}>
+        <Paper>
+          <List>
+            {clients.map((client) => (
+              <ClientListItem
+                key={client.id}
+                client={client}
+                selectedClientId={selectedClientId}
+                onClick={handleClientClick}
+              />
+            ))}
+          </List>
+          <Button
+            onClick={() => {
+              handleAddClick();
+            }}
+          >
+            <Add />
+          </Button>
+        </Paper>
+      </Box>
+      <ClientEditorDialog open={editorOpen} />
+    </>
   );
 }
 
