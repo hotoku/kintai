@@ -34,17 +34,19 @@ function ActiveWorkHourTable({
           </TableRow>
         </TableHead>
         <TableBody>
-          {workHours.map((wh) => {
-            return (
-              <WorkHourRow
-                key={wh.id}
-                deleted={false}
-                workHour={wh}
-                onDelete={onDelete}
-                onUpdate={onUpdate}
-              />
-            );
-          })}
+          {workHours
+            .sort((a, b) => a.startTime.valueOf() - b.startTime.valueOf())
+            .map((wh) => {
+              return (
+                <WorkHourRow
+                  key={wh.id}
+                  deleted={false}
+                  workHour={wh}
+                  onDelete={onDelete}
+                  onUpdate={onUpdate}
+                />
+              );
+            })}
         </TableBody>
       </Table>
     </TableContainer>
