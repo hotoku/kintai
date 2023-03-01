@@ -1,3 +1,4 @@
+import { Add, PlusOne } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -126,7 +127,7 @@ function ClientsPage(): JSX.Element {
             handleAddClick();
           }}
         >
-          add
+          <Add />
         </Button>
       </Paper>
     </Box>
