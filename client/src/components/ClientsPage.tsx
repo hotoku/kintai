@@ -1,4 +1,12 @@
-import { Collapse, List, ListItemButton, ListItemText } from "@mui/material";
+import {
+  Box,
+  Button,
+  Collapse,
+  List,
+  ListItemButton,
+  ListItemText,
+  Paper,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -96,17 +104,32 @@ function ClientsPage(): JSX.Element {
     }
   };
 
+  const handleAddClick = () => {
+    console.log("add client");
+  };
+
   return (
-    <List>
-      {clients.map((client) => (
-        <ClientListItem
-          key={client.id}
-          client={client}
-          selectedClientId={selectedClientId}
-          onClick={handleClientClick}
-        />
-      ))}
-    </List>
+    <Box style={{ padding: 10 }}>
+      <Paper>
+        <List>
+          {clients.map((client) => (
+            <ClientListItem
+              key={client.id}
+              client={client}
+              selectedClientId={selectedClientId}
+              onClick={handleClientClick}
+            />
+          ))}
+        </List>
+        <Button
+          onClick={() => {
+            handleAddClick();
+          }}
+        >
+          add
+        </Button>
+      </Paper>
+    </Box>
   );
 }
 
