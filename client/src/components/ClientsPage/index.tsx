@@ -1,9 +1,10 @@
-import { Add } from "@mui/icons-material";
+import { Add, Label } from "@mui/icons-material";
 import {
   Box,
   Button,
   Collapse,
   Dialog,
+  Input,
   List,
   ListItemButton,
   ListItemText,
@@ -11,6 +12,7 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { postClient } from "../../api/fetches";
 
 type Client = {
   id: number;
@@ -94,9 +96,53 @@ function ClientListItem({
   );
 }
 
-function useClientEditor() {
-  const [open, setOpen] = useState(false);
-  return [open];
+function useClientEditor(afterSave: () => void) {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [object, setObject] = useState<Partial<Client>>({ name: "" });
+  const open = () => {
+    setIsOpen(true);
+  };
+  const close = () => {
+    setIsOpen(false);
+  };
+  const save = async () => {
+    await postClient(object);
+  };
+  const canSave = object.name !== undefined && object.name.length > 0;
+  const dialog = (
+    <Dialog open={isOpen} onClose={close}>
+      <Box style={{ padding: 10 }}>
+        <label>
+          client name{" "}
+          <Input
+            value={object.name}
+            onChange={(e) =>
+              setObject((o) => {
+                return {
+                  ...o,
+                  name: e.target.value,
+                };
+              })
+            }
+          />
+        </label>
+        <Button
+          disabled={!canSave}
+          style={{ marginLeft: 5 }}
+          variant="contained"
+          onClick={() => {
+            save().then(() => {
+              afterSave();
+            });
+            close();
+          }}
+        >
+          save
+        </Button>
+      </Box>
+    </Dialog>
+  );
+  return [open, dialog] as [() => void, JSX.Element];
 }
 
 function ClientsPage(): JSX.Element {
@@ -105,7 +151,13 @@ function ClientsPage(): JSX.Element {
     number | undefined
   >();
 
-  const [editorOpen] = useClientEditor();
+  const afterSave = () => {
+    loadClients().then((cs) => {
+      setClients(cs);
+    });
+  };
+
+  const [openEditor, editorDialog] = useClientEditor(afterSave);
 
   useEffect(() => {
     loadClients().then((cs) => {
@@ -119,10 +171,6 @@ function ClientsPage(): JSX.Element {
     } else {
       setSelectedClientId(client.id);
     }
-  };
-
-  const handleAddClick = () => {
-    console.log("add client");
   };
 
   return (
@@ -141,14 +189,14 @@ function ClientsPage(): JSX.Element {
           </List>
           <Button
             onClick={() => {
-              handleAddClick();
+              openEditor();
             }}
           >
             <Add />
           </Button>
         </Paper>
       </Box>
-      <ClientEditorDialog open={editorOpen} />
+      {editorDialog}
     </>
   );
 }
