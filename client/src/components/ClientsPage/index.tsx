@@ -1,4 +1,4 @@
-import { Add, Label } from "@mui/icons-material";
+import { Add } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -24,14 +24,6 @@ type Deal = {
   id: number;
   name: string;
 };
-
-type ClientEditorDialogProps = {
-  open: boolean;
-};
-
-function ClientEditorDialog({ open }: ClientEditorDialogProps): JSX.Element {
-  return <Dialog open={open}></Dialog>;
-}
 
 async function loadClients(): Promise<Client[]> {
   const ret = await fetch("/graphql", {
