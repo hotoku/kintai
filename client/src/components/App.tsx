@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import ClientsPage from "./ClientsPage";
 import Deals from "./DealsPage";
 
 import ErrorBoundary from "./ErrorBoundary";
@@ -9,6 +8,7 @@ import WorkHoursPage from "./WorkHoursPage";
 import KintaiAppBar from "./KintaiAppBar";
 import WeekPage from "./WeekPage";
 import dayjs from "dayjs";
+import ClientsPage from "./ClientsPage";
 
 function MyRoutes() {
   const query = parseQuery(useLocation().search);
