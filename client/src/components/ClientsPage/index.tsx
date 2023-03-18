@@ -1,4 +1,4 @@
-import { Add } from "@mui/icons-material";
+import { Add, Edit } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -9,8 +9,9 @@ import {
   Paper,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useClientEditor } from "./useClientEditor";
+import { useClientSelector } from "./useClientSelector";
 
 export type Client = {
   id: number;
@@ -23,7 +24,7 @@ type Deal = {
   name: string;
 };
 
-async function loadClients(): Promise<Client[]> {
+async function doLoadClients(): Promise<Client[]> {
   const ret = await fetch("/graphql", {
     method: "POST",
     headers: {
@@ -47,15 +48,31 @@ async function loadClients(): Promise<Client[]> {
   return (await ret.json()).data.clients;
 }
 
-function dealListItem(deal: Deal): JSX.Element {
+function DealListItem(deal: Deal): JSX.Element {
+  const navigate = useNavigate();
+
   return (
     <ListItemButton
       key={deal.id}
       sx={{ pl: 4 }}
-      component={Link}
-      to={`/workHours?dealId=${deal.id}`}
+      onClick={() => {
+        const url = `/workHours?dealId=${deal.id}`;
+        navigate(url);
+      }}
     >
-      {deal.name}
+      <Button
+        style={{
+          paddingTop: 0,
+          paddingBottom: 0,
+        }}
+      >
+        <Edit
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        />
+      </Button>
+      <ListItemText> {deal.name}</ListItemText>
     </ListItemButton>
   );
 }
@@ -77,42 +94,41 @@ function ClientListItem({
           onClick(client);
         }}
       >
+        <Button
+          style={{
+            paddingTop: 0,
+            paddingBottom: 0,
+          }}
+        >
+          <Edit
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          />
+        </Button>
         <ListItemText primary={client.name} />
       </ListItemButton>
       <Collapse in={client.id === selectedClientId}>
-        <List>{client.deals.map(dealListItem)}</List>
+        <List>{client.deals.map(DealListItem)}</List>
       </Collapse>
     </div>
   );
 }
 
 function ClientsPage(): JSX.Element {
-  const [clients, setClients] = useState<Client[]>([]);
-  const [selectedClientId, setSelectedClientId] = useState<
-    number | undefined
-  >();
-
-  const afterSave = () => {
-    loadClients().then((cs) => {
+  const loadClients = () => {
+    doLoadClients().then((cs) => {
       setClients(cs);
     });
   };
 
-  const [openEditor, editorDialog] = useClientEditor(afterSave);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [openEditor, editorDialog] = useClientEditor(loadClients);
+  const [selectedClientId, handleClientClick] = useClientSelector();
 
   useEffect(() => {
-    loadClients().then((cs) => {
-      setClients(cs);
-    });
+    loadClients();
   }, []);
-
-  const handleClientClick = (client: Client) => {
-    if (selectedClientId === client.id) {
-      setSelectedClientId(undefined);
-    } else {
-      setSelectedClientId(client.id);
-    }
-  };
 
   return (
     <>
@@ -133,7 +149,10 @@ function ClientsPage(): JSX.Element {
               openEditor();
             }}
           >
-            <Add />
+            <Add /> client
+          </Button>
+          <Button onClick={() => {}}>
+            <Add /> deal
           </Button>
         </Paper>
       </Box>
