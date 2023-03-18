@@ -3,7 +3,9 @@ import { useState } from "react";
 import { Client } from ".";
 import { postClient, putClient } from "../../api/fetches";
 
-export function useClientEditor(afterSave: () => void) {
+export function useClientEditor(
+  afterSave: () => void
+): [(c?: Client) => void, JSX.Element] {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [object, setObject] = useState<Partial<Client>>({ name: "" });
   const open = (obj: Client | undefined) => {
@@ -67,5 +69,5 @@ export function useClientEditor(afterSave: () => void) {
       </Box>
     </Dialog>
   );
-  return [open, dialog] as [() => void, JSX.Element];
+  return [open, dialog];
 }
