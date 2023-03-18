@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useClientEditor } from "./useClientEditor";
 import { useClientSelector } from "./useClientSelector";
+import { useDealEditor } from "./useDealEditor";
 
 export type Client = {
   id: number;
@@ -126,7 +127,8 @@ function ClientsPage(): JSX.Element {
   };
 
   const [clients, setClients] = useState<Client[]>([]);
-  const [openEditor, editorDialog] = useClientEditor(loadClients);
+  const [openClientEditor, clientEditorDialog] = useClientEditor(loadClients);
+  const [openDealEditor, dealEditorDialog] = useDealEditor(clients);
   const [selectedClientId, handleClientClick] = useClientSelector();
 
   useEffect(() => {
@@ -144,23 +146,28 @@ function ClientsPage(): JSX.Element {
                 client={client}
                 selectedClientId={selectedClientId}
                 onClick={handleClientClick}
-                onEditClick={openEditor}
+                onEditClick={openClientEditor}
               />
             ))}
           </List>
           <Button
             onClick={() => {
-              openEditor();
+              openClientEditor();
             }}
           >
             <Add /> client
           </Button>
-          <Button onClick={() => {}}>
+          <Button
+            onClick={() => {
+              openDealEditor();
+            }}
+          >
             <Add /> deal
           </Button>
         </Paper>
       </Box>
-      {editorDialog}
+      {clientEditorDialog}
+      {dealEditorDialog}
     </>
   );
 }
