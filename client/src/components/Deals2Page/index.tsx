@@ -134,7 +134,7 @@ type DealsProp = {
   clientId?: string;
 };
 
-const Deals = ({ clientId }: DealsProp) => {
+const Deals2 = ({ clientId }: DealsProp) => {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [editedRecord, setEditedRecord] = useState<HalfwayDeal>({});
@@ -246,4 +246,4 @@ const Deals = ({ clientId }: DealsProp) => {
   );
 };
 
-export default Deals;
+export default Deals2;

@@ -40,7 +40,7 @@ function KintaiAppBar(): JSX.Element {
               <DrawerItem href="/" text="home" />
             </ListItem>
             <ListItem>
-              <DrawerItem href="/deals" text="deals" />
+              <DrawerItem href="/deals2" text="deals2" />
             </ListItem>
             <ListItem>
               <DrawerItem href="/week" text="week" />
