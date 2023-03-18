@@ -9,7 +9,7 @@ import {
   Paper,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useClientEditor } from "./useClientEditor";
 import { useClientSelector } from "./useClientSelector";
 
@@ -81,11 +81,13 @@ type ClientListItemProps = {
   client: Client;
   selectedClientId?: number;
   onClick: (c: Client) => void;
+  onEditClick: (c: Client) => void;
 };
 function ClientListItem({
   client,
   selectedClientId,
   onClick,
+  onEditClick,
 }: ClientListItemProps): JSX.Element {
   return (
     <div>
@@ -103,6 +105,7 @@ function ClientListItem({
           <Edit
             onClick={(e) => {
               e.stopPropagation();
+              onEditClick(client);
             }}
           />
         </Button>
@@ -141,6 +144,7 @@ function ClientsPage(): JSX.Element {
                 client={client}
                 selectedClientId={selectedClientId}
                 onClick={handleClientClick}
+                onEditClick={openEditor}
               />
             ))}
           </List>

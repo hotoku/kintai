@@ -1,19 +1,37 @@
 import { Box, Button, Dialog, Input } from "@mui/material";
 import { useState } from "react";
 import { Client } from ".";
-import { postClient } from "../../api/fetches";
+import { postClient, putClient } from "../../api/fetches";
 
 export function useClientEditor(afterSave: () => void) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [object, setObject] = useState<Partial<Client>>({ name: "" });
-  const open = () => {
+  const open = (obj: Client | undefined) => {
     setIsOpen(true);
+    if (obj) {
+      setObject(obj);
+    } else {
+      setObject({ name: "" });
+    }
   };
   const close = () => {
     setIsOpen(false);
   };
   const save = async () => {
-    await postClient(object);
+    if (object.name === undefined) {
+      return;
+    }
+    if (object.name === "") {
+      return;
+    }
+    if (!object.id) {
+      await postClient(object);
+    } else {
+      await putClient({
+        id: object.id,
+        name: object.name,
+      });
+    }
   };
   const canSave = object.name !== undefined && object.name.length > 0;
   const dialog = (
