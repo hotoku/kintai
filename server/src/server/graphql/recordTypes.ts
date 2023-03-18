@@ -7,6 +7,7 @@ export type DealRecord = {
   id: number;
   name: string;
   clientId: number;
+  isFinished: boolean;
 };
 
 export type WorkHourRecord = {
