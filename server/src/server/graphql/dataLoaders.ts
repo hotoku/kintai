@@ -57,7 +57,8 @@ function createDealLoader(): DataLoader<number, DealRecord> {
       select
         id,
         name,
-        clientId
+        clientId,
+        isFinished
       from
         Deals
       where
@@ -198,7 +199,7 @@ function createDaySummaryLoader(): DataLoader<string, DaySummaryRecord> {
 }
 
 export type MyDataLoader = {
-  clientLoader: ClientLoader;
+  clientLoader: ClientLoader; // todo: 他のメンバーと平仄を合わせる
   clientDealsLoader: DataLoader<number, number[]>;
   dealLoader: DataLoader<number, DealRecord>;
   dealWorkHoursLoader: DataLoader<number, number[]>;
