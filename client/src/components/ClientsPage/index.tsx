@@ -49,7 +49,12 @@ async function doLoadClients(): Promise<Client[]> {
   return (await ret.json()).data.clients;
 }
 
-function DealListItem(deal: Deal): JSX.Element {
+type DealListItemProps = {
+  deal: Deal;
+  onEditClick: (d: Deal) => Promise<void>;
+};
+
+function DealListItem({ deal, onEditClick }: DealListItemProps): JSX.Element {
   const navigate = useNavigate();
 
   return (
@@ -70,6 +75,7 @@ function DealListItem(deal: Deal): JSX.Element {
         <Edit
           onClick={(e) => {
             e.stopPropagation();
+            onEditClick(deal);
           }}
         />
       </Button>
@@ -81,14 +87,16 @@ function DealListItem(deal: Deal): JSX.Element {
 type ClientListItemProps = {
   client: Client;
   selectedClientId?: number;
-  onClick: (c: Client) => void;
-  onEditClick: (c: Client) => void;
+  onClick: (c: Client) => Promise<void>;
+  onEditClick: (c: Client) => Promise<void>;
+  onDealEditClick: (d: Deal) => Promise<void>;
 };
 function ClientListItem({
   client,
   selectedClientId,
   onClick,
   onEditClick,
+  onDealEditClick,
 }: ClientListItemProps): JSX.Element {
   return (
     <div>
@@ -113,17 +121,20 @@ function ClientListItem({
         <ListItemText primary={client.name} />
       </ListItemButton>
       <Collapse in={client.id === selectedClientId}>
-        <List>{client.deals.map(DealListItem)}</List>
+        <List>
+          {client.deals.map((d) => (
+            <DealListItem deal={d} onEditClick={onDealEditClick} />
+          ))}
+        </List>
       </Collapse>
     </div>
   );
 }
 
 function ClientsPage(): JSX.Element {
-  const loadClients = () => {
-    doLoadClients().then((cs) => {
-      setClients(cs);
-    });
+  const loadClients = async () => {
+    const cs = await doLoadClients();
+    setClients(cs);
   };
 
   const [clients, setClients] = useState<Client[]>([]);
@@ -147,6 +158,7 @@ function ClientsPage(): JSX.Element {
                 selectedClientId={selectedClientId}
                 onClick={handleClientClick}
                 onEditClick={openClientEditor}
+                onDealEditClick={openDealEditor}
               />
             ))}
           </List>

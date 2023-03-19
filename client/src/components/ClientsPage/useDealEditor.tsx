@@ -2,9 +2,11 @@ import { Box, Dialog } from "@mui/material";
 import { useState } from "react";
 import { Client } from ".";
 
-export function useDealEditor(clients: Client[]): [() => void, JSX.Element] {
+export function useDealEditor(
+  clients: Client[]
+): [() => Promise<void>, JSX.Element] {
   const [isOpen, setIsOpen] = useState(false);
-  const open = () => {
+  const open = async () => {
     setIsOpen(true);
   };
   const close = () => {
