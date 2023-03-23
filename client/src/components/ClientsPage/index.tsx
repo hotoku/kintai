@@ -20,9 +20,10 @@ export type Client = {
   deals: { id: number; name: string }[];
 };
 
-type Deal = {
+export type Deal = {
   id: number;
   name: string;
+  clientId?: number;
 };
 
 async function doLoadClients(): Promise<Client[]> {
