@@ -18,13 +18,9 @@ clean:
 	@echo "drop user if exists $(MYSQL_USER_NAME)@localhost" | mysql -u root -p"$(MYSQL_ROOT_PASSWORD)"
 
 
-BACKUP_DIR := ../../release/backup
-
-
 .PHONY: restore
 restore:
-	$(eval DUMP_FILE := $(shell ls $(BACKUP_DIR) | tail -n1))
-	echo $(DUMP_FILE)
+	$(eval DUMP_FILE := $(shell ls $(BACKUP_DIR) | sort | tail -n1))
 	@make clean
 	@make user
 	@mysql -u root -p"$(MYSQL_ROOT_PASSWORD)" $(DATABASE_NAME) < $(BACKUP_DIR)/$(DUMP_FILE)
