@@ -35,13 +35,19 @@ export function useDealEditor(
     setObj(d ?? {});
   };
   const close = () => {
+    setObj({});
+    setClientId("");
     setIsOpen(false);
   };
   const canSave =
     typeof clientId === "number" && object.name && object.name.length > 0;
 
   const save = async () => {
+    console.log("object:", object);
     if (object.name === undefined) {
+      return;
+    }
+    if (object.clientId === undefined) {
       return;
     }
     if (object.name === "") {
