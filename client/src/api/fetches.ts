@@ -27,12 +27,9 @@ export const putDeal = (obj: {
   return fetch("/api/deals", { method, headers, body });
 };
 
-export const postDeal = (obj: {
-  name: string;
-  clientId: number;
-}): Promise<Response> => {
+export const postDeal = (obj: Partial<Deal>): Promise<Response> => {
   const method = "POST";
-  const body = JSON.stringify(obj);
+  const body = JSON.stringify({ ...obj, isFinished: obj.isFinished ?? false });
   const headers = {
     Accept: "application/json",
     "Content-Type": "application/json",

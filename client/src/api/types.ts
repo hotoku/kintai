@@ -3,6 +3,7 @@ export type Deal = {
   name: string;
   clientId: number;
   clientName: string;
+  isFinished: boolean;
 };
 
 export type HalfwayDeal = {

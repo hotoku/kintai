@@ -140,7 +140,10 @@ function ClientsPage(): JSX.Element {
 
   const [clients, setClients] = useState<Client[]>([]);
   const [openClientEditor, clientEditorDialog] = useClientEditor(loadClients);
-  const [openDealEditor, dealEditorDialog] = useDealEditor(clients);
+  const [openDealEditor, dealEditorDialog] = useDealEditor(
+    clients,
+    loadClients
+  );
   const [selectedClientId, handleClientClick] = useClientSelector();
 
   useEffect(() => {

@@ -1,6 +1,7 @@
 import { Box, Button, Dialog, Input, MenuItem, Select } from "@mui/material";
 import { useState } from "react";
 import { Client, Deal } from ".";
+import { postDeal } from "../../api/fetches";
 
 function menuItem(items: { id: number; name: string }[]): JSX.Element[] {
   const ret = [] as JSX.Element[];
@@ -20,12 +21,13 @@ function menuItem(items: { id: number; name: string }[]): JSX.Element[] {
 }
 
 export function useDealEditor(
-  clients: Client[]
+  clients: Client[],
+  afterSave: () => Promise<void>
 ): [(d?: Deal) => Promise<void>, JSX.Element] {
   const [isOpen, setIsOpen] = useState(false);
-  const [obj, setObj] = useState<Partial<Deal>>({});
+  const [object, setObj] = useState<Partial<Deal>>({ name: "" });
   const [clientId, setClientId] = useState<number | "">(
-    obj && obj.clientId ? obj.clientId : ""
+    object && object.clientId ? object.clientId : ""
   );
 
   const open = async (d: Deal | undefined) => {
@@ -36,7 +38,18 @@ export function useDealEditor(
     setIsOpen(false);
   };
   const canSave =
-    typeof clientId === "number" && obj.name && obj.name.length > 0;
+    typeof clientId === "number" && object.name && object.name.length > 0;
+
+  const save = async () => {
+    if (object.name === undefined) {
+      return;
+    }
+    if (object.name === "") {
+      return;
+    }
+    await postDeal(object);
+  };
+
   const dialog = (
     <Dialog open={isOpen} onClose={close}>
       <Box style={{ padding: 10 }}>
@@ -55,7 +68,7 @@ export function useDealEditor(
           <label>
             deal name{" "}
             <Input
-              value={obj && obj.name ? obj.name : ""}
+              value={object && object.name ? object.name : ""}
               onChange={(e) =>
                 setObj((o) => {
                   return {
@@ -72,9 +85,7 @@ export function useDealEditor(
           style={{ marginLeft: 5 }}
           variant="contained"
           onClick={() => {
-            // save().then(() => {
-            //   afterSave();
-            // });
+            save().then(() => afterSave());
             close();
           }}
         >
