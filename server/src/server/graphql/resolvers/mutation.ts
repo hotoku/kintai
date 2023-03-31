@@ -153,6 +153,40 @@ export const mutationType = new GraphQLObjectType<{}, ContextType>({
         }
       },
     },
+    addDeal: {
+      type: DealType,
+      args: {
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        clientId: { type: new GraphQLNonNull(GraphQLInt) },
+        isFinished: { type: GraphQLBoolean },
+      },
+      resolve: async (_, args, { loaders }) => {
+        const db = await getConnection();
+        const isFinished = args.isFinished ?? false;
+        const sql = `
+          insert into
+          Deals(
+            name,
+            clientId,
+            isFinished
+          )
+          values (
+            ?, ?, ?
+          )
+        `;
+        const values = [args.name, args.clientId, isFinished];
+        try {
+          const [obj, _] = await db.query(sql, values);
+          assert(
+            !(obj instanceof Array),
+            new Error("type of return value is not expected")
+          );
+          return loaders.dealLoader.load(obj.insertId);
+        } catch (e) {
+          return new Error(JSON.stringify(e));
+        }
+      },
+    },
     updateDeal: {
       type: DealType,
       args: {
