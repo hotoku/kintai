@@ -2,6 +2,7 @@ import { Box, Button, Dialog, Input, MenuItem, Select } from "@mui/material";
 import { useState } from "react";
 import { Client, Deal } from ".";
 import { postDeal } from "../../api/fetches";
+import { maybeInt } from "../../utils";
 
 function menuItem(items: { id: number; name: string }[]): JSX.Element[] {
   const ret = [] as JSX.Element[];
@@ -63,7 +64,9 @@ export function useDealEditor(
           <Select
             onChange={(e) => {
               const val = e.target.value;
+              const val2 = maybeInt(val);
               setClientId(typeof val == "number" ? val : "");
+              setObj({ ...object, clientId: val2 });
             }}
             value={clientId}
           >
