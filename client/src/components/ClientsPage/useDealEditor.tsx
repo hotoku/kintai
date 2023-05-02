@@ -1,7 +1,7 @@
 import { Box, Button, Dialog, Input, MenuItem, Select } from "@mui/material";
 import { useState } from "react";
 import { Client, Deal } from ".";
-import { postDeal } from "../../api/fetches";
+import { postDeal, putDeal } from "../../api/fetches";
 import { maybeInt } from "../../utils";
 
 function menuItem(items: { id: number; name: string }[]): JSX.Element[] {
@@ -54,7 +54,15 @@ export function useDealEditor(
     if (object.name === "") {
       return;
     }
-    await postDeal(object);
+    if (object.id) {
+      await putDeal({
+        id: object.id,
+        name: object.name,
+        clientId: object.clientId,
+      });
+    } else {
+      await postDeal(object);
+    }
   };
 
   const dialog = (
