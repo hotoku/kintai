@@ -55,11 +55,7 @@ export function useDealEditor(
       return;
     }
     if (object.id) {
-      await putDeal({
-        id: object.id,
-        name: object.name,
-        clientId: object.clientId,
-      });
+      await putDeal(object);
     } else {
       await postDeal(object);
     }
