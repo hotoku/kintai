@@ -124,7 +124,13 @@ function ClientListItem({
       <Collapse in={client.id === selectedClientId}>
         <List>
           {client.deals.map((d) => (
-            <DealListItem key={d.id} deal={d} onEditClick={onDealEditClick} />
+            <DealListItem
+              key={d.id}
+              deal={{ ...d, clientId: client.id }}
+              onEditClick={async (d) => {
+                await onDealEditClick(d);
+              }}
+            />
           ))}
         </List>
       </Collapse>

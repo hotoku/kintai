@@ -33,6 +33,9 @@ export function useDealEditor(
 
   const open = async (d: Deal | undefined) => {
     setIsOpen(true);
+    if (d && d.clientId) {
+      setClientId(d.clientId);
+    }
     setObj(d ?? {});
   };
   const close = () => {
