@@ -7,7 +7,7 @@ import {
   GraphQLBoolean,
 } from "graphql";
 import { getConnection, getPool } from "../../../db/db";
-import { WorkHourType } from "../objectTypes";
+import { DealType, WorkHourType } from "../objectTypes";
 
 import { ContextType } from "./index";
 
@@ -148,6 +148,79 @@ export const mutationType = new GraphQLObjectType<{}, ContextType>({
             new Error("type of return value is not expected")
           );
           return loaders.workHourLoader.load(obj.insertId);
+        } catch (e) {
+          return new Error(JSON.stringify(e));
+        }
+      },
+    },
+    addDeal: {
+      type: DealType,
+      args: {
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        clientId: { type: new GraphQLNonNull(GraphQLInt) },
+        isFinished: { type: GraphQLBoolean },
+      },
+      resolve: async (_, args, { loaders }) => {
+        const db = await getConnection();
+        const isFinished = args.isFinished ?? false;
+        const sql = `
+          insert into
+          Deals(
+            name,
+            clientId,
+            isFinished
+          )
+          values (
+            ?, ?, ?
+          )
+        `;
+        const values = [args.name, args.clientId, isFinished];
+        try {
+          const [obj, _] = await db.query(sql, values);
+          assert(
+            !(obj instanceof Array),
+            new Error("type of return value is not expected")
+          );
+          return loaders.dealLoader.load(obj.insertId);
+        } catch (e) {
+          return new Error(JSON.stringify(e));
+        }
+      },
+    },
+    updateDeal: {
+      type: DealType,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLInt) },
+        name: { type: GraphQLString },
+        clientId: { type: GraphQLInt },
+        isFinished: { type: GraphQLBoolean },
+      },
+      resolve: async (_, args, { loaders }) => {
+        const db = getPool();
+        const setStatemets = [] as string[];
+        const setValues = [] as any[];
+        if (args.name !== undefined) {
+          setStatemets.push(`name=?`);
+          setValues.push(args.name);
+        }
+        if (args.clientId !== undefined) {
+          setStatemets.push(`clientId=?`);
+          setValues.push(args.clientId);
+        }
+        if (args.isFinished !== undefined) {
+          setStatemets.push(`isFinished=?`);
+          setValues.push(args.isFinished);
+        }
+        const sql = `
+          update Deals
+          set
+            ${setStatemets.join(",")}
+          where
+            id = ${args.id}
+        `;
+        try {
+          await db.query(sql, setValues);
+          return loaders.dealLoader.load(args.id);
         } catch (e) {
           return new Error(JSON.stringify(e));
         }

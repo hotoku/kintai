@@ -68,6 +68,9 @@ export const DealType: GraphQLObjectType<DealRecord, ContextType> =
           );
         },
       },
+      isFinished: {
+        type: GraphQLBoolean,
+      },
     }),
   });
 

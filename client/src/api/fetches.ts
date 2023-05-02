@@ -13,11 +13,7 @@ export const fetchDeals = async (): Promise<Deal[]> => {
   return data;
 };
 
-export const putDeal = (obj: {
-  id: number;
-  name: string;
-  clientId: number;
-}): Promise<Response> => {
+export const putDeal = (obj: Partial<Deal>): Promise<Response> => {
   const method = "PUT";
   const body = JSON.stringify(obj);
   const headers = {
@@ -27,12 +23,9 @@ export const putDeal = (obj: {
   return fetch("/api/deals", { method, headers, body });
 };
 
-export const postDeal = (obj: {
-  name: string;
-  clientId: number;
-}): Promise<Response> => {
+export const postDeal = (obj: Partial<Deal>): Promise<Response> => {
   const method = "POST";
-  const body = JSON.stringify(obj);
+  const body = JSON.stringify({ ...obj, isFinished: obj.isFinished ?? false });
   const headers = {
     Accept: "application/json",
     "Content-Type": "application/json",

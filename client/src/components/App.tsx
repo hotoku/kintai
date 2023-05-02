@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import Deals from "./DealsPage";
+import Deals2 from "./Deals2Page";
 
 import ErrorBoundary from "./ErrorBoundary";
 import { parseQuery } from "../utils";
@@ -9,6 +9,7 @@ import KintaiAppBar from "./KintaiAppBar";
 import WeekPage from "./WeekPage";
 import dayjs from "dayjs";
 import ClientsPage from "./ClientsPage";
+import Deals from "./DealsPage";
 
 function MyRoutes() {
   const query = parseQuery(useLocation().search);
@@ -22,7 +23,8 @@ function MyRoutes() {
         element={<WorkHoursPage dealId={parseInt(query.dealId)} />}
       />
       ,
-      <Route path="/deals" element={<Deals clientId={query.clientId} />} />,
+      <Route path="/deals" element={<Deals />} />,
+      <Route path="/deals2" element={<Deals2 clientId={query.clientId} />} />,
       <Route path="/week" element={<WeekPage date={date} />} />
     </Routes>
   );

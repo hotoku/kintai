@@ -1,31 +1,32 @@
-import { Add } from "@mui/icons-material";
+import { Add, Edit } from "@mui/icons-material";
 import {
   Box,
   Button,
   Collapse,
-  Dialog,
-  Input,
   List,
   ListItemButton,
   ListItemText,
   Paper,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { postClient } from "../../api/fetches";
+import { useNavigate } from "react-router-dom";
+import { useClientEditor } from "./useClientEditor";
+import { useClientSelector } from "./useClientSelector";
+import { useDealEditor } from "./useDealEditor";
 
-type Client = {
+export type Client = {
   id: number;
   name: string;
   deals: { id: number; name: string }[];
 };
 
-type Deal = {
+export type Deal = {
   id: number;
   name: string;
+  clientId?: number;
 };
 
-async function loadClients(): Promise<Client[]> {
+async function doLoadClients(): Promise<Client[]> {
   const ret = await fetch("/graphql", {
     method: "POST",
     headers: {
@@ -49,15 +50,37 @@ async function loadClients(): Promise<Client[]> {
   return (await ret.json()).data.clients;
 }
 
-function dealListItem(deal: Deal): JSX.Element {
+type DealListItemProps = {
+  deal: Deal;
+  onEditClick: (d: Deal) => Promise<void>;
+};
+
+function DealListItem({ deal, onEditClick }: DealListItemProps): JSX.Element {
+  const navigate = useNavigate();
+
   return (
     <ListItemButton
       key={deal.id}
       sx={{ pl: 4 }}
-      component={Link}
-      to={`/workHours?dealId=${deal.id}`}
+      onClick={() => {
+        const url = `/workHours?dealId=${deal.id}`;
+        navigate(url);
+      }}
     >
-      {deal.name}
+      <Button
+        style={{
+          paddingTop: 0,
+          paddingBottom: 0,
+        }}
+      >
+        <Edit
+          onClick={(e) => {
+            e.stopPropagation();
+            onEditClick(deal);
+          }}
+        />
+      </Button>
+      <ListItemText> {deal.name}</ListItemText>
     </ListItemButton>
   );
 }
@@ -65,12 +88,16 @@ function dealListItem(deal: Deal): JSX.Element {
 type ClientListItemProps = {
   client: Client;
   selectedClientId?: number;
-  onClick: (c: Client) => void;
+  onClick: (c: Client) => Promise<void>;
+  onEditClick: (c: Client) => Promise<void>;
+  onDealEditClick: (d: Deal) => Promise<void>;
 };
 function ClientListItem({
   client,
   selectedClientId,
   onClick,
+  onEditClick,
+  onDealEditClick,
 }: ClientListItemProps): JSX.Element {
   return (
     <div>
@@ -79,91 +106,55 @@ function ClientListItem({
           onClick(client);
         }}
       >
+        <Button
+          style={{
+            paddingTop: 0,
+            paddingBottom: 0,
+          }}
+        >
+          <Edit
+            onClick={(e) => {
+              e.stopPropagation();
+              onEditClick(client);
+            }}
+          />
+        </Button>
         <ListItemText primary={client.name} />
       </ListItemButton>
       <Collapse in={client.id === selectedClientId}>
-        <List>{client.deals.map(dealListItem)}</List>
+        <List>
+          {client.deals.map((d) => (
+            <DealListItem
+              key={d.id}
+              deal={{ ...d, clientId: client.id }}
+              onEditClick={async (d) => {
+                await onDealEditClick(d);
+              }}
+            />
+          ))}
+        </List>
       </Collapse>
     </div>
   );
 }
 
-function useClientEditor(afterSave: () => void) {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [object, setObject] = useState<Partial<Client>>({ name: "" });
-  const open = () => {
-    setIsOpen(true);
-  };
-  const close = () => {
-    setIsOpen(false);
-  };
-  const save = async () => {
-    await postClient(object);
-  };
-  const canSave = object.name !== undefined && object.name.length > 0;
-  const dialog = (
-    <Dialog open={isOpen} onClose={close}>
-      <Box style={{ padding: 10 }}>
-        <label>
-          client name{" "}
-          <Input
-            value={object.name}
-            onChange={(e) =>
-              setObject((o) => {
-                return {
-                  ...o,
-                  name: e.target.value,
-                };
-              })
-            }
-          />
-        </label>
-        <Button
-          disabled={!canSave}
-          style={{ marginLeft: 5 }}
-          variant="contained"
-          onClick={() => {
-            save().then(() => {
-              afterSave();
-            });
-            close();
-          }}
-        >
-          save
-        </Button>
-      </Box>
-    </Dialog>
-  );
-  return [open, dialog] as [() => void, JSX.Element];
-}
-
 function ClientsPage(): JSX.Element {
-  const [clients, setClients] = useState<Client[]>([]);
-  const [selectedClientId, setSelectedClientId] = useState<
-    number | undefined
-  >();
-
-  const afterSave = () => {
-    loadClients().then((cs) => {
-      setClients(cs);
-    });
+  const loadClients = async () => {
+    const cs = await doLoadClients();
+    setClients(cs);
   };
 
-  const [openEditor, editorDialog] = useClientEditor(afterSave);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [openClientEditor, clientEditorDialog] = useClientEditor(loadClients);
+  const [openDealEditor, dealEditorDialog] = useDealEditor(
+    clients,
+    loadClients
+  );
+  const [selectedClientId, handleClientClick] = useClientSelector();
 
   useEffect(() => {
-    loadClients().then((cs) => {
-      setClients(cs);
-    });
+    loadClients();
   }, []);
-
-  const handleClientClick = (client: Client) => {
-    if (selectedClientId === client.id) {
-      setSelectedClientId(undefined);
-    } else {
-      setSelectedClientId(client.id);
-    }
-  };
 
   return (
     <>
@@ -176,19 +167,29 @@ function ClientsPage(): JSX.Element {
                 client={client}
                 selectedClientId={selectedClientId}
                 onClick={handleClientClick}
+                onEditClick={openClientEditor}
+                onDealEditClick={openDealEditor}
               />
             ))}
           </List>
           <Button
             onClick={() => {
-              openEditor();
+              openClientEditor();
             }}
           >
-            <Add />
+            <Add /> client
+          </Button>
+          <Button
+            onClick={() => {
+              openDealEditor();
+            }}
+          >
+            <Add /> deal
           </Button>
         </Paper>
       </Box>
-      {editorDialog}
+      {clientEditorDialog}
+      {dealEditorDialog}
     </>
   );
 }
