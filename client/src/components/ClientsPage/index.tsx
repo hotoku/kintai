@@ -36,6 +36,7 @@ async function doLoadClients(): Promise<Client[]> {
             deals {
               id
               name
+              isFinished
             } 
           }
         }

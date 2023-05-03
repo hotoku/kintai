@@ -2,6 +2,7 @@ export type Deal = {
   id?: number;
   name: string;
   clientId: number;
+  isFinished: boolean;
 };
 
 export type WorkHour = {
