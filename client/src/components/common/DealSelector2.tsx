@@ -5,7 +5,7 @@ import { Deal } from "../../api/types";
 export type Client = {
   id: number;
   name: string;
-  deals: Pick<Deal, "id" | "name" | "clientId">[];
+  deals: Pick<Deal, "id" | "name" | "clientId" | "isFinished">[];
 };
 
 export type Selection = {

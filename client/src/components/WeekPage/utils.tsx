@@ -16,6 +16,7 @@ export type WorkHour = {
       id: number;
       name: string;
     };
+    isFinished: boolean;
   };
 };
 export type DaySummary = {

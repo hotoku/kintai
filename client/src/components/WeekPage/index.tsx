@@ -66,7 +66,10 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
 
   const [clients, deals] = useMemo(() => {
     const clients = new Map<number, Client>();
-    const deals = new Map<number, Pick<Deal, "id" | "name" | "clientId">>();
+    const deals = new Map<
+      number,
+      Pick<Deal, "id" | "name" | "clientId" | "isFinished">
+    >();
     for (const s of allSummaries) {
       for (const w of s.workHours) {
         const deal = w.deal;
@@ -76,6 +79,7 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
             id: deal.id,
             name: deal.name,
             clientId: deal.client.id,
+            isFinished: deal.isFinished,
           });
         }
         if (!clients.has(client.id)) {
