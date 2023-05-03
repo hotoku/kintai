@@ -1,7 +1,16 @@
-import { Box, Button, Dialog, Input, MenuItem, Select } from "@mui/material";
+import {
+  Box,
+  Button,
+  Dialog,
+  Input,
+  MenuItem,
+  Select,
+  Switch,
+} from "@mui/material";
 import { useState } from "react";
-import { Client, Deal } from ".";
+import { Client } from ".";
 import { postDeal, putDeal } from "../../api/fetches";
+import { Deal } from "../../api/types";
 import { maybeInt } from "../../utils";
 
 function menuItem(items: { id: number; name: string }[]): JSX.Element[] {
@@ -26,7 +35,7 @@ export function useDealEditor(
   afterSave: () => Promise<void>
 ): [(d?: Deal) => Promise<void>, JSX.Element] {
   const [isOpen, setIsOpen] = useState(false);
-  const [object, setObj] = useState<Partial<Deal>>({ name: "" });
+  const [object, setObject] = useState<Partial<Deal>>({ name: "" });
   const [clientId, setClientId] = useState<number | "">(
     object && object.clientId ? object.clientId : ""
   );
@@ -36,10 +45,10 @@ export function useDealEditor(
     if (d && d.clientId) {
       setClientId(d.clientId);
     }
-    setObj(d ?? {});
+    setObject(d ?? {});
   };
   const close = () => {
-    setObj({});
+    setObject({});
     setClientId("");
     setIsOpen(false);
   };
@@ -47,7 +56,6 @@ export function useDealEditor(
     typeof clientId === "number" && object.name && object.name.length > 0;
 
   const save = async () => {
-    console.log("object:", object);
     if (object.name === undefined) {
       return;
     }
@@ -73,12 +81,18 @@ export function useDealEditor(
               const val = e.target.value;
               const val2 = maybeInt(val);
               setClientId(typeof val == "number" ? val : "");
-              setObj({ ...object, clientId: val2 });
+              setObject({ ...object, clientId: val2 });
             }}
             value={clientId}
           >
             {menuItem(clients)}
           </Select>
+          <Switch
+            checked={object.isFinished ?? false}
+            onChange={() => {
+              setObject({ ...object, isFinished: !object.isFinished });
+            }}
+          ></Switch>
         </Box>
         <Box>
           <label>
@@ -86,7 +100,7 @@ export function useDealEditor(
             <Input
               value={object && object.name ? object.name : ""}
               onChange={(e) =>
-                setObj((o) => {
+                setObject((o) => {
                   return {
                     ...o,
                     name: e.target.value,

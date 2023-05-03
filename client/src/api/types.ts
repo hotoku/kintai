@@ -2,15 +2,7 @@ export type Deal = {
   id: number;
   name: string;
   clientId: number;
-  clientName: string;
   isFinished: boolean;
-};
-
-export type HalfwayDeal = {
-  id?: number;
-  name?: string;
-  clientId?: number;
-  clientName?: string;
 };
 
 export type WorkHour = {

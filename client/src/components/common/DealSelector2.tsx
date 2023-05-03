@@ -1,15 +1,11 @@
 import { Box, MenuItem, Select } from "@mui/material";
 import { useMemo, useState } from "react";
-
-export type Deal = {
-  id: number;
-  name: string;
-};
+import { Deal } from "../../api/types";
 
 export type Client = {
   id: number;
   name: string;
-  deals: Deal[];
+  deals: Pick<Deal, "id" | "name" | "clientId" | "isFinished">[];
 };
 
 export type Selection = {
@@ -54,9 +50,9 @@ function DealSelector({
       if (client === undefined) {
         throw new Error("panic");
       }
-      return client.deals;
+      return client.deals.filter((d) => !d.isFinished);
     } else {
-      return clients.map((c) => c.deals).flat();
+      return clients.map((c) => c.deals.filter((d) => !d.isFinished)).flat();
     }
   }, [selection.clientId, clients]);
 
