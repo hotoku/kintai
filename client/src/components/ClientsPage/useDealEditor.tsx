@@ -1,7 +1,8 @@
 import { Box, Button, Dialog, Input, MenuItem, Select } from "@mui/material";
 import { useState } from "react";
-import { Client, Deal } from ".";
+import { Client } from ".";
 import { postDeal, putDeal } from "../../api/fetches";
+import { Deal } from "../../api/types";
 import { maybeInt } from "../../utils";
 
 function menuItem(items: { id: number; name: string }[]): JSX.Element[] {

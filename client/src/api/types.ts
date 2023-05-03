@@ -2,7 +2,6 @@ export type Deal = {
   id: number;
   name: string;
   clientId: number;
-  clientName: string;
   isFinished: boolean;
 };
 
