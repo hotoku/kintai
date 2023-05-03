@@ -76,7 +76,9 @@ function DealListItem({ deal, onEditClick }: DealListItemProps): JSX.Element {
           }}
         />
       </Button>
-      <ListItemText> {deal.name}</ListItemText>
+      <ListItemText style={deal.isFinished ? { color: "gray" } : undefined}>
+        {deal.name}
+      </ListItemText>
     </ListItemButton>
   );
 }
