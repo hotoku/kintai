@@ -50,9 +50,9 @@ function DealSelector({
       if (client === undefined) {
         throw new Error("panic");
       }
-      return client.deals;
+      return client.deals.filter((d) => !d.isFinished);
     } else {
-      return clients.map((c) => c.deals).flat();
+      return clients.map((c) => c.deals.filter((d) => !d.isFinished)).flat();
     }
   }, [selection.clientId, clients]);
 
