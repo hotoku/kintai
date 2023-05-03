@@ -23,13 +23,13 @@ function LocalDealSelector({
   onSelectionChange,
 }: LocalDealSelectorProps): JSX.Element {
   const [allClients, setAllClients] = useState<
-    (Client & { deals: Pick<Deal, "id" | "name">[] })[]
+    (Client & { deals: Pick<Deal, "id" | "name" | "clientId">[] })[]
   >([]);
 
   useEffect(() => {
     throwQuery<
       (Client & {
-        deals: Pick<Deal, "id" | "name">[];
+        deals: Pick<Deal, "id" | "name" | "clientId">[];
       })[]
     >(
       `
@@ -40,6 +40,7 @@ function LocalDealSelector({
           deals {
             id
             name
+            clientId
           }
         }
       }
