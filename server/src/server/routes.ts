@@ -2,7 +2,6 @@ import express, { Application } from "express";
 import { getPool } from "../db/db";
 import { WorkHour, Client, Deal } from "../db/types";
 
-
 const TRUE = 1;
 const FALSE = 0;
 
@@ -30,11 +29,12 @@ from
 update Deals
 set
   name = ?,
-  clientId = ?
+  clientId = ?,
+  isFinished = ?
 where
   id=?      
 `,
-      [obj.name, obj.clientId, obj.id]
+      [obj.name, obj.clientId, obj.isFinished ?? false, obj.id]
     );
     res.send("ok");
   });

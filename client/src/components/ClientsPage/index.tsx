@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Deal } from "../../api/types";
 import { useClientEditor } from "./useClientEditor";
 import { useClientSelector } from "./useClientSelector";
 import { useDealEditor } from "./useDealEditor";
@@ -17,13 +18,7 @@ import { useDealEditor } from "./useDealEditor";
 export type Client = {
   id: number;
   name: string;
-  deals: { id: number; name: string }[];
-};
-
-export type Deal = {
-  id: number;
-  name: string;
-  clientId?: number;
+  deals: Deal[];
 };
 
 async function doLoadClients(): Promise<Client[]> {
@@ -41,6 +36,7 @@ async function doLoadClients(): Promise<Client[]> {
             deals {
               id
               name
+              isFinished
             } 
           }
         }
@@ -80,7 +76,9 @@ function DealListItem({ deal, onEditClick }: DealListItemProps): JSX.Element {
           }}
         />
       </Button>
-      <ListItemText> {deal.name}</ListItemText>
+      <ListItemText style={deal.isFinished ? { color: "gray" } : undefined}>
+        {deal.name}
+      </ListItemText>
     </ListItemButton>
   );
 }
