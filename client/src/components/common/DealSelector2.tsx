@@ -1,15 +1,11 @@
 import { Box, MenuItem, Select } from "@mui/material";
 import { useMemo, useState } from "react";
-
-export type Deal = {
-  id: number;
-  name: string;
-};
+import { Deal } from "../../api/types";
 
 export type Client = {
   id: number;
   name: string;
-  deals: Deal[];
+  deals: Pick<Deal, "id" | "name" | "clientId">[];
 };
 
 export type Selection = {

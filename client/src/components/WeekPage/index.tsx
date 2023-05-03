@@ -6,7 +6,7 @@ import { ArrowForward, ArrowBack } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import Content from "./Content";
-import { HalfwayWorkHour, WorkHour } from "../../api/types";
+import { Deal, HalfwayWorkHour, WorkHour } from "../../api/types";
 import { addWorkHour, updateWorkHour } from "../WorkHoursPage/utils";
 import WorkHourEditorDialog from "../common/WorkHourEditorDialog";
 import DealSelector, { Client, Selection } from "../common/DealSelector2";
@@ -66,10 +66,7 @@ function WeekPage({ date: date_ }: WeekPageProps): JSX.Element {
 
   const [clients, deals] = useMemo(() => {
     const clients = new Map<number, Client>();
-    const deals = new Map<
-      number,
-      { id: number; name: string; clientId: number }
-    >();
+    const deals = new Map<number, Pick<Deal, "id" | "name" | "clientId">>();
     for (const s of allSummaries) {
       for (const w of s.workHours) {
         const deal = w.deal;
