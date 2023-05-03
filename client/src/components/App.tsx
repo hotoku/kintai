@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import Deals2 from "./Deals2Page";
 
 import ErrorBoundary from "./ErrorBoundary";
 import { parseQuery } from "../utils";
@@ -24,7 +23,6 @@ function MyRoutes() {
       />
       ,
       <Route path="/deals" element={<Deals />} />,
-      <Route path="/deals2" element={<Deals2 clientId={query.clientId} />} />,
       <Route path="/week" element={<WeekPage date={date} />} />
     </Routes>
   );

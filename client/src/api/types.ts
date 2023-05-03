@@ -6,13 +6,6 @@ export type Deal = {
   isFinished: boolean;
 };
 
-export type HalfwayDeal = {
-  id?: number;
-  name?: string;
-  clientId?: number;
-  clientName?: string;
-};
-
 export type WorkHour = {
   id: number;
   dealId: number;
