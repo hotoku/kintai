@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-DEVICE_NAME=kintai-prd-003
+DEVICE_NAME=kintai-prd-$(date +%s)
 
 
 gcloud compute instances create ${DEVICE_NAME} \
