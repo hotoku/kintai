@@ -51,6 +51,10 @@ source "googlecompute" "hotoku-python-dev" {
 }
 
 build {
+  sources = [
+    "sources.googlecompute.kintai"
+  ]
+
   provisioner "shell" {
     inline = [
       "sudo mkdir -p /image-build",
