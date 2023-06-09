@@ -37,7 +37,7 @@ variable "label-value" {
   default = "__NO_VALUE__"
 }
 
-source "googlecompute" "hotoku-python-dev" {
+source "googlecompute" "kintai" {
   project_id          = "${var.project-id}"
   source_image        = "${var.source-image}"
   ssh_username        = "packer"
