@@ -1,5 +1,5 @@
 .PHONY: image
-image: tree-clean commit-hash
+image: commit-hash
 	$(eval YMD := $(shell date "+%y%m%d%H%M%S"))
 	packer init .
 	packer build \
@@ -11,7 +11,7 @@ image: tree-clean commit-hash
 
 
 .PHONY: commit-hash
-commit-hash:
+commit-hash: tree-clean
 	$(eval COMMIT_HASH := $(shell git rev-parse HEAD | cut -c1-7))
 
 
