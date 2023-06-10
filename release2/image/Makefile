@@ -6,7 +6,7 @@ image: tree-clean commit-hash
 		--var image-suffix=$(YMD)-$(COMMIT_HASH) \
 		--var project-id=$(PROJECT_ID) \
 		--var instance-size=60 \
-		--var label-value=ZkYiQDnhsO9Mvs1TaiBgMyS9spfrqe \
+		--var label-value=zkyiqdnhso9mvs1taibgmys9spfrqe \
 		.
 
 

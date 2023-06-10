@@ -46,7 +46,7 @@ source "googlecompute" "kintai" {
   image_name          = "${var.image-name-body}-${var.image-suffix}"
   machine_type        = "c2-standard-${var.instance-size}"
   image_labels        = {
-    "kintai_label": "${var.label-value}"
+    "kintai-label": "${var.label-value}"
   }
 }
 
