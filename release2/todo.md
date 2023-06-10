@@ -20,4 +20,4 @@ gcloud services enable storage-api.googleapis.com
 [2023-06-10 13:14:00]
 
 gcloud auth application-default login
-を実行して、`GOOGLE_APPLICATION_DEFAULT_CREDENTIALS`環境変数を削除
+を実行して、`GOOGLE_APPLICATION_CREDENTIALS`環境変数を削除
