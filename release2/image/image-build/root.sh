@@ -2,7 +2,10 @@
 
 
 EMACS_VERSION=28.2
-NODE_VERSION=19.3.0
+NODE_VERSION=v19.3.0
+
+
+WORK_DIR=/image-build
 
 
 mylog(){
@@ -36,7 +39,7 @@ mylog "end python build deps"
 ## emacs
 mylog "start emacs"
 apt install -y libgnutls28-dev libtinfo-dev pkg-config
-cd /startup
+cd ${WORK_DIR}
 wget https://ftp.gnu.org/gnu/emacs/emacs-${EMACS_VERSION}.tar.xz
 tar xJvf emacs-${EMACS_VERSION}.tar.xz
 cd emacs-${EMACS_VERSION}
@@ -56,12 +59,12 @@ mylog "end docker"
 
 ## node
 mylog "start node"
-cd /startup
+cd ${WORK_DIR}
 wget https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-x64.tar.xz
 tar xJvf node-${NODE_VERSION}-linux-x64.tar.xz
-export PATH=/startup/node-${NODE_VERSION}-linux-x64/bin:${PATH}
-echo "export PATH=/startup/node-${NODE_VERSION}-linux-x64/bin:\${PATH}" >> /root/.bashrc
-echo "export PATH=/startup/node-${NODE_VERSION}-linux-x64/bin:\${PATH}" >> /root/.zshrc
+export PATH=${WORK_DIR}/node-${NODE_VERSION}-linux-x64/bin:${PATH}
+echo "export PATH=${WORK_DIR}/node-${NODE_VERSION}-linux-x64/bin:\${PATH}" >> /root/.bashrc
+echo "export PATH=${WORK_DIR}/node-${NODE_VERSION}-linux-x64/bin:\${PATH}" >> /root/.zshrc
 mylog "end node"
 
 
@@ -83,8 +86,8 @@ mylog "end google cloud sdk"
 ## mecab
 mylog "start mecab"
 apt install -y mecab libmecab-dev mecab-ipadic-utf8 swig
-git clone https://github.com/neologd/mecab-ipadic-neologd.git /startup/neologd
-cd /startup/neologd
+git clone https://github.com/neologd/mecab-ipadic-neologd.git ${WORK_DIR}/neologd
+cd ${WORK_DIR}/neologd
 bin/install-mecab-ipadic-neologd -y
 mv /usr/lib/x86_64-linux-gnu/mecab/dic/mecab-ipadic-neologd /var/lib/mecab/dic
 sed -E -e "s|dicdir = /var/lib/mecab/dic/debian|dicdir = /var/lib/mecab/dic/mecab-ipadic-neologd|" -i.bak /etc/mecabrc
@@ -107,7 +110,7 @@ apt install -y coinor-cbc
 
 
 ## scip
-cd /startup
+cd ${WORK_DIR}
 git clone https://github.com/scipopt/soplex.git
 cd soplex
 mkdir build && cd $_
@@ -116,7 +119,7 @@ make -j60
 make install
 
 
-cd /startup
+cd ${WORK_DIR}
 git clone https://github.com/scipopt/scip.git
 cd scip
 mkdir build && cd $_
