@@ -63,7 +63,7 @@ build {
   }
 
   provisioner "file" {
-    source      = "./image-build"
+    source      = "./image-build/"
     destination = "/image-build"
   }
 }
