@@ -37,9 +37,9 @@ echo "end python build deps"
 echo "start emacs"
 apt install -y libgnutls28-dev libtinfo-dev pkg-config
 cd /startup
-wget https://ftp.gnu.org/gnu/emacs/emacs-${HOTOKU_EMACS_VERSION}.tar.xz
-tar xJvf emacs-${HOTOKU_EMACS_VERSION}.tar.xz
-cd emacs-${HOTOKU_EMACS_VERSION}
+wget https://ftp.gnu.org/gnu/emacs/emacs-${EMACS_VERSION}.tar.xz
+tar xJvf emacs-${EMACS_VERSION}.tar.xz
+cd emacs-${EMACS_VERSION}
 ./configure --with-x-toolkit=no --with-xpm=ifavailable --with-jpeg=ifavailable --with-png=ifavailable --with-gif=ifavailable --with-tiff=ifavailable --with-gnutls=ifavailable
 make -j60
 make -j60 install
