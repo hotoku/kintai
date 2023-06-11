@@ -57,11 +57,11 @@ echo "end docker"
 ## node
 echo "start node"
 cd /startup
-wget https://nodejs.org/dist/${HOTOKU_NODE_VERSION}/node-${HOTOKU_NODE_VERSION}-linux-x64.tar.xz
-tar xJvf node-${HOTOKU_NODE_VERSION}-linux-x64.tar.xz
-export PATH=/startup/node-${HOTOKU_NODE_VERSION}-linux-x64/bin:${PATH}
-echo "export PATH=/startup/node-${HOTOKU_NODE_VERSION}-linux-x64/bin:\${PATH}" >> /root/.bashrc
-echo "export PATH=/startup/node-${HOTOKU_NODE_VERSION}-linux-x64/bin:\${PATH}" >> /root/.zshrc
+wget https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-x64.tar.xz
+tar xJvf node-${NODE_VERSION}-linux-x64.tar.xz
+export PATH=/startup/node-${NODE_VERSION}-linux-x64/bin:${PATH}
+echo "export PATH=/startup/node-${NODE_VERSION}-linux-x64/bin:\${PATH}" >> /root/.bashrc
+echo "export PATH=/startup/node-${NODE_VERSION}-linux-x64/bin:\${PATH}" >> /root/.zshrc
 echo "end node"
 
 
