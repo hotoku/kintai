@@ -10,31 +10,31 @@ mylog(){
 }
 
 
-echo "install utis start"
+mylog "install utis start"
 
 
 ## basic utils
-echo "start basic utils"
+mylog "start basic utils"
 apt update
 apt install -y zsh direnv fzf jq unzip sqlite3 cmake
 wget https://github.com/sharkdp/fd/releases/download/v8.2.1/fd_8.2.1_amd64.deb
 dpkg -i fd_8.2.1_amd64.deb
 snap install --classic ripgrep
-echo "end basic utils"
+mylog "end basic utils"
 
 
 ## python build deps
-echo "start python build deps"
+mylog "start python build deps"
 apt install -y \
     make build-essential libssl-dev zlib1g-dev \
     libbz2-dev libreadline-dev libsqlite3-dev wget curl \
     llvm libncursesw5-dev xz-utils tk-dev libxml2-dev \
     libxmlsec1-dev libffi-dev liblzma-dev
-echo "end python build deps"
+mylog "end python build deps"
 
 
 ## emacs
-echo "start emacs"
+mylog "start emacs"
 apt install -y libgnutls28-dev libtinfo-dev pkg-config
 cd /startup
 wget https://ftp.gnu.org/gnu/emacs/emacs-${EMACS_VERSION}.tar.xz
@@ -44,44 +44,44 @@ cd emacs-${EMACS_VERSION}
 make -j60
 make -j60 install
 cd /
-echo "end emacs"
+mylog "end emacs"
 
 
 ## docker
-echo "start docker"
+mylog "start docker"
 apt install -y docker.io
 gpasswd -a hotoku docker
-echo "end docker"
+mylog "end docker"
 
 
 ## node
-echo "start node"
+mylog "start node"
 cd /startup
 wget https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-x64.tar.xz
 tar xJvf node-${NODE_VERSION}-linux-x64.tar.xz
 export PATH=/startup/node-${NODE_VERSION}-linux-x64/bin:${PATH}
 echo "export PATH=/startup/node-${NODE_VERSION}-linux-x64/bin:\${PATH}" >> /root/.bashrc
 echo "export PATH=/startup/node-${NODE_VERSION}-linux-x64/bin:\${PATH}" >> /root/.zshrc
-echo "end node"
+mylog "end node"
 
 
 ## pyright prettiier
-echo "start pyright prettier"
+mylog "start pyright prettier"
 npm i -g pyright prettier
-echo "end pyright prettier"
+mylog "end pyright prettier"
 
 
 ## google cloud sdk
-echo "start google cloud sdk"
+mylog "start google cloud sdk"
 echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
 apt install -y apt-transport-https ca-certificates gnupg
 curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
 apt -y update && sudo apt-get install -y google-cloud-sdk
-echo "end google cloud sdk"
+mylog "end google cloud sdk"
 
 
 ## mecab
-echo "start mecab"
+mylog "start mecab"
 apt install -y mecab libmecab-dev mecab-ipadic-utf8 swig
 git clone https://github.com/neologd/mecab-ipadic-neologd.git /startup/neologd
 cd /startup/neologd
@@ -89,11 +89,11 @@ bin/install-mecab-ipadic-neologd -y
 mv /usr/lib/x86_64-linux-gnu/mecab/dic/mecab-ipadic-neologd /var/lib/mecab/dic
 sed -E -e "s|dicdir = /var/lib/mecab/dic/debian|dicdir = /var/lib/mecab/dic/mecab-ipadic-neologd|" -i.bak /etc/mecabrc
 ln -s /etc/mecabrc /usr/local/etc/mecabrc
-echo "end mecab"
+mylog "end mecab"
 
 
 ## misc
-echo "start misc"
+mylog "start misc"
 apt install -y graphviz nkf
 
 
@@ -102,7 +102,7 @@ curl -sS https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh -o
 sudo bash /tmp/add-google-cloud-ops-agent-repo.sh --also-install
 
 
-# cbc
+## cbc
 apt install -y coinor-cbc
 
 
@@ -123,3 +123,4 @@ mkdir build && cd $_
 cmake .. -DAUTOBUILD=ON
 make -j60
 make install
+mylog "end misc"
