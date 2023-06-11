@@ -5,15 +5,15 @@ DEVICE_NAME=kintai-prd-$(date +%s)
 
 
 gcloud compute instances create ${DEVICE_NAME} \
+       --project=kintai-prd \
        --zone=asia-northeast1-b \
-       --machine-type=c2-standard-4 \
+       --machine-type=e2-medium \
        --network-interface=network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=default \
        --maintenance-policy=MIGRATE \
        --provisioning-model=STANDARD \
        --service-account=496636495656-compute@developer.gserviceaccount.com \
        --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append \
-       --tags=http-server,https-server \
-       --create-disk=auto-delete=yes,boot=yes,device-name=${DEVICE_NAME},image=projects/ubuntu-os-cloud/global/images/ubuntu-2204-jammy-v20230531,mode=rw,size=100,type=projects/kintai-prd/zones/asia-northeast1-b/diskTypes/pd-balanced \
+       --create-disk=auto-delete=yes,boot=yes,device-name=${DEVICE_NAME},image=projects/kintai-prd/global/images/kintai-230611152504-b4dd76d,mode=rw,size=20,type=projects/kintai-prd/zones/asia-northeast1-b/diskTypes/pd-balanced \
        --no-shielded-secure-boot \
        --shielded-vtpm \
        --shielded-integrity-monitoring \
