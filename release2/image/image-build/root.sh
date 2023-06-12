@@ -98,32 +98,11 @@ mylog "end mecab"
 ## misc
 mylog "start misc"
 apt install -y graphviz nkf
+mylog "end misc"
 
 
 ## Ops agents, cf: https://cloud.google.com/stackdriver/docs/solutions/agents/ops-agent/installation
+mylog "start ops agents"
 curl -sS https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh -o /tmp/add-google-cloud-ops-agent-repo.sh
 sudo bash /tmp/add-google-cloud-ops-agent-repo.sh --also-install
-
-
-## cbc
-apt install -y coinor-cbc
-
-
-# ## scip
-# cd ${WORK_DIR}
-# git clone https://github.com/scipopt/soplex.git
-# cd soplex
-# mkdir build && cd $_
-# cmake ..
-# make -j60
-# make install
-
-
-cd ${WORK_DIR}
-git clone https://github.com/scipopt/scip.git
-cd scip
-mkdir build && cd $_
-cmake .. -DAUTOBUILD=ON
-make -j60
-make install
-mylog "end misc"
+mylog "end ops agents"
