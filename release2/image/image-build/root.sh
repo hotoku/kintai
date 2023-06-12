@@ -106,3 +106,12 @@ mylog "start ops agents"
 curl -sS https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh -o /tmp/add-google-cloud-ops-agent-repo.sh
 sudo bash /tmp/add-google-cloud-ops-agent-repo.sh --also-install
 mylog "end ops agents"
+
+
+## nginx
+mylog "start nginx"
+apt install -y nginx
+rm /etc/nginx/sites-enabled/default
+cp ${WORK_DIR}/nginx/kintai.inctore.com /etc/nginx/sites-available/
+ln -s /etc/nginx/sites-{enabled,available}/kintai.inctore.com
+mylog "end nginx"
