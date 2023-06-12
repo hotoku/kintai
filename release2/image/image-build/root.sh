@@ -109,14 +109,14 @@ sudo bash /tmp/add-google-cloud-ops-agent-repo.sh --also-install
 apt install -y coinor-cbc
 
 
-## scip
-cd ${WORK_DIR}
-git clone https://github.com/scipopt/soplex.git
-cd soplex
-mkdir build && cd $_
-cmake ..
-make -j60
-make install
+# ## scip
+# cd ${WORK_DIR}
+# git clone https://github.com/scipopt/soplex.git
+# cd soplex
+# mkdir build && cd $_
+# cmake ..
+# make -j60
+# make install
 
 
 cd ${WORK_DIR}
