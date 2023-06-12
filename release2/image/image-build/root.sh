@@ -113,5 +113,5 @@ mylog "start nginx"
 apt install -y nginx
 rm /etc/nginx/sites-enabled/default
 cp ${WORK_DIR}/nginx/kintai.inctore.com /etc/nginx/sites-available/
-ln -s /etc/nginx/sites-{enabled,available}/kintai.inctore.com
+ln -s /etc/nginx/sites-{available,enabled}/kintai.inctore.com
 mylog "end nginx"
