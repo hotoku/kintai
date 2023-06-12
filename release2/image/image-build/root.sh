@@ -115,3 +115,13 @@ rm /etc/nginx/sites-enabled/default
 cp ${WORK_DIR}/nginx/kintai.inctore.com /etc/nginx/sites-available/
 ln -s /etc/nginx/sites-{available,enabled}/kintai.inctore.com
 mylog "end nginx"
+
+
+## ufw setting
+mylog "ufw setting start"
+ufw default deny incoming
+ufw default allow outgoing
+ufw allow ssh
+ufw allow 'Nginx Full'
+yes | ufw enable
+mylog "ufw setting end"
