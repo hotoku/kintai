@@ -125,3 +125,9 @@ ufw allow ssh
 ufw allow 'Nginx Full'
 yes | ufw enable
 mylog "ufw setting end"
+
+
+## mysql
+mylog "start mysql"
+apt install -y mysql-server
+mylog "end mysql"
