@@ -63,7 +63,7 @@ export const mutationType = new GraphQLObjectType<{}, ContextType>({
           setValues.push(args.note);
         }
         const sql = `
-          update WorkHours
+          update workhours
           set
             ${setStatemets.join(",")}
           where
@@ -87,7 +87,7 @@ export const mutationType = new GraphQLObjectType<{}, ContextType>({
       resolve: async (_, args) => {
         const db = await getConnection();
         const sql = `
-          delete from WorkHours where id=?
+          delete from workhours where id=?
         `;
         try {
           await db.query(sql, args.id);
@@ -109,7 +109,7 @@ export const mutationType = new GraphQLObjectType<{}, ContextType>({
         const db = await getConnection();
         const sql = `
           insert into
-          WorkHours (
+          workhours (
             startTime,
             endTime,
             dealId,
@@ -165,7 +165,7 @@ export const mutationType = new GraphQLObjectType<{}, ContextType>({
         const isFinished = args.isFinished ?? false;
         const sql = `
           insert into
-          Deals(
+          deals(
             name,
             clientId,
             isFinished
@@ -212,7 +212,7 @@ export const mutationType = new GraphQLObjectType<{}, ContextType>({
           setValues.push(args.isFinished);
         }
         const sql = `
-          update Deals
+          update deals
           set
             ${setStatemets.join(",")}
           where

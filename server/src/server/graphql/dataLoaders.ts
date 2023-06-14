@@ -24,7 +24,7 @@ class ClientLoader extends DataLoader<number, ClientRecord> {
         id,
         name
       from
-        Clients
+        clients
       where
         id in (?)
         `,
@@ -44,7 +44,7 @@ class ClientLoader extends DataLoader<number, ClientRecord> {
         id,
         name
       from
-        Clients
+        clients
     `);
     return rows;
   };
@@ -60,7 +60,7 @@ function createDealLoader(): DataLoader<number, DealRecord> {
         clientId,
         isFinished
       from
-        Deals
+        deals
       where
         id in (?)
     `,
@@ -81,9 +81,9 @@ function createClientDealsLoader(): DataLoader<number, number[]> {
         c.id as clientId,
         d.id as dealId
       from
-        Clients c
+        clients c
          inner join
-        Deals d
+        deals d
           on c.id = d.clientId
       where
         c.id in (?)
@@ -114,9 +114,9 @@ function createDealWorkHoursLoader(): DataLoader<number, number[]> {
         d.id as dealId,
         w.id as workHourId
       from
-        Deals d
+        deals d
           inner join
-        WorkHours w
+        workhours w
           on d.id = w.dealId
       where
         d.id in (?)
@@ -181,7 +181,7 @@ function createDaySummaryLoader(): DataLoader<string, DaySummaryRecord> {
         note,
         dealId
       from
-        WorkHours
+        workhours
       where
         substr(startTime, 1, 10) in (?)
     `,

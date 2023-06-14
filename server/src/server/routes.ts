@@ -26,7 +26,7 @@ from
     const obj = req.body as Deal;
     await db.query(
       `
-update Deals
+update deals
 set
   name = ?,
   clientId = ?,
@@ -44,7 +44,7 @@ where
     const obj = req.body as Deal;
     await db.query(
       `
-insert into Deals (name, clientId)
+insert into deals (name, clientId)
 values (?, ?)      
 `,
       [obj.name, obj.clientId]
@@ -73,7 +73,7 @@ from
     const obj = req.body as Client;
     await db.query(
       `
-update Clients
+update clients
 set
   name = ?
 where
@@ -89,7 +89,7 @@ where
     const obj = req.body as Client;
     await db.query(
       `
-insert into Clients (
+insert into clients (
   name
 )
 values (
@@ -182,7 +182,7 @@ export const workHours = (app: Application): Application => {
     const obj = req.body as WorkHour;
     await db.query(
       `
-      delete from WorkHours
+      delete from workhours
       where
         id = ?
       `,
