@@ -14,7 +14,7 @@
     "user": "kintai_prd",
     "host": "127.0.0.1",
     "password": {
-      "ENV": "MYSQL_USER_PASSWORD"
+      "ENV": "MYSQL_ROOT_PASSWORD"
     },
     "database": "kintai_prd",
     "multipleStatements": true
