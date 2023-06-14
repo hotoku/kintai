@@ -1,0 +1,45 @@
+#!/bin/bash
+
+
+read_number(){
+    local file="$1"
+    cat ${file} | jq -r '.number'
+}
+
+
+update_number(){
+    local file="$1"
+    local old_number="$2"
+    local new_number=$((${old_number} + 1))
+    local new_json=$(cat ${file} | jq '.number = '"${new_number}")
+    echo ${new_json} > ${file}
+}
+
+
+SCRIPT_DIR=$(dirname $(readlink -f $0))
+CONF_JSON=${SCRIPT_DIR}/conf.json
+NUMBER=$(read_number ${CONF_JSON})
+DEVICE_NAME=kintai-prd-${NUMBER}
+IMAGE_NAME=$(gcloud compute images list | grep kintai | tail -n1 | awk '{print $1}')
+
+
+echo IMAGE_NAME="${IMAGE_NAME}"
+
+
+gcloud compute instances create ${DEVICE_NAME} \
+       --project=kintai-prd \
+       --zone=asia-northeast1-b \
+       --machine-type=e2-medium \
+       --network-interface=network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=default \
+       --maintenance-policy=MIGRATE \
+       --provisioning-model=STANDARD \
+       --service-account=496636495656-compute@developer.gserviceaccount.com \
+       --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append \
+       --create-disk=auto-delete=yes,boot=yes,device-name=${DEVICE_NAME},image=projects/kintai-prd/global/images/${IMAGE_NAME},mode=rw,size=20,type=projects/kintai-prd/zones/asia-northeast1-b/diskTypes/pd-balanced \
+       --no-shielded-secure-boot \
+       --shielded-vtpm \
+       --shielded-integrity-monitoring \
+       --labels=goog-ec-src=vm_add-gcloud \
+       --reservation-affinity=any \
+       --tags=http-server,https-server
+update_number ${CONF_JSON} ${NUMBER}
