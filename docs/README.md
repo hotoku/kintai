@@ -19,6 +19,29 @@
   - トップでmake
   - そのうちCI/CDを考える
 
+## 環境変数
+
+- DB名
+- DBユーザー名
+- DBユーザーのパスワード
+- サーバーのポート番号
+
 ## 必要なもの
 
-- DBマイグレーション
+- DB
+  - マイグレーション
+  - バックアップ
+  - リストア
+- アプリ
+  - 開発
+    - client
+      - npm start
+    - server
+      - npm start
+  - 本番
+    - client
+      - npm run build
+    - server
+      - npm run build
+      - npm run start-prd
+    - nginx
