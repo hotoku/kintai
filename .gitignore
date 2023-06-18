@@ -1,3 +1,4 @@
 /index.html
 /release/backup/
 .DS_Store
+.envrc
