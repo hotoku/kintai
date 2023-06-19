@@ -21,6 +21,7 @@ CONF_JSON=${SCRIPT_DIR}/conf.json
 NUMBER=$(read_number ${CONF_JSON})
 DEVICE_NAME=kintai-prd-${NUMBER}
 IMAGE_NAME=$(gcloud compute images list | grep kintai | tail -n1 | awk '{print $1}')
+MACHINE_TYPE=e2-medium
 
 
 echo IMAGE_NAME="${IMAGE_NAME}"
@@ -29,7 +30,7 @@ echo IMAGE_NAME="${IMAGE_NAME}"
 gcloud compute instances create ${DEVICE_NAME} \
        --project=kintai-prd \
        --zone=asia-northeast1-b \
-       --machine-type=e2-medium \
+       --machine-type=${MACHINE_TYPE} \
        --network-interface=network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=default \
        --maintenance-policy=MIGRATE \
        --provisioning-model=STANDARD \
