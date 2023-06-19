@@ -16,6 +16,22 @@ update_number(){
 }
 
 
+print_help(){
+    cat <<EOF
+$0 [-t <machine type>] [-h]
+EOF
+}
+
+
+MACHINE_TYPE=e2-medium
+while getopts t:h OPT; do
+    case ${OPT} in
+        t ) MACHINE_TYPE=${OPTARG} ;;
+        h ) print_help ; exit 0 ;;
+    esac
+done
+
+
 SCRIPT_DIR=$(dirname $(readlink -f $0))
 CONF_JSON=${SCRIPT_DIR}/conf.json
 NUMBER=$(read_number ${CONF_JSON})
@@ -24,12 +40,13 @@ IMAGE_NAME=$(gcloud compute images list | grep kintai | tail -n1 | awk '{print $
 
 
 echo IMAGE_NAME="${IMAGE_NAME}"
+echo MACHINE_TYPE="${MACHINE_TYPE}"
 
 
 gcloud compute instances create ${DEVICE_NAME} \
        --project=kintai-prd \
        --zone=asia-northeast1-b \
-       --machine-type=e2-medium \
+       --machine-type=${MACHINE_TYPE} \
        --network-interface=network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=default \
        --maintenance-policy=MIGRATE \
        --provisioning-model=STANDARD \
