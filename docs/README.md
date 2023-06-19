@@ -45,3 +45,14 @@
       - npm run build
       - npm run start-prd
     - nginx
+
+## 移行作業
+
+- kintai-prdを改めて作成
+  - こいつは、localにprd.envrcを利用
+  - gcpに接続できるようになるため
+- gceサーバーで、client/serverをセットアップ
+  - 動作確認
+- nginxとの連携確認
+- https接続の確認
+- basic認証の確認
