@@ -152,7 +152,7 @@ function createWorkHourLoader(): DataLoader<number, WorkHourRecord> {
         isDeleted,
         note
       from
-        Workhours
+        workhours
       where
         id in (?)
     `,
