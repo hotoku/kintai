@@ -1,26 +1,53 @@
-BACKUP_DIR := $(HOME)/projects/hotoku/kintai-release/release/backup
+define domysql
+if [ -z "$(MYSQL_ROOT_PASSWORD)" ]; then \
+  echo "$1" | sudo mysql -uroot; \
+else \
+  echo "$1" | mysql -uroot -p"$(MYSQL_ROOT_PASSWORD)"; \
+fi
+endef
+
+
+define hoge
+echo $1
+echo $2
+echo $3
+endef
+
+
+.PHONY: hoge
+hoge:
+	$(eval MSG := hoge,fuga)
+	$(call hoge,$(MSG))
 
 
 .PHONY: user
 user: database
-	@echo "create user if not exists $(MYSQL_USER_NAME)@localhost identified by '$(MYSQL_USER_PASSWORD)'" | mysql -u root -p"$(MYSQL_ROOT_PASSWORD)"
-	@echo "grant select, create, insert, delete, drop, alter, references, update on $(DATABASE_NAME).* to $(MYSQL_USER_NAME)@localhost" | mysql -u root -p"$(MYSQL_ROOT_PASSWORD)"
+	$(eval QUERY1 := create user if not exists '$(MYSQL_USER_NAME)'@'localhost' identified by '$(MYSQL_USER_PASSWORD)')
+	$(eval QUERY2 := grant select, create, insert, delete, drop, alter, references, update on $(DATABASE_NAME).* to '$(MYSQL_USER_NAME)'@'localhost')
+	$(call domysql,$(QUERY1))
+	$(call domysql,$(QUERY2))
 
 
 .PHONY: database
 database:
-	@echo "create database if not exists $(DATABASE_NAME)" | mysql -u root -p"$(MYSQL_ROOT_PASSWORD)"
+	$(eval QUERY := create database if not exists $(DATABASE_NAME))
+	$(call domysql,$(QUERY))
 
 
 .PHONY: clean
 clean:
-	@echo "drop database if exists $(DATABASE_NAME)" | mysql -u root -p"$(MYSQL_ROOT_PASSWORD)"
-	@echo "drop user if exists $(MYSQL_USER_NAME)@localhost" | mysql -u root -p"$(MYSQL_ROOT_PASSWORD)"
+	$(eval QUERY1 := drop database if exists $(DATABASE_NAME))
+	$(eval QUERY2 := drop user if exists '$(MYSQL_USER_NAME)'@'localhost')
+	$(call domysql,$(QUERY1))
+	$(call domysql,$(QUERY2))
 
 
 .PHONY: restore
-restore:
-	$(eval DUMP_FILE := $(shell ls $(BACKUP_DIR) | sort | tail -n1))
+restore: dump-file
 	@make clean
 	@make user
-	@mysql -u root -p"$(MYSQL_ROOT_PASSWORD)" $(DATABASE_NAME) < $(BACKUP_DIR)/$(DUMP_FILE)
+	$(call domysql,$(shell cat $(DUMP_FILE)))
+
+
+.PHONY: dump-file
+	@if [ -z "$(DUMP_FILE)" ]; then echo "DUMP_FILE is empty"; false; fi
