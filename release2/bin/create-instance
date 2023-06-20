@@ -41,6 +41,7 @@ IMAGE_NAME=$(gcloud compute images list | grep kintai | tail -n1 | awk '{print $
 
 echo IMAGE_NAME="${IMAGE_NAME}"
 echo MACHINE_TYPE="${MACHINE_TYPE}"
+echo DEVICE_NAME="${DEVICE_NAME}"
 
 
 gcloud compute instances create ${DEVICE_NAME} \
