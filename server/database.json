@@ -1,22 +1,16 @@
 {
   "dev": {
     "driver": "mysql",
-    "user": "kintai_dev",
+    "user": {
+      "ENV": "MYSQL_USER_NAME"
+    },
     "host": "127.0.0.1",
     "password": {
       "ENV": "MYSQL_USER_PASSWORD"
     },
-    "database": "kintai_dev",
-    "multipleStatements": true
-  },
-  "prd": {
-    "driver": "mysql",
-    "user": "kintai_prd",
-    "host": "127.0.0.1",
-    "password": {
-      "ENV": "MYSQL_ROOT_PASSWORD"
+    "database": {
+      "ENV": "DATABASE_NAME"
     },
-    "database": "kintai_prd",
     "multipleStatements": true
   }
 }
