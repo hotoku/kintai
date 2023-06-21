@@ -7,19 +7,6 @@ fi
 endef
 
 
-define hoge
-echo $1
-echo $2
-echo $3
-endef
-
-
-.PHONY: hoge
-hoge:
-	$(eval MSG := hoge,fuga)
-	$(call hoge,$(MSG))
-
-
 .PHONY: user
 user: database
 	$(eval QUERY1 := create user if not exists '$(MYSQL_USER_NAME)'@'localhost' identified by '$(MYSQL_USER_PASSWORD)')
