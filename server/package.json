@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "migrate": "db-migrate up",
-    "migrate-prd": "db-migrate up -e prd",
     "seeds": "ts-node src/db/makeSeeds.ts; ts-node src/db/loadSeeds.ts ",
     "test": "mocha -r ts-node/register 'tests/**/*.ts'",
     "start": "nodemon",

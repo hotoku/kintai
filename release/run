@@ -1,25 +1,7 @@
 #!/bin/bash
 
 
-echo launching at $(date)
 
-
-# enable anyenv
-if [[ "$(hostname)" = hotoku-macbookair-2019.local ]]; then
-    export PATH=/usr/local/bin:${PATH}
-else
-    export PATH=/opt/homebrew/bin:${PATH}
-fi
-eval "$(anyenv init -)"
-
-
-echo HOME=${HOME}
-echo KINTAI_SYNC_DATA_PATH=${KINTAI_SYNC_DATA_PATH}
-echo PATH=${PATH}
-echo sqlite is $(which sqlite3)
-echo node version follows
-node --version
-echo i am $(whoami)
-
-
+cd ../server
+set
 node dist/index.js

@@ -2,7 +2,7 @@ import {
   AppBar,
   Drawer,
   IconButton,
-  Link,
+  Link as MuiLink,
   List,
   ListItem,
   Toolbar,
@@ -12,13 +12,14 @@ import MenuIcon from "@mui/icons-material/Menu";
 
 import { blue } from "@mui/material/colors";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 type DrawerItemProps = {
   href: string;
   text: string;
 };
 function DrawerItem({ href, text }: DrawerItemProps): JSX.Element {
-  return <Link href={href}>{text}</Link>;
+  return <Link to={href}>{text}</Link>;
 }
 
 function KintaiAppBar(): JSX.Element {
@@ -47,14 +48,14 @@ function KintaiAppBar(): JSX.Element {
             </ListItem>
           </List>
         </Drawer>
-        <Link href="/">
+        <MuiLink href="/">
           <Typography variant="h5" color={blue[50]}>
             Kintai
             {process.env.REACT_APP_IS_DEVELOPMENT ? (
               <span>開発環境！！！</span>
             ) : null}
           </Typography>
-        </Link>
+        </MuiLink>
       </Toolbar>
     </AppBar>
   );
