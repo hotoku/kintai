@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-
+import { Link as Link2 } from "react-router-dom";
 import { blue } from "@mui/material/colors";
 import { useState } from "react";
 
@@ -18,7 +18,7 @@ type DrawerItemProps = {
   text: string;
 };
 function DrawerItem({ href, text }: DrawerItemProps): JSX.Element {
-  return <Link href={href}>{text}</Link>;
+  return <Link2 to={href}>{text}</Link2>;
 }
 
 function KintaiAppBar(): JSX.Element {

@@ -31,8 +31,8 @@ const App = () => {
   return (
     <ErrorBoundary>
       <Box sx={{ flexGrow: 1 }}>
-        <KintaiAppBar />
         <BrowserRouter>
+          <KintaiAppBar />
           <MyRoutes />
         </BrowserRouter>
       </Box>
