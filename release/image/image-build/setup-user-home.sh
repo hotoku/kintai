@@ -2,7 +2,7 @@
 
 
 mkdir -p ${HOME}/projects/hotoku
-git clone git@github.com:hotoku/dot-emacs ${HOME}/projects/hotoku/dot-emacs
+git clone git@github.com:hotoku/dot-emacs --recursive ${HOME}/projects/hotoku/dot-emacs
 git clone git@github.com:hotoku/dot ${HOME}/projects/hotoku/dot
 
 
