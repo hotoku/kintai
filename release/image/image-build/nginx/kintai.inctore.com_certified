@@ -1,0 +1,58 @@
+# -*- mode: nginx -*-
+
+
+server {
+
+
+    root /var/www/kintai;
+    index index.html index.htm index.nginx-debian.html;
+
+
+    server_name kintai.inctore.com;
+
+
+    location /api {
+        auth_basic "Restricted";                   # 認証時に表示されるメッセージ
+        auth_basic_user_file /etc/nginx/.htpasswd; # .htpasswdファイルのパス
+        proxy_pass http://localhost:10080;
+    }
+    location /graphql {
+        auth_basic "Restricted";                   # 認証時に表示されるメッセージ
+        auth_basic_user_file /etc/nginx/.htpasswd; # .htpasswdファイルのパス
+        proxy_pass http://localhost:10080;
+    }
+
+
+    location / {
+        auth_basic "Restricted";                   # 認証時に表示されるメッセージ
+        auth_basic_user_file /etc/nginx/.htpasswd; # .htpasswdファイルのパス
+        try_files $uri $uri/ /index.html;
+    }
+
+
+    listen [::]:443 ssl ipv6only=on; # managed by Certbot
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/kintai.inctore.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/kintai.inctore.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+
+}
+
+
+server {
+    if ($host = kintai.inctore.com) {
+        return 301 https://$host$request_uri;
+        } # managed by Certbot
+
+
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+
+        server_name kintai.inctore.com;
+        return 404; # managed by Certbot
+
+
+}

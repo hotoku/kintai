@@ -7,19 +7,6 @@ fi
 endef
 
 
-define hoge
-echo $1
-echo $2
-echo $3
-endef
-
-
-.PHONY: hoge
-hoge:
-	$(eval MSG := hoge,fuga)
-	$(call hoge,$(MSG))
-
-
 .PHONY: user
 user: database
 	$(eval QUERY1 := create user if not exists '$(MYSQL_USER_NAME)'@'localhost' identified by '$(MYSQL_USER_PASSWORD)')
@@ -46,8 +33,9 @@ clean:
 restore: dump-file
 	@make clean
 	@make user
-	$(call domysql,$(shell cat $(DUMP_FILE)))
+	sudo mysql -uroot $(DATABASE_NAME) < $(DUMP_FILE)
 
 
 .PHONY: dump-file
+dump-file:
 	@if [ -z "$(DUMP_FILE)" ]; then echo "DUMP_FILE is empty"; false; fi
