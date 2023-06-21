@@ -37,4 +37,5 @@ restore: dump-file
 
 
 .PHONY: dump-file
+dump-file:
 	@if [ -z "$(DUMP_FILE)" ]; then echo "DUMP_FILE is empty"; false; fi
