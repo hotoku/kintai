@@ -33,7 +33,7 @@ clean:
 restore: dump-file
 	@make clean
 	@make user
-	$(call domysql,$(shell cat $(DUMP_FILE)))
+	sudo mysql -uroot $(DATABASE_NAME) < $(DUMP_FILE)
 
 
 .PHONY: dump-file
