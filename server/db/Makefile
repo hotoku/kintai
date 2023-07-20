@@ -33,7 +33,11 @@ clean:
 restore: dump-file
 	@make clean
 	@make user
-	sudo mysql -uroot $(DATABASE_NAME) < $(DUMP_FILE)
+	if [ -z "$(MYSQL_ROOT_PASSWORD)" ]; then \
+		sudo mysql -uroot $(DATABASE_NAME) < $(DUMP_FILE); \
+	else \
+		mysql -uroot -p"$(MYSQL_ROOT_PASSWORD)" $(DATABASE_NAME) < $(DUMP_FILE); \
+	fi
 
 
 .PHONY: dump-file
