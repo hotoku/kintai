@@ -16,13 +16,23 @@ import { useState } from "react";
 type DrawerItemProps = {
   href: string;
   text: string;
+  onClick: () => void;
 };
-function DrawerItem({ href, text }: DrawerItemProps): JSX.Element {
-  return <Link2 to={href}>{text}</Link2>;
+
+function DrawerItem({ href, text, onClick }: DrawerItemProps): JSX.Element {
+  return (
+    <Link2 onClick={onClick} to={href}>
+      {text}
+    </Link2>
+  );
 }
 
 function KintaiAppBar(): JSX.Element {
   const [isOpenDrawer, setIsOpenDrawer] = useState<boolean>(false);
+
+  const closeDrawer = () => {
+    setIsOpenDrawer(false);
+  };
 
   return (
     <AppBar position="sticky">
@@ -37,13 +47,13 @@ function KintaiAppBar(): JSX.Element {
         >
           <List>
             <ListItem>
-              <DrawerItem href="/" text="home" />
+              <DrawerItem onClick={closeDrawer} href="/" text="home" />
             </ListItem>
             <ListItem>
-              <DrawerItem href="/deals" text="deals" />
+              <DrawerItem onClick={closeDrawer} href="/deals" text="deals" />
             </ListItem>
             <ListItem>
-              <DrawerItem href="/week" text="week" />
+              <DrawerItem onClick={closeDrawer} href="/week" text="week" />
             </ListItem>
           </List>
         </Drawer>
