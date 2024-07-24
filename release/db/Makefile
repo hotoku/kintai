@@ -1,9 +1,9 @@
 .PHONY: user
 user: database user-info
 	@echo "create user if not exists $(MYSQL_USER_NAME)@localhost identified by '$(MYSQL_USER_PASSWORD)'" | \
-		sudo mysql
+		mysql -uroot -p"${MYSQL_ROOT_PASSWORD}"
 	@echo "grant select, create, insert, delete, drop, alter, references, update on $(DATABASE_NAME).* to $(MYSQL_USER_NAME)@localhost" | \
-		sudo mysql
+		mysql -uroot -p"${MYSQL_ROOT_PASSWORD}"
 
 
 .PHONY: user-info
@@ -14,7 +14,7 @@ user-info:
 
 .PHONY: database
 database: database-name
-	@echo "create database if not exists $(DATABASE_NAME)" | sudo mysql
+	@echo "create database if not exists $(DATABASE_NAME)" | mysql -uroot -p"${MYSQL_ROOT_PASSWORD}"
 
 
 .PHONY: database-name
@@ -24,15 +24,15 @@ database-name:
 
 .PHONY: clean
 clean:
-	@echo "drop database if exists $(DATABASE_NAME)" | sudo mysql
-	@echo "drop user if exists '$(MYSQL_USER_NAME)'@localhost" | sudo mysql
+	@echo "drop database if exists $(DATABASE_NAME)" | mysql -uroot -p"${MYSQL_ROOT_PASSWORD}"
+	@echo "drop user if exists '$(MYSQL_USER_NAME)'@localhost" | mysql -uroot -p"${MYSQL_ROOT_PASSWORD}"
 
 
 .PHONY: restore
 restore: dump-file
 	@make clean
 	@make user
-	@sudo mysql $(DATABASE_NAME) < $(DUMP_FILE)
+	@mysql -uroot -p"${MYSQL_ROOT_PASSWORD}" $(DATABASE_NAME) < $(DUMP_FILE)
 
 
 .PHONY: dump-file
