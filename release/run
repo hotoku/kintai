@@ -1,7 +1,0 @@
-#!/bin/bash
-
-
-
-cd ../server
-set
-node dist/index.js
