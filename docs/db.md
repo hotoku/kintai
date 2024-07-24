@@ -16,6 +16,13 @@ cd server/db
 make
 ```
 
+## 消去
+
+```shell
+cd server/db
+make clean
+```
+
 ## マイグレーション
 
 ``` shell
@@ -30,25 +37,3 @@ npm run migrate
 cd server
 npm run seeds
 ```
-
-# 本番用のDB操作
-
-## バックアップ
-
-``` shell
-mysqldump -p"${MYSQL_ROOT_PASSWORD}" -u root バックアップするDB名 > バックアップ先ファイル名
-```
-
-## リストア
-
-``` shell
-echo "create database if not exists リストア先のDB名" | mysql -u root -p"${MYSQL_ROOT_PASSWORD}"
-cat バックアップファイル名 | mysql -u root -p"${MYSQL_ROOT_PASSWORD}" リストア先のDB名
-```
-
-# 本番のリリース作業
-
-`release`フォルダで`make`を実行する。
-
-これによって、`server`, `client`のビルドが走る。
-また、ビルドでできたファイルを参照するexpressサーバーを起動するlaunch controleのジョブができる。
