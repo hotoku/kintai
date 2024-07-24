@@ -47,5 +47,5 @@ $(PLIST_NAME): $(PLIST_NAME).jinja
 $(LOGCONF_DEST): $(LOGCONF_FILE).jinja
 	@echo making $@
 	jinja2 \
-		-D PWD=$(PWD) $< > $(LOGCONF_FILE)
+		-D PWD=$(shell pwd) $< > $(LOGCONF_FILE)
 	sudo cp $(LOGCONF_FILE) $@
