@@ -1,7 +1,8 @@
-PLIST_NAME := info.hotoku.gcal-sync
+PROJECT_NAME := kintai
+PLIST_NAME := info.hotoku.$(PROJECT_NAME).plist
 EXE_NAME := run
 PLIST_DESTPATH := $(HOME)/Library/LaunchAgents
-LOGCONF_FILE := gcal_sync.conf
+LOGCONF_FILE := $(PROJECT_NAME).conf
 LOGCONF_DEST := /etc/newsyslog.d/$(LOGCONF_FILE)
 
 
@@ -13,22 +14,22 @@ all: load run $(LOGCONF_DEST)
 .PHONY: clean
 clean: unload
 	@echo making $@
-	rm -f $(PLIST_NAME).plist $(LOGCONF_FILE)
+	rm -f $(PLIST_NAME) $(LOGCONF_FILE)
 	sudo rm -f $(LOGCONF_DEST)
 
 
 .PHONY: load
-load: $(PLIST_NAME).plist unload permission
+load: $(PLIST_NAME) unload permission
 	@echo making $@
-	cp -f $(PLIST_NAME).plist $(PLIST_DESTPATH)
-	launchctl load $(PLIST_DESTPATH)/$(PLIST_NAME).plist
+	cp -f $(PLIST_NAME) $(PLIST_DESTPATH)
+	launchctl load $(PLIST_DESTPATH)/$(PLIST_NAME)
 
 
 .PHONY: unload
 unload:
 	@echo making $@
-	launchctl unload $(PLIST_DESTPATH)/$(PLIST_NAME).plist || true
-	rm -f $(PLIST_DESTPATH)/$(PLIST_NAME).plist
+	launchctl unload $(PLIST_DESTPATH)/$(PLIST_NAME) || true
+	rm -f $(PLIST_DESTPATH)/$(PLIST_NAME)
 
 
 .PHONY: permission
@@ -36,11 +37,11 @@ permission: $(EXE_NAME)
 	chmod 755 $(EXE_NAME)
 
 
-$(PLIST_NAME).plist: $(PLIST_NAME).plist.jinja
+$(PLIST_NAME): $(PLIST_NAME).jinja
 	@echo making $@
 	jinja2 \
 		-D WORKDIR=$(PWD) \
-		-D PLIST_NAME=$(PLIST_NAME) $< > $@
+		-D PLIST_NAME=$(subst .plist,,$(PLIST_NAME)) $< > $@
 
 
 $(LOGCONF_DEST): $(LOGCONF_FILE).jinja

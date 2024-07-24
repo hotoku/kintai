@@ -6,6 +6,8 @@ echo ${START_TIME} | tee /dev/stderr
 
 
 source ~/.zshrc
-cd ../server
+
+
+cd ../../server
 set
 node dist/index.js
