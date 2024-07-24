@@ -15,9 +15,39 @@
 
 ## 手順
 
-### データのダンプ
+### 空のDBを作成する
 
-データダンプのコマンド
+```shell
+$ cd ${REPO_DIR}/release/db
+$ make
+```
+
+ユーザーが定義されただけのDBが作成される。
+
+### DBを消去する
+
+```shell
+$ cd ${REPO_DIR}/release/db
+$ make clean
+```
+
+対象となるデータベース（環境変数`DATABASE_NAME`の値）が削除される。
+
+### DBのマイグレーション
+
+```shell
+$ cd ${REPO_DIR}/server
+$ npm run migrate
+```
+
+### DBのシード
+
+```shell
+$ cd ${REPO_DIR}/server
+$ npm run seed
+```
+
+### データのダンプ
 
 ```shell
 $ cd ${REPO_DIR}/release
