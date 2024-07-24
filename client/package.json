@@ -31,8 +31,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "deploy": "if ! test -z ${KINTAI_STATIC_ROOT}; then rm -rf ${KINTAI_STATIC_ROOT}/*; cp -vr build/* ${KINTAI_STATIC_ROOT}; fi"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
