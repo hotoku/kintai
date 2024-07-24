@@ -1,5 +1,5 @@
 .envrc
 info.hotoku.gcal-sync.plist
-stdout
-stderr
+stdout.log*
+stderr.log*
 gcal_sync.conf
